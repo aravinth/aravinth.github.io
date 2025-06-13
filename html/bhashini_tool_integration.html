@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhashini Tool Integration Ecosystem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .integration-ecosystem {
+            position: relative;
+            width: 100%;
+            height: 800px;
+            margin: 40px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+
+        .bhashini-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #ff6b9d, #c44569);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 107, 157, 0.4);
+            animation: coreGlow 3s ease-in-out infinite alternate;
+            z-index: 10;
+        }
+
+        .bhashini-logo {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        @keyframes coreGlow {
+            from { box-shadow: 0 0 50px rgba(255, 107, 157, 0.4); }
+            to { box-shadow: 0 0 80px rgba(255, 107, 157, 0.8); }
+        }
+
+        .integration-category {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .category-icon {
+            font-size: 2.2rem;
+            margin-bottom: 5px;
+        }
+
+        .category-label {
+            font-size: 0.8rem;
+            line-height: 1.1;
+            padding: 0 8px;
+        }
+
+        .integration-category:hover .category-circle {
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .integration-category:hover {
+            z-index: 20;
+        }
+
+        /* Category Positions */
+        .office-tools { top: 8%; left: 15%; }
+        .office-tools .category-circle { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+
+        .fonts-display { top: 12%; right: 15%; }
+        .fonts-display .category-circle { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+        .communication { top: 35%; left: 5%; }
+        .communication .category-circle { background: linear-gradient(135deg, #fa709a, #fee140); }
+
+        .developer-apis { top: 35%; right: 5%; }
+        .developer-apis .category-circle { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+
+        .input-methods { bottom: 12%; left: 15%; }
+        .input-methods .category-circle { background: linear-gradient(135deg, #d299c2, #fef9d7); }
+
+        .accessibility { bottom: 8%; right: 15%; }
+        .accessibility .category-circle { background: linear-gradient(135deg, #89f7fe, #66a6ff); }
+
+        .workflows { bottom: 35%; left: 5%; }
+        .workflows .category-circle { background: linear-gradient(135deg, #fdbb2d, #22c1c3); }
+
+        .adoption { bottom: 35%; right: 5%; }
+        .adoption .category-circle { background: linear-gradient(135deg, #ff9a9e, #fecfef); }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 60px 0;
+        }
+
+        .tool-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .tool-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tool-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-right: 15px;
+        }
+
+        .tool-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .tool-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .integration-examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .example-tag {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            animation: dataFlow 4s infinite;
+        }
+
+        @keyframes dataFlow {
+            0% { opacity: 0.3; transform: scaleX(0); }
+            50% { opacity: 1; transform: scaleX(1); }
+            100% { opacity: 0.3; transform: scaleX(0); }
+        }
+
+        .benefits-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 50px;
+            margin: 60px 0;
+            text-align: center;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .benefit-item {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .benefit-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin: 0 auto 20px;
+        }
+
+        .benefit-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .benefit-description {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .integration-ecosystem {
+                height: 600px;
+            }
+            
+            .category-circle {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .category-icon {
+                font-size: 1.5rem;
+            }
+            
+            .category-label {
+                font-size: 0.7rem;
+            }
+            
+            .bhashini-core {
+                width: 120px;
+                height: 120px;
+                font-size: 0.9rem;
+            }
+            
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bhashini Tool Integration Ecosystem</h1>
+            <p>Seamlessly breaking language barriers by integrating with everyday tools and workflows</p>
+        </div>
+
+        <div class="integration-ecosystem">
+            <div class="connection-lines" id="connectionLines"></div>
+            
+            <div class="bhashini-core">
+                <div class="bhashini-logo">🌐</div>
+                <div>Bhashini<br/>Core</div>
+            </div>
+
+            <div class="integration-category office-tools" onclick="openModal('office')">
+                <div class="category-circle">
+                    <div class="category-icon">📝</div>
+                    <div class="category-label">Office Tools & Word Processors</div>
+                </div>
+            </div>
+
+            <div class="integration-category fonts-display" onclick="openModal('fonts')">
+                <div class="category-circle">
+                    <div class="category-icon">🔤</div>
+                    <div class="category-label">Indian Font Support & Display</div>
+                </div>
+            </div>
+
+            <div class="integration-category communication" onclick="openModal('communication')">
+                <div class="category-circle">
+                    <div class="category-icon">💬</div>
+                    <div class="category-label">Communication Platforms</div>
+                </div>
+            </div>
+
+            <div class="integration-category developer-apis" onclick="openModal('apis')">
+                <div class="category-circle">
+                    <div class="category-icon">⚙️</div>
+                    <div class="category-label">Developer SDKs & APIs</div>
+                </div>
+            </div>
+
+            <div class="integration-category input-methods" onclick="openModal('input')">
+                <div class="category-circle">
+                    <div class="category-icon">⌨️</div>
+                    <div class="category-label">Input Methods & Keyboards</div>
+                </div>
+            </div>
+
+            <div class="integration-category accessibility" onclick="openModal('accessibility')">
+                <div class="category-circle">
+                    <div class="category-icon">♿</div>
+                    <div class="category-label">Accessibility Tools</div>
+                </div>
+            </div>
+
+            <div class="integration-category workflows" onclick="openModal('workflows')">
+                <div class="category-circle">
+                    <div class="category-icon">🔄</div>
+                    <div class="category-label">Workflow Integration</div>
+                </div>
+            </div>
+
+            <div class="integration-category adoption" onclick="openModal('adoption')">
+                <div class="category-circle">
+                    <div class="category-icon">📈</div>
+                    <div class="category-label">Broad Adoption</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tool-grid">
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">📄</div>
+                    <div class="tool-title">Content Creation Integration</div>
+                </div>
+                <div class="tool-description">
+                    Direct plugins for popular word processors enabling real-time translation, transliteration, and text-to-speech without switching applications.
+                </div>
+                <div class="integration-examples">
+                    <span class="example-tag">MS Word Plugin</span>
+                    <span class="example-tag">Google Docs Add-on</span>
+                    <span class="example-tag">LibreOffice Extension</span>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">🔤</div>
+                    <div class="tool-title">Font & Display Excellence</div>
+                </div>
+                <div class="tool-description">
+                    High-quality Indian language font distribution and rendering support ensuring perfect display across all devices and platforms.
+                </div>
+                <div class="integration-examples">
+                    <span class="example-tag">Devanagari Fonts</span>
+                    <span class="example-tag">Tamil Scripts</span>
+                    <span class="example-tag">Multi-platform Support</span>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon" style="background: linear-gradient(135deg, #fa709a, #fee140);">💬</div>
+                    <div class="tool-title">Communication Platform Bridge</div>
+                </div>
+                <div class="tool-description">
+                    Real-time translation integration with messaging apps, email clients, and collaboration tools for seamless cross-lingual communication.
+                </div>
+                <div class="integration-examples">
+                    <span class="example-tag">WhatsApp Integration</span>
+                    <span class="example-tag">Email Translation</span>
+                    <span class="example-tag">Teams/Slack Bots</span>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <div class="tool-header">
+                    <div class="tool-icon" style="background: linear-gradient(135deg, #a8edea, #fed6e3);">🛠️</div>
+                    <div class="tool-title">Developer Ecosystem</div>
+                </div>
+                <div class="tool-description">
+                    Comprehensive SDKs and well-documented APIs enabling third-party developers to embed Bhashini capabilities into specialized applications.
+                </div>
+                <div class="integration-examples">
+                    <span class="example-tag">REST APIs</span>
+                    <span class="example-tag">Python SDK</span>
+                    <span class="example-tag">JavaScript Library</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="benefits-section">
+            <h2 style="font-size: 2.5rem; color: #333; margin-bottom: 20px; font-weight: 700;">Integration Benefits</h2>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">🚀</div>
+                    <div class="benefit-title">Accelerated Adoption</div>
+                    <div class="benefit-description">Meet users where they are, reducing friction and accelerating adoption across all sectors</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎯</div>
+                    <div class="benefit-title">Seamless Experience</div>
+                    <div class="benefit-description">Consistent linguistic experience across all workflows and applications</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🌍</div>
+                    <div class="benefit-title">Universal Access</div>
+                    <div class="benefit-description">Breaking language barriers in everyday digital interactions</div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">⚡</div>
+                    <div class="benefit-title">Enhanced Productivity</div>
+                    <div class="benefit-description">Eliminate context switching and streamline multilingual workflows</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        const modalData = {
+            office: {
+                title: "Office Tools & Word Processors",
+                content: "Bhashini integrates directly into popular word processing applications, allowing users to access translation, transliteration, and text-to-speech services without leaving their documents. This seamless integration eliminates workflow disruption and makes multilingual content creation effortless.",
+                features: ["Real-time Translation", "In-document TTS", "Multi-language Support", "Format Preservation", "Collaborative Editing"]
+            },
+            fonts: {
+                title: "Indian Font Support & Display",
+                content: "Comprehensive font distribution and rendering support ensures that all Indian language text generated or translated by Bhashini displays correctly across different devices, operating systems, and platforms, preserving linguistic authenticity and readability.",
+                features: ["Unicode Compliance", "Cross-platform Rendering", "High-quality Typography", "Regional Scripts", "Accessibility Standards"]
+            },
+            communication: {
+                title: "Communication Platforms",
+                content: "Direct integration with messaging apps, email clients, and collaboration tools enables real-time cross-lingual communication. Users can translate messages, emails, and chats instantly without switching between applications.",
+                features: ["Real-time Chat Translation", "Email Integration", "Video Call Subtitles", "Group Communication", "Context Preservation"]
+            },
+            apis: {
+                title: "Developer SDKs & APIs",
+                content: "Comprehensive development tools and well-documented APIs enable third-party developers to easily embed Bhashini's language AI capabilities into specialized applications across various domains like healthcare, legal, agriculture, and education.",
+                features: ["RESTful APIs", "Multiple Language SDKs", "Comprehensive Documentation", "Code Examples", "Developer Support"]
+            },
+            input: {
+                title: "Input Methods & Keyboards",
+                content: "Seamless compatibility with various Indian language keyboard layouts and input methods ensures efficient direct interaction with Bhashini's services, supporting both traditional and modern input methodologies.",
+                features: ["Multi-script Keyboards", "Voice Input", "Gesture Recognition", "Predictive Text", "Custom Layouts"]
+            },
+            accessibility: {
+                title: "Accessibility Tools",
+                content: "Integration with screen readers, dictation software, and assistive technologies makes information available in native Indian languages for persons with diverse abilities, ensuring inclusive access to digital content.",
+                features: ["Screen Reader Support", "Voice Navigation", "High Contrast Display", "Keyboard Navigation", "Audio Descriptions"]
+            },
+            workflows: {
+                title: "Workflow Integration",
+                content: "Direct integration into content management systems, e-governance portals, and business workflows ensures consistent and high-quality linguistic experiences, reducing errors and improving user satisfaction across all touchpoints.",
+                features: ["CMS Integration", "Government Portals", "Business Systems", "Quality Assurance", "Automated Workflows"]
+            },
+            adoption: {
+                title: "Broad Adoption Strategy",
+                content: "By meeting users in their existing workflows and minimizing friction, Bhashini dramatically lowers barriers to entry for advanced language AI utilization, accelerating adoption across educational, governmental, and commercial sectors.",
+                features: ["Low Friction Onboarding", "Familiar Interfaces", "Gradual Learning Curve", "Multi-sector Support", "Scalable Deployment"]
+            }
+        };
+
+        function openModal(category) {
+            const modal = document.getElementById('modal');
+            const modalBody = document.getElementById('modal-body');
+            const data = modalData[category];
+            
+            modalBody.innerHTML = `
+                <h2 style="color: #333; margin-bottom: 20px; font-size: 1.8rem;">${data.title}</h2>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 25px; font-size: 1.1rem;">${data.content}</p>
+                <h3 style="color: #667eea; margin-bottom: 15px; font-size: 1.3rem;">Key Features</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    ${data.features.map(feature => `<span style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem;">${feature}</span>`).join('')}
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Create connection lines
+        function createConnections() {
+            const container = document.querySelector('.integration-ecosystem');
+            const core = document.querySelector('.bhashini-core');
+            const categories = document.querySelectorAll('.integration-category');
+            const linesContainer = document.getElementById('connectionLines');
+            
+            categories.forEach((category, index) => {
+                const line = document.createElement('div');
+                line.className = 'connection-line';
+                
+                // Calculate positions
+                const containerRect = container.getBoundingClientRect();
+                const coreRect = core.getBoundingClientRect();
+                const categoryRect = category.getBoundingClientRect();
+                
+                const startX = (coreRect.left + coreRect.width/2) - containerRect.left;
+                const startY = (coreRect.top + coreRect.height/2) - containerRect.top;
+                const endX = (categoryRect.left + categoryRect.width/2) - containerRect.left;
+                const endY = (categoryRect.top + categoryRect.height/2) - containerRect.top;
+                
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                line.style.left = startX + 'px';
+                line.style.top = startY + 'px';
+                line.style.width = length + 'px';
+                line.style.transform = `rotate(${angle}deg)`;
+                line.style.animationDelay = `${index * 0.5}s`;
+                
+                linesContainer.appendChild(line);
+            });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(createConnections, 100);
+            
+            // Add entrance animations
+            const categories = document.querySelectorAll('.integration-category');
+            categories.forEach((category, index) => {
+                category.style.animationDelay = `${index * 0.2}s`;
+                category.style.animation = 'fadeInUp 0.8s ease forwards';
+                category.style.opacity = '0';
+                category.style.transform = 'translateY(30px)';
+            });
+        });
+
+        // Add fadeInUp animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const linesContainer = document.getElementById('connectionLines');
+            linesContainer.innerHTML = '';
+            setTimeout(createConnections, 100);
+        });
+    </script>
+</body>
+</html>
