@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bhashini 2.0 Wireframes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            text-align: center;
+            padding: 25px;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .wireframe-section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .observability-title { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color: white; }
+        .improvement-title { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); color: white; }
+        .governance-title { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); color: white; }
+        .payment-title { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; }
+        
+        .wireframe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .wireframe {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .wireframe-header {
+            background: #343a40;
+            color: white;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .wireframe-controls {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .control-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6c757d;
+        }
+        
+        .control-dot.close { background: #dc3545; }
+        .control-dot.minimize { background: #ffc107; }
+        .control-dot.maximize { background: #28a745; }
+        
+        .wireframe-content {
+            padding: 20px;
+            background: white;
+            min-height: 400px;
+        }
+        
+        .nav-bar {
+            background: #e9ecef;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-item {
+            padding: 5px 10px;
+            background: #6c757d;
+            color: white;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        .nav-item.active {
+            background: #007bff;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .metric-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+        }
+        
+        .chart-placeholder {
+            background: #e9ecef;
+            border: 2px dashed #6c757d;
+            border-radius: 5px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-style: italic;
+            margin: 15px 0;
+        }
+        
+        .table-container {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .table-row {
+            padding: 10px 15px;
+            border-bottom: 1px solid #dee2e6;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #495057;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background: #f8f9fa;
+            font-size: 14px;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background: #f8f9fa;
+            font-size: 14px;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background: #f8f9fa;
+            font-size: 14px;
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            background: #f8f9fa;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .page-btn {
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .page-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .filter-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            BHASHINI 2.0 FOUNDATIONAL COMPONENTS - WIREFRAMES
+        </div>
+        
+        <div class="content">
+            <!-- 1. Observability - API Logging Service -->
+            <div class="wireframe-section">
+                <div class="section-title observability-title">
+                    📊 OBSERVABILITY: Granular API Call Logging & Ingestion Service
+                </div>
+                
+                <div class="wireframe-grid">
+                    <div class="wireframe">
+                        <div class="wireframe-header">
+                            <span>🔍 Internal Query Interface</span>
+                            <div class="wireframe-controls">
+                                <div class="control-dot close"></div>
+                                <div class="control-dot minimize"></div>
+                                <div class="control-dot maximize"></div>
+                            </div>
+                        </div>
+                        <div class="wireframe-content">
+                            <div class="nav-bar">
+                                <div style="display: flex; gap: 10px;">
+                                    <div class="nav-item active">API Logs</div>
+                                    <div class="nav-item">Usage Analytics</div>
+                                    <div class="nav-item">System Health</div>
+                                </div>
+                                <div class="nav-item">Admin</div>
+                            </div>
+                            
+                            <div class="filter-section">
+                                <div class="filter-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Date Range</label>
+                                        <input type="date" class="form-input" value="2024-01-01">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">API Type</label>
+                                        <select class="form-select">
+                                            <option>All APIs</option>
+                                            <option>NMT</option>
+                                            <option>ASR</option>
+                                            <option>TTS</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-select">
+                                            <option>All</option>
+                                            <option>Success</option>
+                                            <option>Error</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary">Apply Filters</button>
+                            </div>
+                            
+                            <div class="table-container">
+                                <div class="table-header">API Call Logs</div>
+                                <div class="table-row">
+                                    <div><strong>Timestamp</strong></div>
+                                    <div><strong>User/API Key</strong></div>
+                                    <div><strong>Endpoint</strong></div>
+                                    <div><strong>Status</strong></div>
+                                </div>
+                                <div class="table-row">
+                                    <div>2024-01-15 10:30:45</div>
+                                    <div>user_123</div>
+                                    <div>/api/v1/nmt/translate</div>
+                                    <div><span class="status-badge status-success">Success</span></div>
+                                </div>
+                                <div class="table-row">
+                                    <div>2024-01-15 10:29:12</div>
+                                    <div>api_key_456</div>
+                                    <div>/api/v1/asr/recognize</div>
+                                    <div><span class="status-badge status-error">Error</span></div>
+                                </div>
+                                <div class="table-row">
+                                    <div>2024-01-15 10:28:33</div>
+                                    <div>user_789</div>
+                                    <div>/api/v1/tts/synthesize</div>
+                                    <div><span class="status-badge status-success">Success</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="pagination">
+                                <div class="page-btn">‹</div>
+                                <div class="page-btn active">1</div>
+                                <div class="page-btn">2</div>
+                                <div class="page-btn">3</div>
+                                <div class="page-btn">›</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wireframe">
+                        <div class="wireframe-header">
+                            <span>📈 Log Ingestion Dashboard</span>
+                            <div class="wireframe-controls">
+                                <div class="control-dot close"></div>
+                                <div class="control-dot minimize"></div>
+                                <div class="control-dot maximize"></div>
+                            </div>
+                        </div>
+                        <div class="wireframe-content">
+                            <div class="nav-bar">
+                                <div style="display: flex; gap: 10px;">
+                                    <div class="nav-item active">Real-time</div>
+                                    <div class="nav-item">Historical</div>
+                                    <div class="nav-item">Alerts</div>
+                                </div>
+                                <div class="nav-item">🔄 Auto-refresh: ON</div>
+                            </div>
+                            
+                            <div class="dashboard-grid">
+                                <div class="metric-card">
+                                    <div class="metric-number">1,247</div>
+                                    <div class="metric-label">Logs/minute</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">99.8%</div>
+                                    <div class="metric-label">Success Rate</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">45ms</div>
+                                    <div class="metric-label">Avg Latency</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">342GB</div>
+                                    <div class="metric-label">Storage Used</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-placeholder">
+                                📊 API Call Volume Over Time (Line Chart)
+                            </div>
+                            
+                            <div class="alert alert-success">
+                                ✅ Microservice Status: Healthy - All logging endpoints operational
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 2. Improvement System - Feedback Portal -->
+            <div class="wireframe-section">
+                <div class="section-title improvement-title">
+                    🔄 IMPROVEMENT SYSTEM: User Feedback Collection & Categorization Portal
+                </div>
+                
+                <div class="wireframe-grid">
+                    <div class="wireframe">
+                        <div class="wireframe-header">
+                            <span>📝 User Feedback Submission Form</span>
+                            <div class="wireframe-controls">
+                                <div class="control-dot close"></div>
+                                <div class="control-dot minimize"></div>
+                                <div class="control-dot maximize"></div>
+                            </div>
+                        </div>
+                        <div class="wireframe-content">
+                            <div class="nav-bar">
+                                <div style="display: flex; gap: 10px;">
+                                    <div class="nav-item active">Submit Feedback</div>
+                                    <div class="nav-item">My Submissions</div>
+                                    <div class="nav-item">FAQ</div>
+                                </div>
+                                <div class="nav-item">👤 user@example.com</div>
+                            </div>
+                            
+                            <h3 style="color: #2c3e50; margin-bottom: 20px;">Submit Your Feedback</h3>
+                            
+                            <form>
+                                <div class="form-group">
+                                    <label class="form-label">API Type *</label>
+                                    <select class="form-select" required>
+                                        <option>Select API Type</option>
+                                        <option>Neural Machine Translation (NMT)</option>
+                                        <option>Automatic Speech Recognition (ASR)</option>
+                                        <option>Text-to-Speech (TTS)</option>
+                                        <option>Optical Character Recognition (OCR)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Language *</label>
+                                    <select class="form-select" required>
+                                        <option>Select Language</option>
+                                        <option>Hindi</option>
+                                        <option>Tamil</option>
+                                        <option>Bengali</option>
+                                        <option>Telugu</option>
+                                        <option>Gujarati</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Issue Severity *</label>
+                                    <select class="form-select" required>
+                                        <option>Select Severity</option>
+                                        <option>Low - Minor improvement suggestion</option>
+                                        <option>Medium - Notable issue affecting usage</option>
+                                        <option>High - Critical problem blocking functionality</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Feedback Category *</label>
+                                    <select class="form-select" required>
+                                        <option>Select Category</option>
+                                        <option>Bug Report</option>
+                                        <option>Feature Request</option>
+                                        <option>Quality Issue</option>
+                                        <option>Performance Problem</option>
+                                        <option>Documentation</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Detailed Description *</label>
+                                    <textarea class="form-textarea" required placeholder="Please provide detailed information about your feedback, including steps to reproduce (if applicable), expected behavior, and actual behavior..."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Contact Email (Optional)</label>
+                                    <input type="email" class="form-input" placeholder="your.email@example.com">
+                                </div>
+                                
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                                    <button type="reset" class="btn btn-secondary">Clear Form</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="wireframe">
+                        <div class="wireframe-header">
+                            <span>🏢 Internal Feedback Management Dashboard</span>
+                            <div class="wireframe-controls">
+                                <div class="control-dot close"></div>
+                                <div class="control-dot minimize"></div>
+                                <div class="control-dot maximize"></div>
+                            </div>
+                        </div>
+                        <div class="wireframe-content">
+                            <div class="nav-bar">
+                                <div style="display: flex; gap: 10px;">
+                                    <div class="nav-item active">All Feedback</div>
+                                    <div class="nav-item">Open Items</div>
+                                    <div class="nav-item">Resolved</div>
+                                    <div class="nav-item">Analytics</div>
+                                </div>
+                                <div class="nav-item">🔔 3 New</div>
+                            </div>
+                            
+                            <div class="dashboard-grid">
+                                <div class="metric-card">
+                                    <div class="metric-number">156</div>
+                                    <div class="metric-label">Total Feedback</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">23</div>
+                                    <div class="metric-label">Open Issues</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">12</div>
+                                    <div class="metric-label">High Priority</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">85%</div>
+                                    <div class="metric-label">Resolution Rate</div>
+                                </div>
+                            </div>
+                            
+                            <div class="search-bar">
+                                <input type="text" class="search-input" placeholder="Search feedback...">
+                                <button class="btn btn-primary">Search</button>
+                            </div>
+                            
+                            <div class="table-container">
+                                <div class="table-header">Recent Feedback Submissions</div>
+                                <div class="table-row">
+                                    <div><strong>ID</strong></div>
+                                    <div><strong>Category</strong></div>
+                                    <div><strong>Priority</strong></div>
+                                    <div><strong>Status</strong></div>
+                                </div>
+                                <div class="table-row">
+                                    <div>FB-001</div>
+                                    <div>Bug Report - NMT</div>
+                                    <div><span class="status-badge status-error">High</span></div>
+                                    <div><span class="status-badge status-warning">In Progress</span></div>
+                                </div>
+                                <div class="table-row">
+                                    <div>FB-002</div>
+                                    <div>Feature Request - ASR</div>
+                                    <div><span class="status-badge status-warning">Medium</span></div>
+                                    <div><span class="status-badge status-success">Resolved</span></div>
+                                </div>
+                                <div class="table-row">
+                                    <div>FB-003</div>
+                                    <div>Quality Issue - TTS</div>
+                                    <div><span class="status-badge status-error">High</span></div>
+                                    <div><span class="status-badge status-warning">Open</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 3. Governance - Metrics Dashboard -->
+            <div class="wireframe-section">
+                <div class="section-title governance-title">
+                    🏛️ GOVERNANCE: Core Metrics & High-Level Anomaly Detection Service
+                </div>
+                
+                <div class="wireframe-grid">
+                    <div class="wireframe">
+                        <div class="wireframe-header">
+                            <span>📊 Executive Dashboard (Ministerial/Leadership View)</span>
+                            <div class="wireframe-controls">
+                                <div class="control-dot close"></div>
+                                <div class="control-dot minimize"></div>
+                                <div class="control-dot maximize"></div>
+                            </div>
+                        </div>
+                        <div class="wireframe-content">
+                            <div class="nav-bar">
+                                <div style="display: flex; gap: 10px;">
+                                    <div class="nav-item active">Overview</div>
+                                    <div class="nav-item">Usage Trends</div>
+                                    <div class="nav-item">Performance</div>
+                                    <div class="nav-item">Alerts</div>
+                                </div>
+                                <div class="nav-item">📅 Last Updated: 2 min ago</div>
+                            </div>
+                            
+                            <div class="alert alert-warning">
+                                ⚠️ Anomaly Detected: 15% drop in API calls detected in the last 2 hours
+                            </div>
+                            
+                            <div class="dashboard-grid">
+                                <div class="metric-card">
+                                    <div class="metric-number">2.4M</div>
+                                    <div class="metric-label">Total API Calls (Today)</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">15,847</div>
+                                    <div class="metric-label">Active Users</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">98.7%</div>
+                                    <div class="metric-label">System Uptime</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">Hindi-English</div>
+                                    <div class="metric-label">Top Language Pair</div>
+                                </div>
+                            </div>
+                            
+                            <div class="chart-placeholder">
+                                📈 API Usage Trends - Last 7 Days (Area Chart)
+                            </div>
+                            
+                            <div class="chart-placeholder">
+                                🥧 API Distribution by Type (Pie Chart)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wireframe">
+                        <div class="wireframe-header">
+                            <span>🚨 Anomaly Detection & Alerts Dashboard</span>
+                            <div class="wireframe-controls">
+                                <div class="control-dot close"></div>
+                                <div class="control-dot minimize"></div>
+                                <div class="control-dot maximize"></div>
+                            </div>
+                        </div>
+                        <div class="wireframe-content">
+                            <div class="nav-bar">
+                                <div style="display: flex; gap: 10px;">
+                                    <div class="nav-item active">Active Alerts</div>
+                                    <div class="nav-item">Rules</div>
+                                    <div class="nav-item">History</div>
+                                    <div class="nav-item">Settings</div>
+                                </div>
+                                <div class="nav-item">🔔 2 Critical</div>
+                            </div>
+                            
+                            <div class="dashboard-grid">
+                                <div class="metric-card">
+                                    <div class="metric-number">3</div>
+                                    <div class="metric-label">Active Alerts</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">2</div>
+                                    <div class="metric-label">Critical</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">1</div>
+                                    <div class="metric-label">Warning</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-number">12</div>
+                                    <div class="metric-label">Resolved Today</div>
+                                </div>
+                            </div>
+                            
+                            <div class="table-container">
+                                <div class="table-header">Current Anomalies</div>
+                                <div class="table-row">
+                                    <div><strong>Alert Type</strong></div>
+                                    <div><strong>Severity</strong></div>
+                                    <div><strong>Time</strong></div>
+                                    <div><strong>Action</strong></div>
+                                </div>
+                                <div class="table-row">
+                                    <div>API Usage Drop</div>
+                                    <div><span class="status-badge status-error">Critical</span></div>
+                                    <div>2 hours ago</div>
+                                    <div><button class="btn btn-primary" style="padding: 5px 10px; font-size: 12px;">Investigate</button></div>
+                                </div>
+                                <div class="table-row">
+                                    <div>Error Rate Spike</div>
+                                    <div><span class="status-badge status-error">Critical</span></div>
+                                    <div>45 min ago</div>
+                                    <div><button class="btn btn-primary
