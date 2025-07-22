@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- saved from url=(0075)file:///Users/aravinthbheemaraj/Downloads/cloud_architecture_estimator.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS Cloud Architecture &amp; Cost Estimator</title>
+    <title>AWS Cloud Architecture & Cost Estimator - Agricultural Platform</title>
     <style>
         * {
             margin: 0;
@@ -20,7 +20,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1500px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -168,78 +168,113 @@
             margin-top: 30px;
         }
         
-        .cost-table {
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .cost-category {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 15px;
             padding: 25px;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .cost-table h3 {
+        .category-title {
             color: #4ecdc4;
             margin-bottom: 20px;
             font-size: 1.3rem;
             text-align: center;
+            font-weight: bold;
         }
         
-        .cost-row {
+        .cost-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            flex-wrap: wrap;
         }
         
-        .cost-row:last-child {
+        .cost-item:last-child {
             border-bottom: none;
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: #4ecdc4;
         }
         
-        .service {
+        .service-name {
             color: #e2e8f0;
+            flex: 1;
+            min-width: 200px;
         }
         
-        .cost {
+        .cost-range {
             color: #4ecdc4;
             font-weight: 600;
+            text-align: right;
+            min-width: 120px;
         }
         
-        .growth-chart {
-            background: rgba(255, 255, 255, 0.05);
+        .service-description {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            flex-basis: 100%;
+        }
+        
+        .total-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-radius: 15px;
-            padding: 25px;
+            padding: 30px;
             margin-top: 30px;
             text-align: center;
         }
         
-        .growth-visualization {
-            display: flex;
-            justify-content: space-between;
-            align-items: end;
-            height: 200px;
-            margin: 20px 0;
-            padding: 0 20px;
-        }
-        
-        .growth-bar {
-            background: linear-gradient(to top, #4facfe, #00f2fe);
-            border-radius: 5px 5px 0 0;
-            width: 60px;
-            display: flex;
-            flex-direction: column;
-            justify-content: end;
-            align-items: center;
-            color: #000;
+        .total-range {
+            font-size: 3rem;
             font-weight: bold;
-            position: relative;
+            color: #fff;
+            margin: 20px 0;
         }
         
-        .bar-label {
-            position: absolute;
-            bottom: -25px;
+        .scaling-visualization {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .scaling-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .scaling-title {
+            color: #4ecdc4;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .scaling-details {
             color: #e2e8f0;
-            font-size: 0.8rem;
+            line-height: 1.6;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .warning-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
         
         .recommendations {
@@ -268,6 +303,16 @@
             margin-bottom: 10px;
         }
         
+        .cost-driver {
+            background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+            color: #1a202c;
+        }
+        
         @media (max-width: 768px) {
             .cost-estimation {
                 grid-template-columns: 1fr;
@@ -281,260 +326,285 @@
                 flex-direction: column;
                 align-items: center;
             }
+            
+            .total-range {
+                font-size: 2rem;
+            }
         }
     </style>
-<style>
-            @keyframes pulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-                100% { transform: scale(1); }
-            }
-        </style></head>
+</head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🌾 Agricultural Platform - AWS Cloud Architecture</h1>
-            <p>Scalable infrastructure for farmer-centric agricultural services</p>
+            <p>Enterprise-grade scalable infrastructure for farmer-centric agricultural services</p>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number" style="animation: 1s ease-in-out 0s 1 normal none running pulse;">3K</div>
+                <div class="stat-number">3K</div>
                 <div class="stat-label">Current Weekly Users</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" style="animation: 1s ease-in-out 0s 1 normal none running pulse;">5L</div>
+                <div class="stat-number">5L</div>
                 <div class="stat-label">Target Weekly Users</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" style="animation: 1s ease-in-out 0s 1 normal none running pulse;">167x</div>
+                <div class="stat-number">167x</div>
                 <div class="stat-label">Scale Multiplier</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" style="animation: 1s ease-in-out 0s 1 normal none running pulse;">24/7</div>
-                <div class="stat-label">Availability Target</div>
+                <div class="stat-number">$150K-220K</div>
+                <div class="stat-label">Annual Budget Range</div>
             </div>
         </div>
 
         <div class="architecture-section">
-            <h2 class="section-title">🏗️ Cloud Architecture Design</h2>
+            <h2 class="section-title">🏗️ Enhanced Cloud Architecture Design</h2>
             
             <div class="architecture-diagram">
                 <div class="layer edge-layer">
-                    <div class="layer-title">🌐 Edge &amp; CDN Layer</div>
+                    <div class="layer-title">🌐 Edge & Security Layer</div>
                     <div class="components">
-                        <div class="component">CloudFront CDN<br><small>Global Edge Locations</small></div>
-                        <div class="component">AWS WAF<br><small>DDoS Protection</small></div>
-                        <div class="component">Route 53<br><small>DNS &amp; Health Checks</small></div>
+                        <div class="component">CloudFront CDN<br><small>Global Edge Distribution</small></div>
+                        <div class="component">AWS WAF + Shield<br><small>Advanced DDoS Protection</small></div>
+                        <div class="component">Route 53<br><small>DNS & Health Checks</small></div>
                     </div>
                 </div>
 
                 <div class="layer api-layer">
-                    <div class="layer-title">🔌 API Gateway &amp; Load Balancing</div>
+                    <div class="layer-title">🔌 API Gateway & Load Balancing</div>
                     <div class="components">
-                        <div class="component">API Gateway<br><small>Auth &amp; Rate Limiting</small></div>
-                        <div class="component">Application Load Balancer<br><small>Traffic Distribution</small></div>
-                        <div class="component">WhatsApp Gateway<br><small>Messaging API</small></div>
+                        <div class="component">API Gateway<br><small>Auth & Rate Limiting</small></div>
+                        <div class="component">Application Load Balancer<br><small>Advanced Routing</small></div>
+                        <div class="component">Network Load Balancer<br><small>High Performance</small></div>
+                        <div class="component">WhatsApp/IVRS Gateway<br><small>Voice & Messaging</small></div>
                     </div>
                 </div>
 
                 <div class="layer compute-layer">
-                    <div class="layer-title">⚡ Compute &amp; Application Layer</div>
+                    <div class="layer-title">⚡ Compute & AI Processing Layer</div>
                     <div class="components">
-                        <div class="component">EKS Cluster<br><small>Beckn Core Services</small></div>
-                        <div class="component">EC2 Auto Scaling<br><small>m5.large → m5.4xlarge</small></div>
-                        <div class="component">GPU Instances<br><small>g5.xlarge for AI/ML</small></div>
-                        <div class="component">Lambda Functions<br><small>Serverless Processing</small></div>
+                        <div class="component">EKS Cluster<br><small>Beckn Core + App Services</small></div>
+                        <div class="component">EC2 Auto Scaling<br><small>m5.large → m5.2xlarge</small></div>
+                        <div class="component">GPU Instances<br><small>g5.4xlarge → g5.24xlarge</small></div>
+                        <div class="component">Lambda Functions<br><small>Event-driven Processing</small></div>
+                        <div class="component">AWS Batch<br><small>ML Training Jobs</small></div>
                     </div>
                 </div>
 
                 <div class="layer data-layer">
-                    <div class="layer-title">🗄️ Data &amp; AI Services Layer</div>
+                    <div class="layer-title">🗄️ Data & Storage Layer</div>
                     <div class="components">
-                        <div class="component">RDS PostgreSQL<br><small>Multi-AZ, Read Replicas</small></div>
-                        <div class="component">OpenSearch<br><small>Vector Database</small></div>
-                        <div class="component">S3 Storage<br><small>Content &amp; Media</small></div>
-                        <div class="component">AWS Transcribe/Polly<br><small>Voice Services</small></div>
+                        <div class="component">RDS PostgreSQL<br><small>Multi-AZ with Read Replicas</small></div>
+                        <div class="component">OpenSearch/Aurora<br><small>Vector Database & Search</small></div>
+                        <div class="component">S3 Storage<br><small>Content, Logs, ML Models</small></div>
+                        <div class="component">AWS Transcribe/Polly<br><small>Voice AI Services</small></div>
                     </div>
                 </div>
 
                 <div class="layer monitoring-layer">
-                    <div class="layer-title">📊 Monitoring &amp; Analytics</div>
+                    <div class="layer-title">📊 Monitoring & DevOps</div>
                     <div class="components">
-                        <div class="component">CloudWatch<br><small>Metrics &amp; Logs</small></div>
-                        <div class="component">X-Ray<br><small>Distributed Tracing</small></div>
-                        <div class="component">QuickSight<br><small>Business Analytics</small></div>
+                        <div class="component">CloudWatch + X-Ray<br><small>Metrics & Tracing</small></div>
+                        <div class="component">CodePipeline/Build<br><small>CI/CD Automation</small></div>
+                        <div class="component">Systems Manager<br><small>Configuration Management</small></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="architecture-section">
-            <h2 class="section-title">💰 Annual AWS Cost Estimation</h2>
+            <h2 class="section-title">💰 Detailed AWS Cost Breakdown (Annual)</h2>
             
-            <div class="cost-estimation">
-                <div class="cost-table">
-                    <h3>🚀 Current Scale (3K users/week)</h3>
-                    <div class="cost-row">
-                        <span class="service">EC2 Instances (3x m5.large)</span>
-                        <span class="cost">$1,890</span>
+            <div class="warning-box">
+                <div class="warning-title">⚠️ GPU Compute: Critical Cost Variable</div>
+                <p>LLM inference represents 45-60% of total infrastructure costs. Requires careful optimization and right-sizing based on actual usage patterns.</p>
+            </div>
+            
+            <div class="cost-breakdown">
+                <div class="cost-category">
+                    <div class="category-title">🖥️ I. Compute Services</div>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">EC2 (Beckn Core, App Services)</div>
+                        <div class="cost-range">$24K - $36K</div>
+                        <div class="service-description">EKS worker nodes: 2-4x m5.large/xlarge scaling to 8-16x m5.xlarge/2xlarge with auto-scaling groups</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">EKS Cluster</span>
-                        <span class="cost">$876</span>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">GPU Compute (LLM Inference)</div>
+                        <div class="cost-range">$96K - $180K</div>
+                        <div class="service-description">Starting: 2-4x g5.4xlarge (A10G GPUs). Scaling: 2-4x g5.12xlarge/24xlarge (8-16 GPUs avg)</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">RDS PostgreSQL (db.r5.large)</span>
-                        <span class="cost">$2,190</span>
-                    </div>
-                    <div class="cost-row">
-                        <span class="service">OpenSearch (t3.small.search)</span>
-                        <span class="cost">$350</span>
-                    </div>
-                    <div class="cost-row">
-                        <span class="service">CloudFront + WAF</span>
-                        <span class="cost">$600</span>
-                    </div>
-                    <div class="cost-row">
-                        <span class="service">S3 Storage (10TB)</span>
-                        <span class="cost">$280</span>
-                    </div>
-                    <div class="cost-row">
-                        <span class="service">API Gateway</span>
-                        <span class="cost">$420</span>
-                    </div>
-                    <div class="cost-row">
-                        <span class="service">Monitoring &amp; Analytics</span>
-                        <span class="cost">$480</span>
-                    </div>
-                    <div class="cost-row">
-                        <span class="service">AI Services (Transcribe/Polly)</span>
-                        <span class="cost">$300</span>
-                    </div>
-                    <div class="cost-row">
-                        <span class="service"><strong>Total Annual Cost</strong></span>
-                        <span class="cost"><strong>$7,386</strong></span>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">Lambda/Step Functions/Batch</div>
+                        <div class="cost-range">$3.6K - $9.6K</div>
+                        <div class="service-description">Event-driven processing, embedding generation, episodic ML tasks</div>
                     </div>
                 </div>
 
-                <div class="cost-table">
-                    <h3>🎯 Target Scale (5L users/week)</h3>
-                    <div class="cost-row">
-                        <span class="service">EC2 Instances (15x m5.2xlarge)</span>
-                        <span class="cost">$23,400</span>
+                <div class="cost-category">
+                    <div class="category-title">🗄️ II. Storage & Databases</div>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">Amazon S3 (Content, Logs)</div>
+                        <div class="cost-range">$3.6K - $9.6K</div>
+                        <div class="service-description">5TB → 15-20TB growth. Standard + IA tiers. Voice recordings, ML models, logs</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">EKS Cluster (3 AZ)</span>
-                        <span class="cost">$2,628</span>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">RDS PostgreSQL (Multi-AZ)</div>
+                        <div class="cost-range">$3K - $5.4K</div>
+                        <div class="service-description">Beckn metadata, user data. Starting: db.m5.xlarge Multi-AZ, scaling up</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">RDS PostgreSQL (db.r5.4xlarge)</span>
-                        <span class="cost">$17,520</span>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">Vector Database (OpenSearch/Aurora)</div>
+                        <div class="cost-range">$4.8K - $8.4K</div>
+                        <div class="service-description">Semantic search, embeddings. 2-3x r6g.xlarge OpenSearch HA or Aurora pgvector</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">OpenSearch (m5.large.search)</span>
-                        <span class="cost">$4,200</span>
+                </div>
+
+                <div class="cost-category">
+                    <div class="category-title">🌐 III. Networking & Transfer</div>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">Data Transfer (Outbound)</div>
+                        <div class="cost-range">$12K - $30K</div>
+                        <div class="service-description">15-30TB annually. Voice/video content, API responses. Highly variable</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">GPU Instances (2x g5.xlarge)</span>
-                        <span class="cost">$8,760</span>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">Load Balancers (ALB, NLB)</div>
+                        <div class="cost-range">$1.2K - $2.4K</div>
+                        <div class="service-description">Basic charges + data processed through load balancers</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">CloudFront + WAF</span>
-                        <span class="cost">$3,600</span>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">CloudFront/Route 53</div>
+                        <div class="cost-range">$600 - $1.2K</div>
+                        <div class="service-description">Per-request charges, data transfer, DNS queries</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">S3 Storage (500TB)</span>
-                        <span class="cost">$14,000</span>
+                </div>
+
+                <div class="cost-category">
+                    <div class="category-title">🔒 IV. Security & Monitoring</div>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">CloudWatch, X-Ray, WAF, KMS</div>
+                        <div class="cost-range">$2.4K - $4.8K</div>
+                        <div class="service-description">Log ingestion, custom metrics, tracing, WAF rules, encryption keys</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">API Gateway (High Volume)</span>
-                        <span class="cost">$6,000</span>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">CI/CD Services</div>
+                        <div class="cost-range">$600 - $1.8K</div>
+                        <div class="service-description">CodeBuild/Pipeline build minutes, deployment frequency</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">Data Transfer &amp; Bandwidth</span>
-                        <span class="cost">$12,000</span>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">Systems Manager/Config</div>
+                        <div class="cost-range">$240 - $600</div>
+                        <div class="service-description">Configuration management, compliance, patch management</div>
                     </div>
-                    <div class="cost-row">
-                        <span class="service">AI Services (Scale)</span>
-                        <span class="cost">$15,000</span>
-                    </div>
-                    <div class="cost-row">
-                        <span class="service">Monitoring &amp; Analytics</span>
-                        <span class="cost">$3,600</span>
-                    </div>
-                    <div class="cost-row">
-                        <span class="service"><strong>Total Annual Cost</strong></span>
-                        <span class="cost"><strong>$110,708</strong></span>
+                </div>
+
+                <div class="cost-category">
+                    <div class="category-title">🎯 V. Contingency Buffer</div>
+                    
+                    <div class="cost-item">
+                        <div class="service-name">Miscellaneous & Overruns</div>
+                        <div class="cost-range">$12K - $24K</div>
+                        <div class="service-description">Unexpected usage spikes, additional services, re-architecture needs</div>
                     </div>
                 </div>
             </div>
 
-            <div class="growth-chart">
-                <h3>📈 Cost Growth Projection</h3>
-                <div class="growth-visualization">
-                    <div class="growth-bar" style="height: 20%;">
-                        $7K
-                        <div class="bar-label">Month 1-3</div>
+            <div class="total-summary">
+                <h3>🎯 Total Annual Investment Range</h3>
+                <div class="total-range">$150K - $220K</div>
+                <p>Conservative estimate accounting for ramp-up period and optimization opportunities</p>
+                <div class="cost-driver">GPU Compute drives 45-60% of total costs</div>
+                <div class="cost-driver">Data Transfer scales with voice/video usage</div>
+            </div>
+        </div>
+
+        <div class="architecture-section">
+            <h2 class="section-title">📈 Scaling Strategy & Timeline</h2>
+            
+            <div class="scaling-visualization">
+                <div class="scaling-card">
+                    <div class="scaling-title">🚀 Phase 1: MVP (Months 1-3)</div>
+                    <div class="scaling-details">
+                        • 2x m5.large EC2 instances<br>
+                        • 2x g5.4xlarge for AI inference<br>
+                        • Basic RDS setup<br>
+                        • <strong>Cost: ~$8K-12K/month</strong>
                     </div>
-                    <div class="growth-bar" style="height: 35%;">
-                        $25K
-                        <div class="bar-label">Month 4-6</div>
+                </div>
+                
+                <div class="scaling-card">
+                    <div class="scaling-title">⚡ Phase 2: Growth (Months 4-8)</div>
+                    <div class="scaling-details">
+                        • 4-6x m5.xlarge instances<br>
+                        • 3-4x g5.4xlarge GPUs<br>
+                        • Enhanced monitoring<br>
+                        • <strong>Cost: ~$12K-16K/month</strong>
                     </div>
-                    <div class="growth-bar" style="height: 55%;">
-                        $50K
-                        <div class="bar-label">Month 7-9</div>
-                    </div>
-                    <div class="growth-bar" style="height: 80%;">
-                        $80K
-                        <div class="bar-label">Month 10-11</div>
-                    </div>
-                    <div class="growth-bar" style="height: 100%;">
-                        $111K
-                        <div class="bar-label">Month 12</div>
+                </div>
+                
+                <div class="scaling-card">
+                    <div class="scaling-title">🎯 Phase 3: Scale (Months 9-12)</div>
+                    <div class="scaling-details">
+                        • 8-16x m5.2xlarge instances<br>
+                        • 2-4x g5.12xlarge/24xlarge<br>
+                        • Full production setup<br>
+                        • <strong>Cost: ~$16K-20K/month</strong>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="recommendations">
-            <h2 class="section-title">🎯 Optimization Recommendations</h2>
+            <h2 class="section-title">🎯 Cost Optimization Strategies</h2>
             <div class="rec-grid">
                 <div class="rec-card">
-                    <h4>🔄 Auto Scaling Strategy</h4>
-                    <p>Implement predictive scaling based on farmer activity patterns (harvest seasons, weather events). Use Spot Instances for dev/test workloads to reduce costs by 60-90%.</p>
+                    <h4>🤖 GPU Cost Management</h4>
+                    <p>Use Spot Instances for non-critical inference (60-90% savings). Implement GPU sharing and model caching. Consider AWS Inferentia2 for production inference workloads.</p>
                 </div>
                 
                 <div class="rec-card">
-                    <h4>📊 Reserved Instances</h4>
-                    <p>Purchase 1-year Reserved Instances for baseline capacity to save 30-40% on EC2 and RDS costs. Consider Savings Plans for compute flexibility.</p>
+                    <h4>📊 Reserved Instance Strategy</h4>
+                    <p>Purchase 1-year RIs for baseline capacity (30-40% savings). Use Savings Plans for compute flexibility. Reserve 70% of steady-state capacity.</p>
                 </div>
                 
                 <div class="rec-card">
-                    <h4>🌍 Multi-Region Strategy</h4>
-                    <p>Start with single region (Mumbai) and expand to Chennai/Delhi based on user distribution. Use S3 Cross-Region Replication for data resilience.</p>
+                    <h4>🔄 Auto-scaling Optimization</h4>
+                    <p>Implement predictive scaling based on agricultural patterns. Use scheduled scaling for known peak times. Mix On-Demand and Spot instances.</p>
                 </div>
                 
                 <div class="rec-card">
-                    <h4>🤖 AI Cost Optimization</h4>
-                    <p>Use AWS Batch for ML training workloads, implement intelligent caching for Transcribe/Polly to reduce API calls, consider Amazon Bedrock for LLM services.</p>
+                    <h4>🌍 Data Transfer Optimization</h4>
+                    <p>Leverage CloudFront caching for voice content. Compress audio/video files. Use S3 Transfer Acceleration for uploads from rural areas.</p>
                 </div>
                 
                 <div class="rec-card">
-                    <h4>📱 Edge Computing</h4>
-                    <p>Leverage CloudFront edge locations in India for low-latency voice services. Implement Lambda@Edge for real-time content personalization.</p>
+                    <h4>💾 Storage Lifecycle Management</h4>
+                    <p>S3 Intelligent Tiering for automated cost optimization. Archive old data to Glacier. Use compression for voice recordings and logs.</p>
                 </div>
                 
                 <div class="rec-card">
-                    <h4>💾 Data Lifecycle</h4>
-                    <p>Implement S3 Intelligent Tiering for cost optimization. Archive old farming data to Glacier. Use compression for voice recordings to reduce storage costs.</p>
+                    <h4>🎯 Right-sizing Strategy</h4>
+                    <p>Regular instance right-sizing analysis. Use AWS Compute Optimizer recommendations. Monitor and adjust based on actual usage patterns.</p>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Add some interactive elements
+        // Interactive elements
         document.querySelectorAll('.component').forEach(component => {
             component.addEventListener('click', function() {
                 this.style.transform = this.style.transform === 'scale(1.1)' ? 'scale(1.05)' : 'scale(1.1)';
@@ -554,6 +624,19 @@
             });
         });
 
+        // Cost range animation
+        document.querySelectorAll('.cost-range').forEach(range => {
+            range.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+                this.style.color = '#ff6b6b';
+            });
+            
+            range.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.color = '#4ecdc4';
+            });
+        });
+
         // Add CSS animation
         const style = document.createElement('style');
         style.textContent = `
@@ -562,8 +645,12 @@
                 50% { transform: scale(1.05); }
                 100% { transform: scale(1); }
             }
+            
+            .cost-range {
+                transition: all 0.3s ease;
+            }
         `;
         document.head.appendChild(style);
     </script>
-
-</body></html>
+</body>
+</html>
