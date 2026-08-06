@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SIDH AI Prototype — Skill India Digital Hub</title>
+<style>
+:root{
+  color-scheme: light;
+  --surface-1:#fcfcfb;
+  --surface-2:#ffffff;
+  --page:#f4f5f7;
+  --text-primary:#0b0b0b;
+  --text-secondary:#52514e;
+  --muted:#898781;
+  --gridline:#e1e0d9;
+  --border:rgba(11,11,11,0.10);
+  --series-1:#2a78d6; /* blue */
+  --series-2:#eb6834; /* orange */
+  --series-3:#1baf7a; /* aqua */
+  --series-4:#eda100; /* yellow */
+  --series-5:#e87ba4; /* magenta */
+  --series-6:#008300; /* green */
+  --series-7:#4a3aa7; /* violet */
+  --series-8:#e34948; /* red */
+  --good:#0ca30c;
+  --warning:#fab219;
+  --serious:#ec835a;
+  --critical:#d03b3b;
+  --radius-sm:8px;
+  --radius-md:14px;
+  --radius-lg:20px;
+  --shadow-1:0 1px 2px rgba(11,11,11,0.06), 0 1px 1px rgba(11,11,11,0.04);
+  --shadow-2:0 8px 24px rgba(11,11,11,0.10), 0 2px 6px rgba(11,11,11,0.06);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--page);
+  color: var(--text-primary);
+  height:100vh;
+  overflow:hidden;
+}
+button{font-family:inherit;}
+
+/* ---------- App shell ---------- */
+.app{
+  display:grid;
+  grid-template-columns: 280px 1fr;
+  grid-template-rows: 64px 1fr;
+  height:100vh;
+}
+.topbar{
+  grid-column: 1 / 3;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 0 22px;
+  background: linear-gradient(90deg,#0b3d91 0%, #1c5cab 55%, #2a78d6 100%);
+  color:#fff;
+  box-shadow: var(--shadow-1);
+  z-index: 5;
+}
+.topbar .brand{
+  display:flex; align-items:center; gap:12px;
+}
+.brand .logo-dot{
+  width:34px;height:34px;border-radius:9px;
+  background: #fff;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800; color:#1c5cab; font-size:15px;
+}
+.brand .titles{ line-height:1.15; }
+.brand .titles .t1{ font-size:15px; font-weight:700; letter-spacing:.2px; }
+.brand .titles .t2{ font-size:11.5px; opacity:.85; }
+.topbar .env-pill{
+  font-size:11.5px;
+  background: rgba(255,255,255,0.15);
+  border:1px solid rgba(255,255,255,0.35);
+  padding:5px 12px;
+  border-radius:999px;
+  display:flex;align-items:center;gap:8px;
+}
+.env-pill .dot{width:7px;height:7px;border-radius:50%;background:#3ce27a;box-shadow:0 0 0 3px rgba(60,226,122,0.25);}
+
+.sidebar{
+  background: #10131a;
+  color:#e7e8ea;
+  overflow-y:auto;
+  padding: 14px 0 24px;
+}
+.sidebar .group-label{
+  font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+  color:#7d8394; padding: 16px 20px 8px;
+  font-weight:700;
+}
+.nav-item{
+  display:flex; align-items:center; gap:11px;
+  padding: 10px 20px;
+  cursor:pointer;
+  font-size:13.5px;
+  border-left:3px solid transparent;
+  color:#c9cbd1;
+}
+.nav-item .num{
+  width:20px;height:20px;border-radius:6px;
+  background:rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px; font-weight:700; color:#9aa0ad; flex-shrink:0;
+}
+.nav-item:hover{ background: rgba(255,255,255,0.05); color:#fff; }
+.nav-item.active{
+  background: rgba(42,120,214,0.18);
+  border-left-color: var(--series-1);
+  color:#fff;
+}
+.nav-item.active .num{ background: var(--series-1); color:#fff; }
+.nav-home{
+  display:flex; align-items:center; gap:11px;
+  padding: 12px 20px; margin: 0 0 6px 0;
+  cursor:pointer; font-size:13.5px; font-weight:700; color:#fff;
+  border-left:3px solid transparent;
+}
+.nav-home:hover, .nav-home.active{ background: rgba(255,255,255,0.06); border-left-color:#3ce27a; }
+.sidebar-foot{
+  margin-top:10px; padding: 14px 20px; font-size:11px; color:#6c7382; line-height:1.5;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+
+.main{
+  overflow-y:auto;
+  background: var(--page);
+  padding: 26px 34px 60px;
+}
+.panel{ display:none; max-width:1180px; margin:0 auto; }
+.panel.active{ display:block; animation: fadein .25s ease; }
+@keyframes fadein{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+
+.panel-head{ margin-bottom: 22px; }
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:11.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+  color: var(--series-1); margin-bottom:8px;
+}
+.eyebrow .yr-tag{
+  background: var(--series-1); color:#fff; padding:2px 9px; border-radius:999px; font-size:10.5px;
+}
+.eyebrow .yr-tag.y2{ background: var(--series-2); }
+.panel-head h1{ font-size: 25px; margin: 4px 0 8px; letter-spacing:-.2px;}
+.panel-head p{ font-size:14px; color: var(--text-secondary); max-width: 760px; line-height:1.55; margin:0; }
+
+.card{
+  background: var(--surface-1);
+  border:1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-1);
+  padding: 20px;
+}
+.card h3{ margin:0 0 12px; font-size:14px; font-weight:700; }
+.card h3 .sub{ font-weight:500; color:var(--muted); font-size:12px;}
+.grid{ display:grid; gap:18px; }
+.grid.cols-2{ grid-template-columns: 1fr 1fr; }
+.grid.cols-3{ grid-template-columns: 1fr 1fr 1fr; }
+.grid.cols-4{ grid-template-columns: repeat(4,1fr); }
+.grid.cols-12{ grid-template-columns: repeat(12,1fr); }
+
+.badge{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px;
+}
+.badge.blue{ background:rgba(42,120,214,.12); color:#1c5cab; }
+.badge.orange{ background:rgba(235,104,52,.12); color:#b5491e; }
+.badge.green{ background:rgba(12,163,12,.12); color:#0a7a0a; }
+.badge.gray{ background:rgba(137,135,129,.14); color:#6b6a64; }
+.badge.high{ background:rgba(208,59,59,.12); color:#a72424; }
+.badge.med{ background:rgba(250,178,25,.20); color:#8a5e00; }
+
+.btn{
+  border:1px solid var(--border);
+  background: var(--surface-2);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size:12.5px;
+  font-weight:600;
+  cursor:pointer;
+  color: var(--text-primary);
+  transition: all .12s ease;
+  display:inline-flex; align-items:center; gap:7px;
+}
+.btn:hover{ border-color: var(--series-1); color: var(--series-1); }
+.btn.primary{ background: var(--series-1); color:#fff; border-color: var(--series-1); }
+.btn.primary:hover{ background:#1c5cab; color:#fff; }
+.btn.sm{ padding:5px 10px; font-size:11.5px; }
+.btn:disabled{ opacity:.45; cursor:not-allowed; }
+.btn.ghost{ background:transparent; }
+.chip{
+  border:1px solid var(--border); border-radius:999px; padding:6px 13px;
+  font-size:12px; cursor:pointer; background:#fff; color:var(--text-secondary);
+  display:inline-flex; align-items:center; gap:6px;
+}
+.chip:hover{ border-color: var(--series-1); color:var(--series-1);}
+.chip.active{ background: var(--series-1); color:#fff; border-color:var(--series-1);}
+
+.progress-track{ height:8px; background: var(--gridline); border-radius:999px; overflow:hidden; }
+.progress-fill{ height:100%; border-radius:999px; background: var(--series-1); transition: width .5s ease; }
+
+hr.hair{ border:none; border-top:1px solid var(--gridline); margin:16px 0; }
+
+.icon{ width:16px; height:16px; flex-shrink:0; }
+.icon-sm{ width:13px;height:13px; }
+svg.icon *{ stroke: currentColor; }
+
+.stepper{ display:flex; align-items:center; gap:0; margin: 6px 0 4px; }
+.stepper .step{ display:flex; flex-direction:column; align-items:center; gap:8px; flex:1; position:relative; }
+.stepper .step .circ{
+  width:34px;height:34px;border-radius:50%; background:#fff; border:2px solid var(--gridline);
+  display:flex;align-items:center;justify-content:center; font-size:13px; font-weight:700; color: var(--muted);
+  transition: all .25s ease; z-index:2;
+}
+.stepper .step .lbl{ font-size:11.5px; color: var(--text-secondary); text-align:center; max-width:110px; }
+.stepper .step:not(:last-child)::after{
+  content:''; position:absolute; top:17px; left:calc(50% + 20px); right:calc(-50% + 20px);
+  height:2px; background: var(--gridline); z-index:1;
+}
+.stepper .step.done .circ{ background: var(--good); border-color: var(--good); color:#fff; }
+.stepper .step.done:not(:last-child)::after{ background: var(--good); }
+.stepper .step.active .circ{ background: var(--series-1); border-color: var(--series-1); color:#fff; box-shadow:0 0 0 5px rgba(42,120,214,0.18);}
+
+.toast{
+  position:fixed; bottom:22px; right:22px; background:#0b0b0b; color:#fff;
+  padding:11px 18px; border-radius:10px; font-size:12.5px; box-shadow: var(--shadow-2);
+  opacity:0; transform: translateY(8px); transition: all .25s ease; pointer-events:none; z-index:50;
+  display:flex; align-items:center; gap:8px;
+}
+.toast.show{ opacity:1; transform:translateY(0); }
+
+.kpi{ display:flex; align-items:baseline; gap:6px; }
+.kpi .val{ font-size:26px; font-weight:800; letter-spacing:-.5px; }
+.kpi .unit{ font-size:12px; color: var(--muted); }
+
+.tag-list{ display:flex; gap:8px; flex-wrap:wrap; }
+
+/* home grid */
+.home-hero{
+  background: linear-gradient(135deg,#0b3d91 0%,#1c5cab 45%, #16855b 100%);
+  border-radius: var(--radius-lg); color:#fff; padding: 30px 34px; margin-bottom:26px;
+  box-shadow: var(--shadow-2);
+}
+.home-hero h1{ font-size:26px; margin:0 0 8px; }
+.home-hero p{ font-size:14px; opacity:.92; max-width:680px; line-height:1.6; margin:0 0 4px;}
+.home-hero .pills{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;}
+.home-hero .pill{ background:rgba(255,255,255,0.16); border:1px solid rgba(255,255,255,0.35); border-radius:999px; padding:5px 13px; font-size:11.5px;}
+.feature-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; }
+.feature-card{
+  background: var(--surface-1); border:1px solid var(--border); border-radius: var(--radius-lg);
+  padding:18px; cursor:pointer; transition: all .15s ease; box-shadow: var(--shadow-1);
+}
+.feature-card:hover{ transform: translateY(-2px); box-shadow: var(--shadow-2); border-color: var(--series-1); }
+.feature-card .fc-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+.feature-card .fc-num{ width:28px;height:28px;border-radius:8px;background:rgba(42,120,214,.10); color:var(--series-1); font-weight:800; font-size:13px; display:flex;align-items:center;justify-content:center;}
+.feature-card h4{ margin:0 0 6px; font-size:14.5px; }
+.feature-card p{ margin:0; font-size:12.3px; color:var(--text-secondary); line-height:1.5; }
+
+/* Chat widget (AI Skill Mentor) */
+.phone{
+  width: 320px; background:#0b0b0b; border-radius: 30px; padding: 10px; box-shadow: var(--shadow-2);
+}
+.phone-screen{ background:#e9edf2; border-radius:22px; overflow:hidden; display:flex; flex-direction:column; height:520px;}
+.chat-head{ background:#1c5cab; color:#fff; padding:14px 16px; display:flex; align-items:center; gap:10px;}
+.chat-head .av{ width:34px;height:34px;border-radius:50%; background:#fff; color:#1c5cab; font-weight:800; display:flex;align-items:center;justify-content:center; font-size:13px;}
+.chat-head .nm{ font-size:13px; font-weight:700; }
+.chat-head .st{ font-size:10.5px; opacity:.85; }
+.chat-body{ flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; }
+.msg{ max-width:80%; padding:9px 12px; border-radius:14px; font-size:12.5px; line-height:1.4; }
+.msg.bot{ background:#fff; align-self:flex-start; border-bottom-left-radius:3px; box-shadow:0 1px 2px rgba(0,0,0,.06);}
+.msg.user{ background:#d9f3d4; align-self:flex-end; border-bottom-right-radius:3px; }
+.msg ul{ margin:6px 0 0; padding-left:16px; }
+.chat-quick{ padding: 6px 10px; display:flex; gap:6px; flex-wrap:wrap; background:#e9edf2; }
+.chat-quick .qbtn{ background:#fff; border:1px solid #d5dae0; border-radius:999px; font-size:11px; padding:6px 10px; cursor:pointer; color:#1c5cab; font-weight:600;}
+.chat-quick .qbtn:hover{ background:#1c5cab; color:#fff; }
+.chat-input{ display:flex; gap:8px; padding:10px; background:#fff; border-top:1px solid #dfe3e8; }
+.chat-input input{ flex:1; border:1px solid #dfe3e8; border-radius:999px; padding:8px 13px; font-size:12.5px; outline:none;}
+.chat-input button{ background:#1c5cab; color:#fff; border:none; width:34px;height:34px;border-radius:50%; cursor:pointer; display:flex;align-items:center;justify-content:center;}
+.lang-select{ margin-top:14px; }
+.lang-select select{ padding:7px 10px; border-radius:8px; border:1px solid var(--border); font-size:12.5px; }
+
+/* Alerts list (Officer Copilot) */
+.alert-row{
+  display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border:1px solid var(--border);
+  border-radius:12px; margin-bottom:9px; cursor:pointer; background:#fff;
+}
+.alert-row:hover{ border-color: var(--series-1); }
+.alert-row.sel{ border-color: var(--series-1); background: rgba(42,120,214,0.05);}
+.alert-row .at-left{ display:flex; flex-direction:column; gap:3px; }
+.alert-row .at-title{ font-size:13px; font-weight:700; }
+.alert-row .at-sub{ font-size:11.5px; color: var(--muted); }
+
+.copilot-box{ background:#f7f8fa; border:1px solid var(--border); border-radius:14px; padding:14px; min-height:260px; display:flex; flex-direction:column; }
+.copilot-msgs{ flex:1; display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+.copilot-msg{ background:#fff; border:1px solid var(--border); border-radius:10px; padding:10px 12px; font-size:12.5px; line-height:1.5; white-space:pre-line;}
+.copilot-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+
+/* Graph RAG */
+.search-box{ display:flex; gap:10px; margin-bottom:12px; }
+.search-box input{ flex:1; padding:12px 16px; border-radius:12px; border:1px solid var(--border); font-size:13.5px; }
+.pipeline-row{ display:flex; align-items:center; gap:0; margin: 18px 0; }
+.pipe-node{ flex:1; text-align:center; padding:14px 8px; border-radius:12px; border:1px solid var(--gridline); background:#fff; font-size:11.5px; font-weight:700; color:var(--muted); position:relative; }
+.pipe-node.on{ border-color: var(--series-1); color: var(--series-1); background: rgba(42,120,214,.06); }
+.pipe-arrow{ width:26px; text-align:center; color: var(--gridline); font-size:16px; }
+.pipe-arrow.on{ color: var(--series-1); }
+.answer-box{ background:#f7f8fa; border:1px solid var(--border); border-radius:14px; padding:16px; margin-top:14px; }
+.cite-row{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.cite{ font-size:10.5px; font-weight:700; background:#fff; border:1px solid var(--border); border-radius:999px; padding:4px 10px; color: var(--text-secondary); }
+
+/* SLM sector cards */
+.sector-card{ border:1px solid var(--border); border-radius:14px; padding:14px; cursor:pointer; background:#fff; }
+.sector-card:hover{ border-color: var(--series-1); }
+.sector-card.sel{ border-color: var(--series-1); box-shadow:0 0 0 3px rgba(42,120,214,0.12); }
+.meter{ display:flex; align-items:center; gap:10px; margin:8px 0; }
+.meter .lbl{ width:110px; font-size:11.5px; color:var(--text-secondary); flex-shrink:0; }
+.meter .bar{ flex:1; height:8px; background:var(--gridline); border-radius:999px; overflow:hidden;}
+.meter .bar > div{ height:100%; border-radius:999px; }
+.meter .val{ width:50px; text-align:right; font-size:11.5px; font-weight:700; }
+
+/* Radar / line chart */
+svg.chart{ width:100%; height:auto; overflow:visible; }
+.axis-label{ font-size:10.5px; fill: var(--muted); }
+.legend-row{ display:flex; gap:16px; flex-wrap:wrap; margin-top:10px; }
+.legend-item{ display:flex; align-items:center; gap:6px; font-size:11.5px; color: var(--text-secondary); }
+.legend-swatch{ width:12px; height:3px; border-radius:2px; }
+.legend-dash{ background-image: linear-gradient(90deg, currentColor 60%, transparent 40%); background-size: 6px 3px; height:3px; width:12px;}
+
+/* skill passport */
+.passport-card{
+  width:320px; border-radius:18px; background: linear-gradient(135deg,#0b3d91,#1c5cab 60%, #16855b);
+  color:#fff; padding:20px; box-shadow: var(--shadow-2);
+}
+.passport-card .p-head{ display:flex; justify-content:space-between; align-items:center; font-size:11px; opacity:.85; margin-bottom:14px;}
+.passport-card .p-name{ font-size:17px; font-weight:800; }
+.passport-card .p-sub{ font-size:11.5px; opacity:.9; margin-top:2px;}
+.qr-box{ width:84px; height:84px; background:#fff; border-radius:8px; margin:14px 0; padding:6px; }
+.qr-box svg{ width:100%; height:100%; }
+.verify-badge{ display:inline-flex; align-items:center; gap:6px; background: rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.4); border-radius:999px; padding:5px 12px; font-size:11px; margin-top:10px;}
+.domain-row{ display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--gridline); font-size:12.5px; }
+.domain-row:last-child{ border-bottom:none; }
+.stars{ color: var(--series-4); font-size:12px; letter-spacing:1px; }
+
+/* PASE */
+.pase-bar{ display:flex; align-items:center; gap:12px; }
+.content-toggle{ display:flex; gap:8px; }
+.content-toggle .ct{ flex:1; text-align:center; padding:12px 8px; border:1px solid var(--border); border-radius:12px; cursor:pointer; font-size:12px; font-weight:600; color: var(--text-secondary); background:#fff;}
+.content-toggle .ct.sel{ border-color: var(--series-1); color: var(--series-1); background: rgba(42,120,214,.06); }
+.diff-bars{ display:flex; align-items:flex-end; gap:14px; height:90px; margin-top:10px;}
+.diff-bars .db{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:6px; height:100%; }
+.diff-bars .db .b{ width:100%; border-radius:6px 6px 0 0; background: var(--gridline); transition: height .4s ease; }
+.diff-bars .db.sel .b{ background: var(--series-1); }
+.breadcrumb{ display:flex; align-items:center; gap:6px; font-size:12.5px; flex-wrap:wrap;}
+.breadcrumb .bc-item{ background:#f0f4f9; padding:5px 10px; border-radius:8px; color: var(--text-secondary); }
+.breadcrumb .bc-item.done{ background: rgba(12,163,12,.10); color:var(--good); text-decoration: line-through; }
+.breadcrumb .arrow{ color: var(--muted); }
+.load-meter{ display:flex; height:10px; border-radius:999px; overflow:hidden; }
+.load-meter div{ height:100%; }
+
+/* CV Psychomotor */
+.pose-box{ background:#12151c; border-radius:14px; height:210px; position:relative; overflow:hidden; }
+.pose-box .pose-label{ position:absolute; top:8px; left:10px; font-size:10.5px; color:#9aa0ad; font-weight:700; letter-spacing:.04em; z-index:2;}
+.pose-box svg{ width:100%; height:100%; }
+.feedback-item{ display:flex; align-items:flex-start; gap:8px; font-size:12.5px; padding:6px 0; }
+.gauge-wrap{ display:flex; flex-direction:column; align-items:center; }
+.gauge-num{ font-size:26px; font-weight:800; margin-top:-64px; }
+.gauge-sub{ font-size:11px; color: var(--muted); margin-top:2px; }
+
+/* AR/VR */
+.scenario-card{ border:1px solid var(--border); border-radius:14px; padding:14px; cursor:pointer; background:#fff; text-align:center;}
+.scenario-card:hover{ border-color: var(--series-1); }
+.scenario-card.sel{ border-color: var(--series-1); background: rgba(42,120,214,.05); }
+.scenario-icon{ width:36px;height:36px; margin:0 auto 8px; color: var(--series-1); }
+.vr-viewport{ background: radial-gradient(circle at 30% 20%, #1b2740, #0b0e16 70%); border-radius:16px; height:230px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; color:#8aa0c6; font-size:12px;}
+.checklist-item{ display:flex; align-items:center; gap:10px; padding:8px 0; font-size:12.5px; border-bottom:1px solid var(--gridline); }
+.checklist-item:last-child{ border-bottom:none; }
+.chk-circle{ width:20px;height:20px;border-radius:50%; border:2px solid var(--gridline); display:flex;align-items:center;justify-content:center; flex-shrink:0; }
+.checklist-item.done .chk-circle{ background: var(--good); border-color: var(--good); color:#fff; }
+
+/* content authoring */
+.lang-grid{ display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+.lang-chip{ font-size:11px; border:1px solid var(--border); border-radius:8px; padding:6px 10px; cursor:pointer; background:#fff; }
+.lang-chip:hover, .lang-chip.sel{ border-color: var(--series-1); color: var(--series-1); background: rgba(42,120,214,.06); }
+.sample-out{ background:#f7f8fa; border:1px dashed var(--border); border-radius:10px; padding:14px; font-size:13px; margin-top:10px; min-height:44px; }
+.quality-row{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;}
+.quality-row .qi{ display:flex; align-items:center; gap:6px; font-size:12px; color: var(--good); font-weight:600;}
+
+/* SJT */
+.sjt-option{ display:block; width:100%; text-align:left; padding:11px 14px; border:1px solid var(--border); border-radius:10px; background:#fff; cursor:pointer; font-size:12.8px; margin-bottom:8px; }
+.sjt-option:hover{ border-color: var(--series-1); }
+.sjt-option.picked{ border-color: var(--series-1); background: rgba(42,120,214,.06); }
+.sjt-feedback{ font-size:12.5px; background:#f7f8fa; border-radius:10px; padding:12px; margin-top:8px; border-left:3px solid var(--series-1); }
+
+@media (max-width: 980px){
+  .grid.cols-2, .grid.cols-3{ grid-template-columns: 1fr; }
+  .feature-grid{ grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo-dot">SI</div>
+      <div class="titles">
+        <div class="t1">Skill India Digital Hub — AI Prototype</div>
+        <div class="t2">NSDC · Learner &amp; Officer experience walkthrough</div>
+      </div>
+    </div>
+    <div class="env-pill"><span class="dot"></span> Prototype environment · Simulated data</div>
+  </div>
+
+  <div class="sidebar">
+    <div class="nav-home active" data-target="home">
+      <span style="width:20px;text-align:center;">⌂</span> Overview
+    </div>
+    <div class="group-label">Year 1</div>
+    <div class="nav-item" data-target="f1"><span class="num">1</span> AI Skill Mentor</div>
+    <div class="nav-item" data-target="f2"><span class="num">2</span> Officer Copilots</div>
+    <div class="nav-item" data-target="f3"><span class="num">3</span> Graph‑RAG Infrastructure</div>
+    <div class="nav-item" data-target="f4"><span class="num">4</span> Sovereign Small LMs</div>
+    <div class="nav-item" data-target="f5"><span class="num">5</span> Cognitive Assessments</div>
+    <div class="nav-item" data-target="f6"><span class="num">6</span> Skill Passport</div>
+    <div class="group-label">Year 2</div>
+    <div class="nav-item" data-target="f7"><span class="num">7</span> Adaptive Skilling (PASE)</div>
+    <div class="nav-item" data-target="f8"><span class="num">8</span> CV Psychomotor Assess.</div>
+    <div class="nav-item" data-target="f9"><span class="num">9</span> Non‑Cognitive Fabrics</div>
+    <div class="nav-item" data-target="f10"><span class="num">10</span> Content Authoring</div>
+    <div class="nav-item" data-target="f11"><span class="num">11</span> AR/VR Simulations</div>
+    <div class="sidebar-foot">Click‑through prototype built to illustrate the intended end‑user experience for each AI feature. All names, scores and conversations are simulated for demo purposes.</div>
+  </div>
+
+  <div class="main" id="main">
+
+    <!-- ============ HOME ============ -->
+    <div class="panel active" id="home">
+      <div class="home-hero">
+        <h1>AI‑Powered. Learner‑First. Future‑Ready.</h1>
+        <p>This is a clickable walkthrough of the 11 AI capabilities planned for the Skill India Digital Hub — six shipping in Year 1, five in Year 2. Each tile opens a simulated screen so stakeholders can experience the feature the way a learner, trainer or officer eventually will, before a line of production code is written.</p>
+        <div class="pills">
+          <div class="pill">AI for Inclusion</div>
+          <div class="pill">Trusted &amp; Secure</div>
+          <div class="pill">Bharat First</div>
+          <div class="pill">Data Sovereignty</div>
+          <div class="pill">Outcome Focused</div>
+        </div>
+      </div>
+
+      <div class="feature-grid" id="feature-grid"></div>
+    </div>
+
+    <!-- ============ F1: AI SKILL MENTOR ============ -->
+    <div class="panel" id="f1">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag">Year 1 · Feature 1</span></div>
+        <h1>AI Skill Mentor</h1>
+        <p>A 22‑language conversational voice &amp; text assistant, available on WhatsApp, web and mobile, that guides a learner through course discovery, enrolment and scheme‑eligibility checks. Try the quick‑action chips or type your own question below.</p>
+      </div>
+      <div class="grid cols-2" style="grid-template-columns: 340px 1fr; align-items:flex-start;">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="chat-head">
+              <div class="av">SM</div>
+              <div>
+                <div class="nm">AI Skill Mentor</div>
+                <div class="st" id="mentor-lang-st">● Online · Hindi</div>
+              </div>
+            </div>
+            <div class="chat-body" id="chat-body">
+              <div class="msg bot">Namaste! I am your AI Skill Mentor. How can I help you today?</div>
+            </div>
+            <div class="chat-quick">
+              <div class="qbtn" data-q="discover">Discover Courses</div>
+              <div class="qbtn" data-q="eligibility">Check Eligibility</div>
+              <div class="qbtn" data-q="enroll">Enroll in Course</div>
+              <div class="qbtn" data-q="track">Track Application</div>
+            </div>
+            <div class="chat-input">
+              <input type="text" id="chat-in" placeholder="Type a message…" />
+              <button id="chat-send">➤</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card">
+            <h3>Language &amp; channel <span class="sub">— same mentor, every surface</span></h3>
+            <div class="lang-select">
+              <select id="lang-picker">
+                <option>Hindi</option><option>English</option><option>Bengali</option><option>Marathi</option>
+                <option>Tamil</option><option>Telugu</option><option>Gujarati</option><option>Urdu</option>
+                <option>Kannada</option><option>Malayalam</option><option>Punjabi</option><option>Assamese</option>
+                <option>Odia</option><option>...and 10 more</option>
+              </select>
+            </div>
+            <div class="tag-list" style="margin-top:14px;">
+              <span class="badge blue">WhatsApp</span>
+              <span class="badge blue">Web</span>
+              <span class="badge blue">Mobile App</span>
+              <span class="badge blue">Voice &amp; Text</span>
+            </div>
+            <hr class="hair" />
+            <h3>What it's doing behind the scenes</h3>
+            <div style="font-size:12.5px; color:var(--text-secondary); line-height:1.7;">
+              Every reply the mentor gives is grounded against the <b>Graph‑RAG</b> knowledge base (Feature 3) so scheme names, eligibility rules and course details are cited from approved NSDC/NCVET sources rather than generated freely.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F2: OFFICER COPILOTS ============ -->
+    <div class="panel" id="f2">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag">Year 1 · Feature 2</span></div>
+        <h1>Officer Copilots</h1>
+        <p>Role‑scoped assistants for administrators that proactively surface attendance or performance anomalies and help draft the follow‑up. Pick a role, open an alert, then ask the copilot to act on it.</p>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <h3>Viewing as</h3>
+        <div class="tag-list" id="role-tabs">
+          <div class="chip active" data-role="Training Manager">Training Manager</div>
+          <div class="chip" data-role="Center Head">Center Head</div>
+          <div class="chip" data-role="State Admin">State Admin</div>
+          <div class="chip" data-role="Finance Officer">Finance Officer</div>
+        </div>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Anomaly alerts</h3>
+          <div id="alert-list"></div>
+        </div>
+        <div class="card">
+          <h3>Copilot Assistant <span class="sub" id="copilot-context">— select an alert</span></h3>
+          <div class="copilot-box">
+            <div class="copilot-msgs" id="copilot-msgs">
+              <div class="copilot-msg">I can help you with:<br>✓ Generate Attendance Anomaly Report<br>✓ Draft Communication to Trainers<br>✓ Summarize Batch Performance</div>
+            </div>
+            <div class="copilot-actions" id="copilot-actions"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F3: GRAPH-RAG ============ -->
+    <div class="panel" id="f3">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag">Year 1 · Feature 3</span></div>
+        <h1>Graph‑RAG Infrastructure</h1>
+        <p>Combines vector search with a Skilling Knowledge Graph so that every AI‑generated answer — to a learner, officer or mentor query — is grounded and referenced to approved Indian skilling guidelines instead of hallucinated.</p>
+      </div>
+      <div class="card">
+        <h3>Try a learner query</h3>
+        <div class="search-box">
+          <input type="text" id="rag-input" placeholder="e.g. What are the eligibility criteria for PMKVY 4.0?" />
+          <button class="btn primary" id="rag-ask">Ask</button>
+        </div>
+        <div class="tag-list">
+          <div class="chip rag-suggest">What are the eligibility criteria for PMKVY 4.0?</div>
+          <div class="chip rag-suggest">What certification do welders receive under NSQF?</div>
+          <div class="chip rag-suggest">How is my skill fingerprint calculated?</div>
+        </div>
+
+        <div class="pipeline-row" id="rag-pipeline">
+          <div class="pipe-node" data-n="1">Learner Query</div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node" data-n="2">Vector Search<br><span style="font-weight:400;">(semantic match)</span></div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node" data-n="3">Skilling Knowledge Graph</div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node" data-n="4">Rules &amp; Guidelines<br><span style="font-weight:400;">(approved sources)</span></div>
+          <div class="pipe-arrow">→</div>
+          <div class="pipe-node" data-n="5">Grounded Answer</div>
+        </div>
+
+        <div class="answer-box" id="rag-answer" style="display:none;"></div>
+
+        <hr class="hair" />
+        <h3>Connected to approved sources</h3>
+        <div class="tag-list">
+          <span class="badge gray">NCVET</span>
+          <span class="badge gray">Ministry of Skill Development &amp; Entrepreneurship</span>
+          <span class="badge gray">NSQF</span>
+          <span class="badge gray">NQR</span>
+          <span class="badge gray">Sector Skill Councils (SSCs)</span>
+          <span class="badge gray">…and more</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F4: SOVEREIGN SLMs ============ -->
+    <div class="panel" id="f4">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag">Year 1 · Feature 4</span></div>
+        <h1>Sovereign Small Language Models</h1>
+        <p>Compact, cost‑efficient models (1B–8B parameters) hosted entirely on Indian infrastructure and fine‑tuned per sector, so skilling data never leaves the country. Select a sector to see its model profile.</p>
+      </div>
+      <div class="grid cols-3" id="sector-grid" style="grid-template-columns:repeat(4,1fr);"></div>
+      <div class="card" style="margin-top:18px;">
+        <h3 id="sector-detail-title">Manufacturing SLM — profile</h3>
+        <div class="grid cols-2">
+          <div>
+            <div class="meter"><div class="lbl">Parameters</div><div class="bar"><div style="width:45%; background:var(--series-1);"></div></div><div class="val" id="sector-params">3.5B</div></div>
+            <div class="meter"><div class="lbl">Inference cost</div><div class="bar"><div style="width:22%; background:var(--series-3);"></div></div><div class="val">Low</div></div>
+            <div class="meter"><div class="lbl">Latency</div><div class="bar"><div style="width:30%; background:var(--series-4);"></div></div><div class="val">Fast</div></div>
+            <div class="meter"><div class="lbl">Data residency</div><div class="bar"><div style="width:100%; background:var(--good);"></div></div><div class="val">India</div></div>
+          </div>
+          <div style="font-size:12.5px; color:var(--text-secondary); line-height:1.8;">
+            <div>✓ Sovereign &amp; secure — hosted in India</div>
+            <div>✓ Fine‑tuned on Indian sector‑specific skilling data</div>
+            <div>✓ No data leaves India</div>
+            <div>✓ Optimized for Indian languages</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F5: COGNITIVE ASSESSMENTS ============ -->
+    <div class="panel" id="f5">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag">Year 1 · Feature 5</span></div>
+        <h1>AI‑Driven Cognitive Assessments</h1>
+        <p>Tracks a learner's mastery across multiple dimensions continuously, instead of relying on one final exam score. Hover the chart points to inspect values; toggle the learner below to compare profiles.</p>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Mastery profile <span class="sub" id="radar-learner-name">— Rahul Kumar</span></h3>
+          <svg class="chart" id="radar-svg" viewBox="0 0 340 300"></svg>
+          <div class="legend-row">
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--series-1);"></span>Current level</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--series-2);"></span>Previous month</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--muted); opacity:.6;"></span>Batch average</div>
+          </div>
+          <div class="tag-list" style="margin-top:14px;">
+            <div class="chip active" data-learner="Rahul">Rahul Kumar</div>
+            <div class="chip" data-learner="Priya">Priya Sharma</div>
+            <div class="chip" data-learner="Aamir">Aamir Khan</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Mastery over time</h3>
+          <svg class="chart" id="line-svg" viewBox="0 0 400 220"></svg>
+          <div class="legend-row">
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--series-1);"></span>Current level</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--series-2);"></span>Previous month</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--muted);"></span>Batch average</div>
+          </div>
+          <hr class="hair" />
+          <div class="grid cols-2">
+            <div class="card" style="padding:12px;"><div class="kpi"><span class="val" id="cog-continuous">Live</span></div><div style="font-size:11.5px; color:var(--muted);">Continuous assessment</div></div>
+            <div class="card" style="padding:12px;"><div class="kpi"><span class="val">Adaptive</span></div><div style="font-size:11.5px; color:var(--muted);">Difficulty personalised</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F6: SKILL PASSPORT ============ -->
+    <div class="panel" id="f6">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag">Year 1 · Feature 6</span></div>
+        <h1>Skill Passport &amp; Fingerprint</h1>
+        <p>A cryptographically verifiable digital resume mapping a learner's proficiency across five domains, exportable for employers. Try the Verify button to simulate an employer's instant check.</p>
+      </div>
+      <div class="grid cols-2" style="grid-template-columns: 320px 1fr; align-items:flex-start;">
+        <div class="passport-card">
+          <div class="p-head"><span>SKILL PASSPORT</span><span>NSDC</span></div>
+          <div class="p-name">Rahul Kumar</div>
+          <div class="p-sub">NSQF Level 4 · Electrician</div>
+          <div class="p-sub">Skill Passport ID: SP‑24‑00098765</div>
+          <div class="qr-box" id="qr-box"></div>
+          <div class="p-sub">Issued 20 May 2024</div>
+          <div class="verify-badge" id="verify-badge">🔒 Cryptographically verifiable</div>
+        </div>
+        <div class="card">
+          <h3>5‑domain skill fingerprint</h3>
+          <div id="domain-rows"></div>
+          <hr class="hair" />
+          <div style="display:flex; align-items:center; gap:14px;">
+            <button class="btn primary" id="verify-btn">Verify as employer</button>
+            <span id="verify-status" style="font-size:12.5px; color:var(--text-secondary);"></span>
+          </div>
+          <hr class="hair" />
+          <h3>What employers get</h3>
+          <div class="tag-list">
+            <span class="badge blue">Verify instantly</span>
+            <span class="badge blue">Trust securely</span>
+            <span class="badge blue">Assess confidently</span>
+            <span class="badge blue">Hire better</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F7: PASE ============ -->
+    <div class="panel" id="f7">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag2 yr-tag y2">Year 2 · Feature 7</span></div>
+        <h1>Personalised Adaptive Skilling Environment (PASE)</h1>
+        <p>Continuously analyses a learner's performance and cognitive load, and adapts pathway, difficulty and content type in real time. Use the two buttons below to simulate the learner struggling or excelling and watch the dashboard react.</p>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Learner dashboard <span class="sub">— live</span></h3>
+          <div style="font-size:12px; color:var(--muted); margin-bottom:4px;">Mastery</div>
+          <div class="pase-bar"><div class="progress-track" style="flex:1;"><div class="progress-fill" id="pase-mastery-fill" style="width:72%;"></div></div><div style="font-weight:700; font-size:13px;" id="pase-mastery-num">72%</div></div>
+          <div style="font-size:12px; color:var(--muted); margin:14px 0 4px;">Cognitive load</div>
+          <div class="load-meter"><div style="width:34%; background:var(--good);" id="pase-load-fill"></div><div style="flex:1; background:var(--gridline);"></div></div>
+          <div style="font-size:11.5px; color:var(--good); margin-top:4px; font-weight:700;" id="pase-load-label">Optimal</div>
+
+          <hr class="hair" />
+          <div style="font-size:12px; color:var(--muted); margin-bottom:8px;">Next best action</div>
+          <button class="btn primary" id="pase-next-action" style="width:100%; justify-content:center;">▶ Watch Concept Video</button>
+
+          <div style="font-size:12px; color:var(--muted); margin:16px 0 8px;">Recommended path</div>
+          <div class="breadcrumb" id="pase-path">
+            <span class="bc-item done">Electrical Wiring</span><span class="arrow">›</span>
+            <span class="bc-item" id="bc-2">Safety Practices</span><span class="arrow">›</span>
+            <span class="bc-item" id="bc-3">Hands‑on Practice</span>
+          </div>
+
+          <div style="margin-top:18px; display:flex; gap:10px;">
+            <button class="btn" id="pase-struggle">Simulate learner struggling</button>
+            <button class="btn" id="pase-excel">Simulate learner excelling</button>
+            <button class="btn ghost" id="pase-reset">Reset</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Adaptive content type</h3>
+          <div class="content-toggle" id="content-toggle">
+            <div class="ct sel" data-c="video">▶ Video</div>
+            <div class="ct" data-c="audio">🔊 Audio</div>
+            <div class="ct" data-c="text">▤ Text</div>
+          </div>
+          <div style="font-size:12px; color: var(--text-secondary); margin-top:10px;" id="content-note">Recommended because the learner responds fastest to visual walkthroughs.</div>
+          <hr class="hair" />
+          <h3>Adjusted difficulty</h3>
+          <div class="diff-bars" id="diff-bars">
+            <div class="db" data-d="easy"><div class="b" style="height:30%;"></div><div style="font-size:11px;">Easy</div></div>
+            <div class="db sel" data-d="medium"><div class="b" style="height:60%;"></div><div style="font-size:11px;">Medium</div></div>
+            <div class="db" data-d="hard"><div class="b" style="height:90%;"></div><div style="font-size:11px;">Hard</div></div>
+          </div>
+          <div style="font-size:11.5px; color:var(--muted); margin-top:8px;" id="diff-note">PASE keeps items at Medium difficulty while cognitive load stays optimal.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F8: CV PSYCHOMOTOR ============ -->
+    <div class="panel" id="f8">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag2 yr-tag y2">Year 2 · Feature 8</span></div>
+        <h1>Computer‑Vision Psychomotor Assessments</h1>
+        <p>AI models analyse a video feed to grade hands‑on, practical trade work by comparing student actions against accredited human‑assessor templates. Choose a trade and run the evaluation pipeline.</p>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <h3>Supported trades</h3>
+        <div class="tag-list" id="trade-tabs">
+          <div class="chip active" data-trade="Welding">Welding</div>
+          <div class="chip" data-trade="Plumbing">Plumbing</div>
+          <div class="chip" data-trade="Electrical">Electrical</div>
+          <div class="chip" data-trade="Automotive">Automotive</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>AI evaluation pipeline</h3>
+        <div class="stepper" id="cv-stepper">
+          <div class="step" data-s="1"><div class="circ">1</div><div class="lbl">Video Capture</div></div>
+          <div class="step" data-s="2"><div class="circ">2</div><div class="lbl">Pose &amp; Action Estimation</div></div>
+          <div class="step" data-s="3"><div class="circ">3</div><div class="lbl">Template Matching</div></div>
+          <div class="step" data-s="4"><div class="circ">4</div><div class="lbl">Scoring &amp; Feedback</div></div>
+        </div>
+        <div style="text-align:center; margin: 16px 0;">
+          <button class="btn primary" id="cv-run">Run assessment for this trade</button>
+        </div>
+        <div class="grid cols-2" id="cv-result" style="display:none;">
+          <div>
+            <div class="grid cols-2">
+              <div class="pose-box"><div class="pose-label">STUDENT PERFORMANCE</div><svg id="pose-student" viewBox="0 0 140 140"></svg></div>
+              <div class="pose-box"><div class="pose-label">EXPERT TEMPLATE</div><svg id="pose-expert" viewBox="0 0 140 140"></svg></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:center; gap:18px;">
+              <div class="gauge-wrap">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--gridline)" stroke-width="10"/>
+                  <circle id="cv-gauge-arc" cx="60" cy="60" r="50" fill="none" stroke="var(--good)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 315" transform="rotate(-90 60 60)"/>
+                </svg>
+                <div class="gauge-num" id="cv-score">86</div>
+                <div class="gauge-sub">/100 · Good</div>
+              </div>
+              <div style="flex:1;">
+                <div class="feedback-item"><span style="color:var(--good);">✓</span> Correct torch angle</div>
+                <div class="feedback-item"><span style="color:var(--good);">✓</span> Proper travel speed</div>
+                <div class="feedback-item"><span style="color:var(--good);">✓</span> Arc length optimal</div>
+                <div class="feedback-item"><span style="color:var(--warning);">⚠</span> Slight deviation in workpiece distance</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F9: NON-COGNITIVE ============ -->
+    <div class="panel" id="f9">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag2 yr-tag y2">Year 2 · Feature 9</span></div>
+        <h1>Non‑Cognitive Assessment Fabrics</h1>
+        <p>Scalable, bias‑free tools — situational judgment tests and voice‑affect markers — that measure workplace readiness and emotional intelligence. Answer the scenario below to see the trait profile update.</p>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Situational Judgment Test</h3>
+          <div style="font-size:13px; margin-bottom:12px; line-height:1.5;">A customer at your training center is visibly frustrated because a class was rescheduled without notice. What do you do first?</div>
+          <div id="sjt-options"></div>
+          <div class="sjt-feedback" id="sjt-feedback" style="display:none;"></div>
+        </div>
+        <div class="card">
+          <h3>Trait profile</h3>
+          <svg class="chart" id="sjt-radar" viewBox="0 0 300 270"></svg>
+          <div class="legend-row">
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--series-1);"></span>You</div>
+            <div class="legend-item"><span class="legend-swatch" style="background:var(--muted); opacity:.6;"></span>Benchmark</div>
+          </div>
+          <hr class="hair" />
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div class="gauge-wrap" style="transform:scale(.8);">
+              <svg width="110" height="110" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--gridline)" stroke-width="10"/>
+                <circle id="sjt-gauge-arc" cx="60" cy="60" r="50" fill="none" stroke="var(--series-1)" stroke-width="10" stroke-linecap="round" stroke-dasharray="245 315" transform="rotate(-90 60 60)"/>
+              </svg>
+              <div class="gauge-num" id="sjt-score" style="margin-top:-64px;">78</div>
+            </div>
+            <div>
+              <div style="font-size:12.5px; color:var(--text-secondary);">Workplace readiness</div>
+              <span class="badge green" id="sjt-readiness-badge">High</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F10: CONTENT AUTHORING ============ -->
+    <div class="panel" id="f10">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag2 yr-tag y2">Year 2 · Feature 10</span></div>
+        <h1>Automated Content Authoring &amp; Localisation</h1>
+        <p>Auto‑generates first‑draft training modules and question banks aligned to qualification standards, with automated translation across 22 scheduled languages. Run the pipeline, then preview a language.</p>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <h3>Content authoring pipeline</h3>
+        <div class="stepper" id="ca-stepper">
+          <div class="step" data-s="1"><div class="circ">1</div><div class="lbl">Qualification Standards</div></div>
+          <div class="step" data-s="2"><div class="circ">2</div><div class="lbl">AI Draft Generation</div></div>
+          <div class="step" data-s="3"><div class="circ">3</div><div class="lbl">SME Review &amp; Approve</div></div>
+          <div class="step" data-s="4"><div class="circ">4</div><div class="lbl">Publish &amp; Update</div></div>
+        </div>
+        <div style="text-align:center; margin-top:16px;"><button class="btn primary" id="ca-run">Run pipeline for "Electrician — Module 4: Panel Wiring"</button></div>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Outputs</h3>
+          <div class="tag-list"><span class="badge blue">Training Modules (Video, Audio, Text)</span><span class="badge blue">Assessment Question Banks</span><span class="badge blue">Job Aids &amp; Infographics</span></div>
+          <div class="quality-row">
+            <div class="qi">✓ Aligned</div><div class="qi">✓ Accurate</div><div class="qi">✓ Inclusive</div><div class="qi">✓ Scalable</div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>22 scheduled languages — preview a translation</h3>
+          <div class="lang-grid" id="ca-lang-grid"></div>
+          <div class="sample-out" id="ca-sample">Select a language to preview the localised module title.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ F11: AR/VR ============ -->
+    <div class="panel" id="f11">
+      <div class="panel-head">
+        <div class="eyebrow"><span class="yr-tag2 yr-tag y2">Year 2 · Feature 11</span></div>
+        <h1>AR/VR Simulation Assessments</h1>
+        <p>Immersive virtual testing environments for niche or equipment‑scarce trade families, where physical lab setups are too costly or restricted. Pick a scenario and step through the simulated task.</p>
+      </div>
+      <div class="grid cols-4" id="scenario-grid" style="margin-bottom:16px;"></div>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3 id="vr-title">Electrical Panel Wiring — simulation</h3>
+          <div class="vr-viewport" id="vr-viewport">Press "Enter Simulation" to begin</div>
+          <div style="text-align:center; margin-top:14px;"><button class="btn primary" id="vr-enter">Enter Simulation</button></div>
+        </div>
+        <div class="card">
+          <h3>Task checklist</h3>
+          <div id="vr-checklist"></div>
+          <hr class="hair" />
+          <div id="vr-score-wrap" style="display:none;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="kpi"><span class="val" id="vr-score">92</span><span class="unit">/100</span></div>
+              <div class="stars">★★★★☆</div>
+            </div>
+            <div style="font-size:11.5px; color:var(--muted); margin-top:4px;">Objective, consistent AI evaluation — safe, repeatable, anywhere.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:18px;">
+        <h3>Key benefits</h3>
+        <div class="tag-list">
+          <span class="badge blue">Safe &amp; risk‑free practice</span>
+          <span class="badge blue">Realistic environment simulation</span>
+          <span class="badge blue">Objective &amp; consistent evaluation</span>
+          <span class="badge blue">Cost‑effective &amp; scalable</span>
+          <span class="badge blue">Anywhere, anytime access</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= shared helpers ================= */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(()=> t.classList.remove('show'), 2200);
+}
+function el(html){
+  const d = document.createElement('div');
+  d.innerHTML = html.trim();
+  return d.firstChild;
+}
+
+/* ================= navigation ================= */
+const FEATURES = [
+  {id:'f1', num:1, year:'Year 1', title:'AI Skill Mentor', desc:'22‑language conversational assistant guiding learners through discovery, enrolment and eligibility checks.'},
+  {id:'f2', num:2, year:'Year 1', title:'Officer Copilots', desc:'Role‑scoped assistants that spot anomalies and help admins draft reports and communications.'},
+  {id:'f3', num:3, year:'Year 1', title:'Graph‑RAG Infrastructure', desc:'Vector search plus a Skilling Knowledge Graph so every answer is grounded and cited.'},
+  {id:'f4', num:4, year:'Year 1', title:'Sovereign Small LMs', desc:'Compact 1B–8B models hosted in India, fine‑tuned per sector, with no data leaving the country.'},
+  {id:'f5', num:5, year:'Year 1', title:'Cognitive Assessments', desc:'Continuous, multi‑dimensional mastery tracking instead of one final exam score.'},
+  {id:'f6', num:6, year:'Year 1', title:'Skill Passport', desc:'A cryptographically verifiable digital resume across five proficiency domains.'},
+  {id:'f7', num:7, year:'Year 2', title:'Adaptive Skilling (PASE)', desc:'Real‑time pathway, difficulty and content adjustment based on performance and cognitive load.'},
+  {id:'f8', num:8, year:'Year 2', title:'CV Psychomotor Assessments', desc:'Video‑based grading of hands‑on trade work against expert templates.'},
+  {id:'f9', num:9, year:'Year 2', title:'Non‑Cognitive Fabrics', desc:'Bias‑free situational judgment and voice‑affect tools measuring workplace readiness.'},
+  {id:'f10', num:10, year:'Year 2', title:'Content Authoring', desc:'Auto‑drafts training modules and question banks, localised into 22 languages.'},
+  {id:'f11', num:11, year:'Year 2', title:'AR/VR Simulations', desc:'Immersive virtual test environments for costly or equipment‑scarce trades.'},
+];
+const grid = document.getElementById('feature-grid');
+FEATURES.forEach(f=>{
+  const card = el(`<div class="feature-card" data-target="${f.id}">
+    <div class="fc-top"><div class="fc-num">${f.num}</div><span class="badge ${f.year==='Year 1'?'blue':'orange'}">${f.year}</span></div>
+    <h4>${f.title}</h4><p>${f.desc}</p>
+  </div>`);
+  grid.appendChild(card);
+});
+
+function goTo(target){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(target).classList.add('active');
+  document.querySelectorAll('.nav-item, .nav-home').forEach(n=>n.classList.remove('active'));
+  const navEl = document.querySelector(`.nav-item[data-target="${target}"], .nav-home[data-target="${target}"]`);
+  if(navEl) navEl.classList.add('active');
+  document.getElementById('main').scrollTop = 0;
+}
+document.querySelectorAll('.nav-item, .nav-home').forEach(n=>{
+  n.addEventListener('click', ()=> goTo(n.dataset.target));
+});
+document.addEventListener('click', (e)=>{
+  const fc = e.target.closest('.feature-card');
+  if(fc) goTo(fc.dataset.target);
+});
+
+/* ================= F1: AI Skill Mentor ================= */
+(function(){
+  const body = document.getElementById('chat-body');
+  const input = document.getElementById('chat-in');
+  const send = document.getElementById('chat-send');
+  const langSel = document.getElementById('lang-picker');
+  const langSt = document.getElementById('mentor-lang-st');
+
+  const RESPONSES = {
+    discover: `Here are trending courses near you:<ul><li>Electrician — NSQF L4 (3 months)</li><li>Retail Sales Associate (6 weeks)</li><li>Junior Software Developer (4 months)</li></ul>Want me to check your eligibility for any of these?`,
+    eligibility: `Based on your profile, you are eligible for <b>PMKVY 4.0</b> under the Training + Placement category. Would you like to explore courses?`,
+    enroll: `Great choice! To enrol in "Electrician — NSQF L4", I'll need your Aadhaar‑linked ID and highest qualification. Shall I start the application?`,
+    track: `Your application <b>APP‑2026‑88213</b> is currently at the "Document Verification" stage. Expected completion: 2 working days.`,
+  };
+  function addMsg(text, cls){
+    const m = el(`<div class="msg ${cls}"></div>`);
+    m.innerHTML = text;
+    body.appendChild(m);
+    body.scrollTop = body.scrollHeight;
+  }
+  function botReply(text){
+    setTimeout(()=> addMsg(text, 'bot'), 450);
+  }
+  document.querySelectorAll('.qbtn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      addMsg(b.textContent, 'user');
+      botReply(RESPONSES[b.dataset.q]);
+    });
+  });
+  send.addEventListener('click', sendMsg);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') sendMsg(); });
+  function sendMsg(){
+    const v = input.value.trim();
+    if(!v) return;
+    addMsg(v, 'user');
+    input.value='';
+    const lower = v.toLowerCase();
+    let key = 'discover';
+    if(lower.includes('eligib')) key='eligibility';
+    else if(lower.includes('enrol') || lower.includes('enroll')) key='enroll';
+    else if(lower.includes('track') || lower.includes('status') || lower.includes('applic')) key='track';
+    botReply(RESPONSES[key]);
+  }
+  langSel.addEventListener('change', ()=>{
+    langSt.textContent = `● Online · ${langSel.value}`;
+    toast(`Mentor switched to ${langSel.value} — same grounded answers, translated live.`);
+  });
+})();
+
+/* ================= F2: Officer Copilots ================= */
+(function(){
+  const ALERTS_BY_ROLE = {
+    'Training Manager':[
+      {title:'Low Attendance', sub:'Center: ABC Training Center · Batch: Electrician – Batch 12 · Attendance below 60% for 5 days', sev:'high',
+       actions:['Generate Attendance Anomaly Report','Draft Communication to Trainers'],
+       msg:`Attendance Anomaly Report — Batch 12 (Electrician)\n\n• 5 consecutive days below 60% attendance\n• 4 learners at risk of certification delay\n• Suggested action: SMS + WhatsApp nudge to absent learners, escalate to Center Head if unresolved in 48 hrs`},
+      {title:'Certification Delay Risk', sub:'10 learners at risk of missing certification timeline', sev:'med',
+       actions:['Summarize Batch Performance','Draft Communication to Trainers'],
+       msg:`10 learners across 3 batches are trending toward missing their certification window. Root cause: assessment backlog in "Practical Viva" stage. Recommend prioritising viva slots for these learners this week.`},
+    ],
+    'Center Head':[
+      {title:'Performance Drop', sub:'Batch: Retail Sales – Batch 08 · Assessment score dropped by 25%', sev:'med',
+       actions:['Summarize Batch Performance','Generate Attendance Anomaly Report'],
+       msg:`Batch 08 (Retail Sales) average assessment score fell from 74% to 55% over 2 weeks. Correlates with a trainer substitution on 12 Jul. Recommend a refresher session and a trainer effectiveness review.`},
+    ],
+    'State Admin':[
+      {title:'Center Compliance Flag', sub:'2 centers pending quarterly infrastructure audit', sev:'med',
+       actions:['Summarize Batch Performance'],
+       msg:`2 training centers in the state have not completed the Q2 infrastructure audit. Recommend scheduling audits within 10 days to remain compliant with NCVET accreditation norms.`},
+    ],
+    'Finance Officer':[
+      {title:'Disbursement Delay', sub:'₹4.2L in trainer stipends pending release beyond SLA', sev:'high',
+       actions:['Generate Attendance Anomaly Report'],
+       msg:`₹4.2L in trainer stipend disbursements across 6 centers are past the 15‑day SLA. Recommend prioritising release for centers with active batches to avoid attrition risk.`},
+    ],
+  };
+  const list = document.getElementById('alert-list');
+  const msgs = document.getElementById('copilot-msgs');
+  const actionsBox = document.getElementById('copilot-actions');
+  const ctx = document.getElementById('copilot-context');
+  let currentAlerts = ALERTS_BY_ROLE['Training Manager'];
+
+  function renderAlerts(){
+    list.innerHTML='';
+    currentAlerts.forEach((a, i)=>{
+      const row = el(`<div class="alert-row" data-i="${i}">
+        <div class="at-left"><div class="at-title">${a.title}</div><div class="at-sub">${a.sub}</div></div>
+        <span class="badge ${a.sev==='high'?'high':'med'}">${a.sev==='high'?'High':'Medium'}</span>
+      </div>`);
+      row.addEventListener('click', ()=> selectAlert(i));
+      list.appendChild(row);
+    });
+  }
+  function selectAlert(i){
+    document.querySelectorAll('.alert-row').forEach(r=>r.classList.remove('sel'));
+    document.querySelector(`.alert-row[data-i="${i}"]`).classList.add('sel');
+    const a = currentAlerts[i];
+    ctx.textContent = `— context: ${a.title}`;
+    msgs.innerHTML = `<div class="copilot-msg">Alert selected: <b>${a.title}</b>. ${a.sub}. What would you like me to do?</div>`;
+    actionsBox.innerHTML='';
+    a.actions.forEach(act=>{
+      const b = el(`<button class="btn sm">${act}</button>`);
+      b.addEventListener('click', ()=>{
+        const m = el(`<div class="copilot-msg"></div>`);
+        m.textContent = a.msg;
+        msgs.appendChild(m);
+        toast(`Copilot generated: ${act}`);
+      });
+      actionsBox.appendChild(b);
+    });
+  }
+  document.querySelectorAll('#role-tabs .chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      document.querySelectorAll('#role-tabs .chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      currentAlerts = ALERTS_BY_ROLE[chip.dataset.role];
+      ctx.textContent = '— select an alert';
+      msgs.innerHTML = `<div class="copilot-msg">I can help you with:<br>✓ Generate Attendance Anomaly Report<br>✓ Draft Communication to Trainers<br>✓ Summarize Batch Performance</div>`;
+      actionsBox.innerHTML='';
+      renderAlerts();
+    });
+  });
+  renderAlerts();
+})();
+
+/* ================= F3: Graph-RAG ================= */
+(function(){
+  const input = document.getElementById('rag-input');
+  const askBtn = document.getElementById('rag-ask');
+  const answerBox = document.getElementById('rag-answer');
+  const nodes = ()=> document.querySelectorAll('#rag-pipeline .pipe-node, #rag-pipeline .pipe-arrow');
+
+  const ANSWERS = {
+    'pmkvy': {q:'What are the eligibility criteria for PMKVY 4.0?',
+      a:`Under <b>PMKVY 4.0</b>, candidates must be an Indian national, aged 15–45 years (relaxed for differently‑abled and select categories), with a valid Aadhaar‑linked ID. Training + Placement track candidates additionally require a minimum qualification of Class 8 for most Level 3–4 NSQF courses.`,
+      cites:['NCVET Guideline 2024/07','NSQF Level Matrix','MSDE Scheme Circular']},
+    'welder': {q:'What certification do welders receive under NSQF?',
+      a:`Welders completing an accredited program receive an <b>NSQF‑aligned certificate</b> (typically Level 3 or 4 depending on module depth), issued jointly with the relevant Sector Skill Council and recorded in the National Qualification Register (NQR) for lifelong portability.`,
+      cites:['NSQF Level Descriptors','Sector Skill Council — Capital Goods','NQR Registration Rules']},
+    'fingerprint': {q:'How is my skill fingerprint calculated?',
+      a:`Your <b>Skill Fingerprint</b> is computed across five domains — Technical, Practical, Cognitive, Employability and Behavioral Skills — by combining continuous assessment scores, CV‑based psychomotor evaluations, and non‑cognitive test results, each weighted per NSQF assessment norms.`,
+      cites:['Skill Passport Spec v2','NSQF Assessment Norms']},
+  };
+  function keyFor(q){
+    const l = q.toLowerCase();
+    if(l.includes('pmkvy')) return 'pmkvy';
+    if(l.includes('weld')) return 'welder';
+    if(l.includes('fingerprint')) return 'fingerprint';
+    return 'pmkvy';
+  }
+  function runPipeline(q){
+    const seq = document.querySelectorAll('#rag-pipeline .pipe-node, #rag-pipeline .pipe-arrow');
+    seq.forEach(n=> n.classList.remove('on'));
+    answerBox.style.display='none';
+    let i=0;
+    const iv = setInterval(()=>{
+      if(i < seq.length){ seq[i].classList.add('on'); i++; }
+      else{
+        clearInterval(iv);
+        const ans = ANSWERS[keyFor(q)];
+        answerBox.style.display='block';
+        answerBox.innerHTML = `<div style="font-size:11.5px; color:var(--muted); margin-bottom:6px;">Grounded answer</div>
+          <div style="font-size:13.5px; line-height:1.6;">${ans.a}</div>
+          <div class="cite-row">${ans.cites.map(c=>`<span class="cite">📄 ${c}</span>`).join('')}</div>
+          <div style="margin-top:8px; color:var(--series-4); font-size:12px;">★★★★★ <span style="color:var(--muted);">confidence: grounded, no hallucination detected</span></div>`;
+      }
+    }, 260);
+  }
+  askBtn.addEventListener('click', ()=>{
+    const q = input.value.trim() || 'What are the eligibility criteria for PMKVY 4.0?';
+    runPipeline(q);
+  });
+  document.querySelectorAll('.rag-suggest').forEach(s=>{
+    s.addEventListener('click', ()=>{ input.value = s.textContent; runPipeline(s.textContent); });
+  });
+})();
+
+/* ================= F4: Sovereign SLMs ================= */
+(function(){
+  const SECTORS = [
+    {name:'Manufacturing', params:'3.5B', cost:22, lat:30},
+    {name:'Construction', params:'2B', cost:18, lat:25},
+    {name:'Healthcare', params:'8B', cost:55, lat:60},
+    {name:'IT / ITeS', params:'6B', cost:40, lat:45},
+    {name:'Retail', params:'1.5B', cost:14, lat:20},
+    {name:'Logistics', params:'2.5B', cost:20, lat:28},
+    {name:'Agriculture', params:'1B', cost:10, lat:15},
+    {name:'BFSI', params:'4B', cost:32, lat:38},
+  ];
+  const grid = document.getElementById('sector-grid');
+  SECTORS.forEach((s,i)=>{
+    const c = el(`<div class="sector-card ${i===0?'sel':''}" data-i="${i}">
+      <div style="font-weight:700; font-size:13px; margin-bottom:6px;">${s.name}</div>
+      <div style="font-size:11px; color:var(--muted);">${s.params} params · Hosted in India</div>
+    </div>`);
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('.sector-card').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+      document.getElementById('sector-detail-title').textContent = `${s.name} SLM — profile`;
+      document.getElementById('sector-params').textContent = s.params;
+      const bars = document.querySelectorAll('#f4 .meter .bar > div');
+      bars[0].style.width = (parseFloat(s.params)/8*100)+'%';
+      bars[1].style.width = s.cost+'%';
+      bars[2].style.width = s.lat+'%';
+    });
+    grid.appendChild(c);
+  });
+})();
+
+/* ================= F5: Cognitive Assessments — SVG radar + line ================= */
+(function(){
+  const AXES = ['Conceptual\nUnderstanding','Practical\nApplication','Problem\nSolving','Employability\nSkills','Industry\nKnowledge','Soft Skills &\nBehavioral'];
+  const LEARNERS = {
+    Rahul: { current:[82,75,68,70,88,72], prev:[70,65,60,62,80,64], batch:[65,60,58,60,70,60],
+      series:[ [55,60,68,72,66,70,74,78,82], [50,52,55,58,60,63,66,68,70], [58,58,59,60,60,61,62,63,63] ] },
+    Priya: { current:[90,85,80,88,70,84], prev:[80,78,72,80,66,76], batch:[65,60,58,60,70,60],
+      series:[ [60,64,68,72,76,80,84,87,90], [55,58,61,64,67,70,72,74,76], [58,58,59,60,60,61,62,63,63] ] },
+    Aamir: { current:[60,55,50,58,62,54], prev:[58,50,46,52,58,48], batch:[65,60,58,60,70,60],
+      series:[ [45,46,48,50,51,53,55,57,60], [40,42,44,45,47,48,50,52,54], [58,58,59,60,60,61,62,63,63] ] },
+  };
+  function drawRadar(svg, axes, seriesArr, colors){
+    svg.innerHTML='';
+    const cx=170, cy=140, r=105, n=axes.length;
+    const rings=[20,40,60,80,100];
+    rings.forEach(v=>{
+      const pts=[]; for(let i=0;i<n;i++){ const a=(Math.PI*2*i/n)-Math.PI/2; const rr=r*v/100; pts.push(`${cx+rr*Math.cos(a)},${cy+rr*Math.sin(a)}`); }
+      const p=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      p.setAttribute('points', pts.join(' ')); p.setAttribute('fill','none'); p.setAttribute('stroke','var(--gridline)'); p.setAttribute('stroke-width','1');
+      svg.appendChild(p);
+    });
+    for(let i=0;i<n;i++){
+      const a=(Math.PI*2*i/n)-Math.PI/2;
+      const x2=cx+r*Math.cos(a), y2=cy+r*Math.sin(a);
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',cx); line.setAttribute('y1',cy); line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+      line.setAttribute('stroke','var(--gridline)'); svg.appendChild(line);
+      const lx=cx+(r+22)*Math.cos(a), ly=cy+(r+22)*Math.sin(a);
+      axes[i].split('\n').forEach((ln,li)=>{
+        const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x',lx); t.setAttribute('y',ly+li*10-3); t.setAttribute('text-anchor','middle'); t.setAttribute('class','axis-label');
+        t.textContent=ln; svg.appendChild(t);
+      });
+    }
+    seriesArr.forEach((vals, si)=>{
+      const pts = vals.map((v,i)=>{ const a=(Math.PI*2*i/n)-Math.PI/2; const rr=r*v/100; return [cx+rr*Math.cos(a), cy+rr*Math.sin(a)]; });
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points', pts.map(p=>p.join(',')).join(' '));
+      poly.setAttribute('fill', colors[si]); poly.setAttribute('fill-opacity', si===2?'0.06':'0.14');
+      poly.setAttribute('stroke', colors[si]); poly.setAttribute('stroke-width', si===2?'1.5':'2');
+      if(si===2) poly.setAttribute('stroke-dasharray','4 3');
+      svg.appendChild(poly);
+      pts.forEach((p,i)=>{
+        const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx',p[0]); c.setAttribute('cy',p[1]); c.setAttribute('r','3.5'); c.setAttribute('fill',colors[si]);
+        c.innerHTML = `<title>${axes[i].replace('\n',' ')}: ${vals[i]}</title>`;
+        svg.appendChild(c);
+      });
+    });
+  }
+  function drawLine(svg, seriesArr, colors, dashArr){
+    svg.innerHTML='';
+    const w=380,h=170,x0=15,y0=10;
+    const maxN = seriesArr[0].length;
+    [0,25,50,75,100].forEach(v=>{
+      const y = y0+h-(h*v/100);
+      const g=document.createElementNS('http://www.w3.org/2000/svg','line');
+      g.setAttribute('x1',x0); g.setAttribute('x2',x0+w); g.setAttribute('y1',y); g.setAttribute('y2',y);
+      g.setAttribute('stroke','var(--gridline)'); svg.appendChild(g);
+    });
+    seriesArr.forEach((vals, si)=>{
+      const pts = vals.map((v,i)=> [x0 + w*i/(maxN-1), y0+h-(h*v/100)]);
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('d', 'M'+pts.map(p=>p.join(',')).join(' L '));
+      path.setAttribute('fill','none'); path.setAttribute('stroke',colors[si]); path.setAttribute('stroke-width','2.5');
+      path.setAttribute('stroke-linecap','round');
+      if(dashArr[si]) path.setAttribute('stroke-dasharray', dashArr[si]);
+      svg.appendChild(path);
+      pts.forEach((p,i)=>{
+        const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx',p[0]); c.setAttribute('cy',p[1]); c.setAttribute('r','3'); c.setAttribute('fill',colors[si]);
+        c.innerHTML=`<title>Week ${i+1}: ${vals[i]}</title>`;
+        svg.appendChild(c);
+      });
+    });
+  }
+  function render(name){
+    const d = LEARNERS[name];
+    drawRadar(document.getElementById('radar-svg'), AXES, [d.current, d.prev, d.batch], ['var(--series-1)'.replace('var(--series-1)','#2a78d6'), '#eb6834', '#898781']);
+    drawLine(document.getElementById('line-svg'), d.series, ['#2a78d6','#eb6834','#898781'], [null,'6 4','2 3']);
+    document.getElementById('radar-learner-name').textContent = '— ' + (name==='Rahul'?'Rahul Kumar':name==='Priya'?'Priya Sharma':'Aamir Khan');
+  }
+  document.querySelectorAll('#f5 .chip[data-learner]').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#f5 .chip[data-learner]').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+      render(c.dataset.learner);
+    });
+  });
+  render('Rahul');
+})();
+
+/* ================= F6: Skill Passport ================= */
+(function(){
+  // simple QR-like pattern (decorative, not a real QR)
+  const qr = document.getElementById('qr-box');
+  let cells='';
+  const seed=[1,0,1,1,0,1,0,1,1,0,1,0,0,1,1,0,1,0,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1,0,1,1,0,1,1,0,1,0,1,0,1,1,0,1,1,0,1,0,1];
+  const n=8;
+  for(let i=0;i<n;i++) for(let j=0;j<n;j++){
+    if(seed[(i*n+j)%seed.length]) cells+=`<rect x="${j*10}" y="${i*10}" width="9" height="9" fill="#0b0b0b"/>`;
+  }
+  qr.innerHTML = `<svg viewBox="0 0 80 80">${cells}
+    <rect x="0" y="0" width="20" height="20" fill="#fff"/><rect x="4" y="4" width="12" height="12" fill="#0b0b0b"/><rect x="7" y="7" width="6" height="6" fill="#fff"/>
+    <rect x="60" y="0" width="20" height="20" fill="#fff"/><rect x="64" y="4" width="12" height="12" fill="#0b0b0b"/><rect x="67" y="7" width="6" height="6" fill="#fff"/>
+    <rect x="0" y="60" width="20" height="20" fill="#fff"/><rect x="4" y="64" width="12" height="12" fill="#0b0b0b"/><rect x="7" y="67" width="6" height="6" fill="#fff"/></svg>`;
+
+  const DOMAINS = [
+    {name:'Technical Skills', stars:4},
+    {name:'Practical Skills', stars:4},
+    {name:'Cognitive Skills', stars:4},
+    {name:'Employability Skills', stars:5},
+    {name:'Behavioral Skills', stars:4},
+  ];
+  const rows = document.getElementById('domain-rows');
+  DOMAINS.forEach(d=>{
+    rows.appendChild(el(`<div class="domain-row"><span>${d.name}</span><span class="stars">${'★'.repeat(d.stars)}${'☆'.repeat(5-d.stars)}</span></div>`));
+  });
+  const btn = document.getElementById('verify-btn');
+  const status = document.getElementById('verify-status');
+  btn.addEventListener('click', ()=>{
+    btn.disabled = true; btn.textContent='Verifying…';
+    status.textContent='';
+    setTimeout(()=>{
+      btn.disabled=false; btn.textContent='Verify as employer';
+      status.innerHTML = `<span style="color:var(--good); font-weight:700;">✓ Verified</span> — cryptographic signature matches NSDC issuance record.`;
+      toast('Employer verification simulated — signature valid.');
+    }, 900);
+  });
+})();
+
+/* ================= F7: PASE ================= */
+(function(){
+  const masteryFill = document.getElementById('pase-mastery-fill');
+  const masteryNum = document.getElementById('pase-mastery-num');
+  const loadFill = document.getElementById('pase-load-fill');
+  const loadLabel = document.getElementById('pase-load-label');
+  const diffBars = document.querySelectorAll('#diff-bars .db');
+  const diffNote = document.getElementById('diff-note');
+  const bc2 = document.getElementById('bc-2');
+
+  function setState(mastery, loadPct, loadState, diff, note){
+    masteryFill.style.width = mastery+'%'; masteryNum.textContent = mastery+'%';
+    loadFill.style.width = loadPct+'%';
+    loadFill.style.background = loadState==='Optimal'?'var(--good)': loadState==='High'?'var(--critical)':'var(--warning)';
+    loadLabel.textContent = loadState;
+    loadLabel.style.color = loadState==='Optimal'?'var(--good)': loadState==='High'?'var(--critical)':'#8a5e00';
+    diffBars.forEach(b=> b.classList.toggle('sel', b.dataset.d===diff));
+    diffNote.textContent = note;
+  }
+  document.getElementById('pase-struggle').addEventListener('click', ()=>{
+    setState(58, 82, 'High', 'easy', 'PASE detected rising cognitive load and dropped difficulty to Easy, switching to video walkthroughs.');
+    toast('Learner struggling — PASE simplified the pathway.');
+  });
+  document.getElementById('pase-excel').addEventListener('click', ()=>{
+    setState(89, 20, 'Optimal', 'hard', 'PASE detected fast, accurate responses and raised difficulty to Hard, unlocking advanced practice items.');
+    toast('Learner excelling — PASE raised the difficulty.');
+  });
+  document.getElementById('pase-reset').addEventListener('click', ()=>{
+    setState(72, 34, 'Optimal', 'medium', 'PASE keeps items at Medium difficulty while cognitive load stays optimal.');
+  });
+  document.querySelectorAll('#content-toggle .ct').forEach(ct=>{
+    ct.addEventListener('click', ()=>{
+      document.querySelectorAll('#content-toggle .ct').forEach(c=>c.classList.remove('sel'));
+      ct.classList.add('sel');
+      const notes = {video:'Recommended because the learner responds fastest to visual walkthroughs.', audio:'Switched to audio for low‑bandwidth / on‑the‑go learning.', text:'Switched to text for quick reference and re‑reading.'};
+      document.getElementById('content-note').textContent = notes[ct.dataset.c];
+    });
+  });
+  document.getElementById('pase-next-action').addEventListener('click', ()=>{
+    bc2.classList.add('done');
+    toast('Concept video marked complete — path advances to "Hands‑on Practice".');
+  });
+})();
+
+/* ================= F8: CV Psychomotor ================= */
+(function(){
+  document.querySelectorAll('#trade-tabs .chip').forEach(c=>{
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('#trade-tabs .chip').forEach(x=>x.classList.remove('active'));
+      c.classList.add('active');
+      document.getElementById('cv-result').style.display='none';
+      resetStepper('cv-stepper');
+    });
+  });
+  function resetStepper(id){
+    document.querySelectorAll(`#${id} .step`).forEach(s=>s.classList.remove('active','done'));
+  }
+  function drawPose(svg, jitter){
+    svg.innerHTML='';
+    const pts = [[70,20],[70,45],[55,60],[45,80],[85,60],[95,80],[70,45],[60,90],[55,120],[80,90],[85,120]];
+    const edges = [[0,1],[1,2],[2,3],[1,4],[4,5],[1,6],[6,7],[7,8],[6,9],[9,10]];
+    const j = jitter? ()=> (Math.random()-0.5)*8 : ()=>0;
+    const jp = pts.map(p=>[p[0]+j(), p[1]+j()]);
+    edges.forEach(([a,b])=>{
+      const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+      l.setAttribute('x1',jp[a][0]); l.setAttribute('y1',jp[a][1]); l.setAttribute('x2',jp[b][0]); l.setAttribute('y2',jp[b][1]);
+      l.setAttribute('stroke', jitter? '#eda100':'#1baf7a'); l.setAttribute('stroke-width','2.5');
+      svg.appendChild(l);
+    });
+    jp.forEach(p=>{
+      const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx',p[0]); c.setAttribute('cy',p[1]); c.setAttribute('r','3.5'); c.setAttribute('fill', jitter? '#eda100':'#1baf7a');
+      svg.appendChild(c);
+    });
+    // simulated spark
+    if(!jitter){
+      const spark=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      spark.setAttribute('cx',95); spark.setAttribute('cy',80); spark.setAttribute('r','4'); spark.setAttribute('fill','#fff'); spark.setAttribute('opacity','0.9');
+      svg.appendChild(spark);
+    }
+  }
+  document.getElementById('cv-run').addEventListener('click', ()=>{
+    const steps = document.querySelectorAll('#cv-stepper .step');
+    document.getElementById('cv-result').style.display='none';
+    resetStepper('cv-stepper');
+    let i=0;
+    const iv = setInterval(()=>{
+      if(i>0) steps[i-1].classList.remove('active'); if(i>0) steps[i-1].classList.add('done');
+      if(i < steps.length){ steps[i].classList.add('active'); i++; }
+      else{
+        clearInterval(iv);
+        document.getElementById('cv-result').style.display='grid';
+        drawPose(document.getElementById('pose-student'), true);
+        drawPose(document.getElementById('pose-expert'), false);
+        const arc = document.getElementById('cv-gauge-arc');
+        const score = 86; const circumference = 2*Math.PI*50;
+        arc.setAttribute('stroke-dasharray', `${circumference*score/100} ${circumference}`);
+        document.getElementById('cv-score').textContent = score;
+        toast('Assessment complete — score 86/100.');
+      }
+    }, 500);
+  });
+})();
+
+/* ================= F9: Non-cognitive SJT ================= */
+(function(){
+  const AXES = ['Adaptability','Teamwork','Communication','Problem\nSolving','Integrity','Resilience'];
+  const BENCH = [60,62,58,60,65,58];
+  let PROFILE = [55,58,60,55,62,52];
+  function drawRadar(svg, axes, you, bench){
+    svg.innerHTML='';
+    const cx=150,cy=125,r=95,n=axes.length;
+    [20,40,60,80,100].forEach(v=>{
+      const pts=[]; for(let i=0;i<n;i++){ const a=(Math.PI*2*i/n)-Math.PI/2; const rr=r*v/100; pts.push(`${cx+rr*Math.cos(a)},${cy+rr*Math.sin(a)}`); }
+      const p=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      p.setAttribute('points',pts.join(' ')); p.setAttribute('fill','none'); p.setAttribute('stroke','var(--gridline)');
+      svg.appendChild(p);
+    });
+    for(let i=0;i<n;i++){
+      const a=(Math.PI*2*i/n)-Math.PI/2;
+      const x2=cx+r*Math.cos(a), y2=cy+r*Math.sin(a);
+      const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',cx); line.setAttribute('y1',cy); line.setAttribute('x2',x2); line.setAttribute('y2',y2); line.setAttribute('stroke','var(--gridline)');
+      svg.appendChild(line);
+      const lx=cx+(r+20)*Math.cos(a), ly=cy+(r+20)*Math.sin(a);
+      axes[i].split('\n').forEach((ln,li)=>{
+        const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+        t.setAttribute('x',lx); t.setAttribute('y',ly+li*10-3); t.setAttribute('text-anchor','middle'); t.setAttribute('class','axis-label');
+        t.textContent=ln; svg.appendChild(t);
+      });
+    }
+    [ [bench,'#898781',true], [you,'#2a78d6',false] ].forEach(([vals,color,dashed])=>{
+      const pts = vals.map((v,i)=>{ const a=(Math.PI*2*i/n)-Math.PI/2; const rr=r*v/100; return [cx+rr*Math.cos(a), cy+rr*Math.sin(a)]; });
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points', pts.map(p=>p.join(',')).join(' '));
+      poly.setAttribute('fill', color); poly.setAttribute('fill-opacity', dashed?'0.05':'0.15');
+      poly.setAttribute('stroke', color); poly.setAttribute('stroke-width', dashed?'1.5':'2.2');
+      if(dashed) poly.setAttribute('stroke-dasharray','4 3');
+      svg.appendChild(poly);
+    });
+  }
+  function render(){ drawRadar(document.getElementById('sjt-radar'), AXES, PROFILE, BENCH); }
+  render();
+
+  const OPTIONS = [
+    {t:'Immediately apologise, explain the reason clearly, and offer to reschedule at their convenience.', delta:[6,4,8,3,5,4], fb:'Strong choice — this balances empathy with clear communication and ownership, the hallmark of high workplace readiness.'},
+    {t:'Tell them rescheduling is normal and they should check the app more often.', delta:[-4,-3,-6,-2,-1,-2], fb:'This can come across as dismissive. Readiness tools flag responses that de‑prioritise the other person\'s experience.'},
+    {t:'Escalate immediately to your manager without speaking to the customer.', delta:[-2,-4,-3,2,1,-2], fb:'Escalation has its place, but skipping direct communication first lowers your teamwork and communication signal.'},
+    {t:'Listen fully, acknowledge the inconvenience, then explain options calmly.', delta:[4,5,7,4,6,5], fb:'Also a strong, empathetic response — active listening before explaining tends to score very well on integrity and resilience.'},
+  ];
+  const optBox = document.getElementById('sjt-options');
+  const fbBox = document.getElementById('sjt-feedback');
+  OPTIONS.forEach((o,i)=>{
+    const b = el(`<button class="sjt-option">${o.t}</button>`);
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.sjt-option').forEach(x=>x.classList.remove('picked'));
+      b.classList.add('picked');
+      PROFILE = PROFILE.map((v,idx)=> Math.max(10, Math.min(100, v+o.delta[idx])));
+      render();
+      fbBox.style.display='block';
+      fbBox.textContent = o.fb;
+      const avg = Math.round(PROFILE.reduce((a,b)=>a+b,0)/PROFILE.length);
+      document.getElementById('sjt-score').textContent = avg;
+      const arc = document.getElementById('sjt-gauge-arc');
+      const circ = 2*Math.PI*50;
+      arc.setAttribute('stroke-dasharray', `${circ*avg/100} ${circ}`);
+      const badge = document.getElementById('sjt-readiness-badge');
+      if(avg>=70){ badge.textContent='High'; badge.className='badge green'; }
+      else if(avg>=50){ badge.textContent='Moderate'; badge.className='badge med'; }
+      else { badge.textContent='Developing'; badge.className='badge high'; }
+    });
+    optBox.appendChild(b);
+  });
+})();
+
+/* ================= F10: Content Authoring ================= */
+(function(){
+  document.getElementById('ca-run').addEventListener('click', ()=>{
+    const steps = document.querySelectorAll('#ca-stepper .step');
+    steps.forEach(s=>s.classList.remove('active','done'));
+    let i=0;
+    const iv = setInterval(()=>{
+      if(i>0){ steps[i-1].classList.remove('active'); steps[i-1].classList.add('done'); }
+      if(i<steps.length){ steps[i].classList.add('active'); i++; }
+      else{ clearInterval(iv); toast('Module drafted, reviewed and published across 22 languages.'); }
+    }, 550);
+  });
+  const LANGS = {
+    'Hindi':'पैनल वायरिंग — इलेक्ट्रीशियन मॉड्यूल 4', 'Bengali':'প্যানেল ওয়্যারিং — ইলেকট্রিশিয়ান মডিউল ৪',
+    'Tamil':'பேனல் வயரிங் — எலக்ட்ரீஷியன் தொகுதி 4', 'Telugu':'పానెల్ వైరింగ్ — ఎలక్ట్రీషియన్ మాడ్యూల్ 4',
+    'Marathi':'पॅनेल वायरिंग — इलेक्ट्रिशियन मॉड्युल ४', 'Gujarati':'પેનલ વાયરિંગ — ઇલેક્ટ્રિશિયન મોડ્યુલ ૪',
+    'Urdu':'پینل وائرنگ — الیکٹریشن ماڈیول 4', 'Kannada':'ಪ್ಯಾನಲ್ ವೈರಿಂಗ್ — ಎಲೆಕ್ಟ್ರಿಷಿಯನ್ ಮಾಡ್ಯೂಲ್ 4',
+    'Malayalam':'പാനൽ വയറിംഗ് — ഇലക്ട്രീഷ്യൻ മോഡ്യൂൾ 4', 'Punjabi':'ਪੈਨਲ ਵਾਇਰਿੰਗ — ਇਲੈਕਟ੍ਰੀਸ਼ਿਅਨ ਮਾਡਿਊਲ 4',
+    'Odia':'ପ୍ୟାନେଲ ୱାରିଙ୍ଗ — ଇଲେକ୍ଟ୍ରିସିଆନ ମଡ୍ୟୁଲ 4', 'Assamese':'পেনেল ৱাৰিং — ইলেকট্ৰিচিয়ান মডিউল ৪',
+    'English':'Panel Wiring — Electrician Module 4',
+  };
+  const grid = document.getElementById('ca-lang-grid');
+  const sample = document.getElementById('ca-sample');
+  Object.keys(LANGS).forEach(l=>{
+    const c = el(`<div class="lang-chip">${l}</div>`);
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('.lang-chip').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+      sample.innerHTML = `<div style="font-size:11px; color:var(--muted); margin-bottom:4px;">${l} — auto‑translated module title</div><div style="font-size:15px;">${LANGS[l]}</div>`;
+    });
+    grid.appendChild(c);
+  });
+  grid.appendChild(el(`<div class="lang-chip" style="pointer-events:none; color:var(--muted);">+10 more scheduled languages</div>`));
+})();
+
+/* ================= F11: AR/VR ================= */
+(function(){
+  const SCENARIOS = [
+    {name:'Electrical Panel Wiring', tasks:['Select Tools','De‑energise Panel','Wire per Diagram','Test & Inspect'], score:92},
+    {name:'Plumbing System Setup', tasks:['Select Tools','Measure & Cut','Assemble Joints','Pressure Test'], score:88},
+    {name:'HVAC Maintenance', tasks:['Isolate Unit','Inspect Filters','Check Refrigerant','Log Readings'], score:85},
+    {name:'Industrial Safety', tasks:['Don PPE','Identify Hazards','Lockout/Tagout','Report Findings'], score:95},
+    {name:'Machine Operation', tasks:['Pre‑op Check','Set Parameters','Run Cycle','Shutdown Sequence'], score:83},
+  ];
+  const grid = document.getElementById('scenario-grid');
+  let current = SCENARIOS[0];
+  SCENARIOS.forEach((s,i)=>{
+    const c = el(`<div class="scenario-card ${i===0?'sel':''}" data-i="${i}">
+      <svg class="scenario-icon" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M7 12h10M12 7v10" stroke="currentColor" stroke-width="1.6"/></svg>
+      <div style="font-size:12px; font-weight:600;">${s.name}</div>
+    </div>`);
+    c.addEventListener('click', ()=>{
+      document.querySelectorAll('.scenario-card').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel');
+      current = s;
+      document.getElementById('vr-title').textContent = s.name + ' — simulation';
+      document.getElementById('vr-viewport').textContent = 'Press "Enter Simulation" to begin';
+      document.getElementById('vr-score-wrap').style.display='none';
+      renderChecklist(s, false);
+    });
+    grid.appendChild(c);
+  });
+  function renderChecklist(s, active){
+    const box = document.getElementById('vr-checklist');
+    box.innerHTML='';
+    s.tasks.forEach(t=>{
+      box.appendChild(el(`<div class="checklist-item"><div class="chk-circle"></div><span>${t}</span></div>`));
+    });
+  }
+  document.getElementById('vr-enter').addEventListener('click', ()=>{
+    const vp = document.getElementById('vr-viewport');
+    vp.textContent = '🎮 Simulation running — headset tracking active…';
+    renderChecklist(current, true);
+    const items = document.querySelectorAll('#vr-checklist .checklist-item');
+    let i=0;
+    const iv = setInterval(()=>{
+      if(i<items.length){ items[i].classList.add('done'); i++; }
+      else{
+        clearInterval(iv);
+        vp.textContent = '✓ Simulation complete';
+        document.getElementById('vr-score-wrap').style.display='block';
+        document.getElementById('vr-score').textContent = current.score;
+        toast(`${current.name} simulation scored ${current.score}/100.`);
+      }
+    }, 500);
+  });
+  renderChecklist(current, false);
+})();
+</script>
+</body>
+</html>
