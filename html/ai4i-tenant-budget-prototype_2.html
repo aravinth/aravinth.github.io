@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI4I-Switch — Tenant, Budget, Application &amp; API Key Prototype</title>
+<style>
+  :root{
+    --bg:#eef1f6;
+    --card:#ffffff;
+    --border:#e2e5ec;
+    --border-soft:#eef0f5;
+    --text:#1a1d29;
+    --muted:#6b7280;
+    --blue:#3d72d1;
+    --blue-dark:#2f5cb0;
+    --blue-tint:#f5f8ff;
+    --purple:#6d4fc4;
+    --purple-tint:#f2effc;
+    --red:#d9483a;
+    --red-tint:#fdeeec;
+    --green:#1a9d5c;
+    --green-tint:#e9f8f0;
+    --amber:#9a5b13;
+    --amber-tint:#fff6e9;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--text);
+    padding:40px 20px 80px;
+  }
+  .wrap{max-width:1160px;margin:0 auto;}
+  .page-title{font-size:30px;font-weight:800;text-align:center;margin:0 0 6px;letter-spacing:-0.01em;}
+  .page-sub{font-size:15px;color:var(--muted);text-align:center;margin:0 0 28px;}
+
+  .persona-toggle{display:flex;justify-content:center;gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+  .persona-btn{
+    background:var(--card);border:1px solid var(--border);color:var(--muted);
+    padding:11px 22px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;
+    transition:all .15s ease;
+  }
+  .persona-btn .tag{display:block;font-size:11px;font-weight:600;opacity:.75;margin-top:1px;}
+  .persona-btn.active{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .persona-btn.active .tag{opacity:.9;}
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:12px;
+    overflow:hidden;
+    margin-bottom:26px;
+  }
+  .subtabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .subtab{
+    padding:16px 22px;font-size:14.5px;font-weight:600;color:var(--muted);
+    border-bottom:3px solid transparent;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;
+    font-family:inherit;white-space:nowrap;
+  }
+  .subtab.active{color:var(--blue);border-bottom-color:var(--blue);background:var(--blue-tint);}
+  .panel-body{padding:30px 32px;}
+  .panel-body h2{font-size:20px;margin:0 0 4px;}
+  .panel-hint{color:var(--muted);font-size:13.5px;margin:0 0 24px;}
+
+  .form-row{display:flex;gap:20px;flex-wrap:wrap;}
+  .form-group{margin-bottom:20px;flex:1 1 220px;}
+  .form-group.full{flex-basis:100%;}
+  label{display:block;font-size:13.5px;font-weight:600;margin-bottom:7px;}
+  label .req{color:var(--red);margin-left:2px;}
+  label .opt{color:var(--muted);font-weight:500;font-size:12px;margin-left:5px;}
+  input[type=text], input[type=number], input[type=email], input[type=tel], select, textarea{
+    width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:8px;
+    font-size:14px;font-family:inherit;color:var(--text);background:#fff;
+  }
+  textarea{resize:vertical;min-height:70px;}
+  input:focus, select:focus, textarea:focus{
+    outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(61,114,209,.15);
+  }
+  input:disabled, select:disabled{background:#f4f6fb;color:var(--muted);}
+  .helper{font-size:12.5px;color:var(--muted);margin-top:6px;}
+  .err-text{font-size:12.5px;color:var(--red);margin-top:6px;display:none;}
+  .err-text.show{display:block;}
+  .amt-input-wrap{position:relative;}
+  .amt-input-wrap .prefix{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;}
+  .amt-input-wrap input{padding-left:26px;}
+
+  .btn{
+    border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:600;
+    cursor:pointer;font-family:inherit;
+  }
+  .btn-primary{background:var(--blue);color:#fff;}
+  .btn-primary:hover{background:var(--blue-dark);}
+  .btn-primary:disabled{background:#b7c6e8;cursor:not-allowed;}
+  .btn-secondary{background:#fff;border:1px solid var(--border);color:var(--text);}
+  .btn-secondary:hover{background:#f4f6fb;}
+  .btn-sm{padding:7px 13px;font-size:12.5px;border-radius:6px;}
+  .btn-row{display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;}
+
+  .info-banner{background:var(--blue-tint);border:1px solid #cfe0ff;color:#274b8f;padding:12px 16px;border-radius:8px;font-size:13.5px;margin-bottom:22px;line-height:1.5;}
+  .warn-banner{background:var(--amber-tint);border:1px solid #f6dcb0;color:var(--amber);padding:12px 16px;border-radius:8px;font-size:13.5px;margin-bottom:22px;line-height:1.5;}
+  .ok-banner{background:var(--green-tint);border:1px solid #bfe9d3;color:#146c42;padding:12px 16px;border-radius:8px;font-size:13.5px;margin-bottom:22px;line-height:1.5;}
+  .purple-banner{background:var(--purple-tint);border:1px solid #ddd2f5;color:#4d3494;padding:12px 16px;border-radius:8px;font-size:13.5px;margin-bottom:22px;line-height:1.5;}
+
+  table{width:100%;border-collapse:collapse;}
+  th{
+    text-align:left;padding:12px 16px;background:#f7f9fc;border-bottom:1px solid var(--border);
+    font-size:11.5px;color:#4b5563;text-transform:uppercase;letter-spacing:.05em;font-weight:700;
+  }
+  td{padding:14px 16px;border-bottom:1px solid var(--border-soft);font-size:14px;vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  .cell-sub{color:var(--muted);font-size:12.5px;margin-top:2px;}
+
+  .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;}
+  .badge-active{background:var(--green-tint);color:#146c42;}
+  .badge-inactive{background:#f1f2f5;color:var(--muted);}
+  .badge-yes{background:var(--blue-tint);color:var(--blue-dark);}
+  .badge-no{background:#f1f2f5;color:var(--muted);}
+  .badge-full{background:var(--red-tint);color:var(--red);}
+  .badge-env-prod{background:#eaf3ff;color:#1d5fb0;}
+  .badge-env-staging{background:var(--amber-tint);color:var(--amber);}
+  .badge-env-dev{background:#f1f2f5;color:#4b5563;}
+  .badge-purple{background:var(--purple-tint);color:#5a3fb0;}
+
+  .search-bar{display:flex;gap:12px;padding:20px 32px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .search-bar input, .search-bar select{max-width:240px;}
+
+  .table-wrap{padding:0 32px 28px;overflow-x:auto;}
+  .table-wrap.top-pad{padding-top:24px;}
+
+  .institution-header{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;
+    background:#fbfcfe;border:1px solid var(--border);border-radius:12px;padding:18px 24px;margin-bottom:22px;
+  }
+  .institution-header .ih-name{font-size:16px;font-weight:700;}
+  .institution-header .ih-meta{font-size:12.5px;color:var(--muted);margin-top:3px;}
+  .ih-stats{display:flex;gap:26px;flex-wrap:wrap;}
+  .ih-stat{text-align:right;}
+  .ih-stat .v{font-size:16px;font-weight:700;}
+  .ih-stat .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
+
+  .amt-cell input{width:130px;padding:8px 10px 8px 22px;display:inline-block;}
+  .amt-cell{white-space:nowrap;position:relative;}
+  .amt-cell .prefix{position:absolute;left:12px;top:9px;color:var(--muted);font-size:13px;}
+  .min-note{font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .row-error{font-size:12px;color:var(--red);margin-top:4px;}
+
+  .total-row td{background:#f7f9fc;font-weight:700;border-top:2px solid var(--border);}
+  .total-badge{font-weight:700;}
+  .total-badge.ok{color:var(--green);}
+  .total-badge.bad{color:var(--red);}
+
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(20,24,35,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal{background:#fff;border-radius:12px;max-width:560px;width:100%;padding:28px;max-height:88vh;overflow-y:auto;}
+  .modal h3{margin:0 0 18px;font-size:18px;}
+  .modal .btn-row{justify-content:flex-end;margin-top:22px;}
+  .close-x{float:right;cursor:pointer;color:var(--muted);font-size:20px;line-height:1;background:none;border:none;}
+
+  .example-box{background:#f7f9fc;border:1px dashed var(--border);border-radius:8px;padding:14px 18px;font-size:12.5px;color:#4b5563;margin-top:4px;line-height:1.6;}
+  .example-box b{color:var(--text);}
+  .toast{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%);
+    background:#1a1d29;color:#fff;padding:12px 22px;border-radius:8px;font-size:13.5px;
+    opacity:0;pointer-events:none;transition:opacity .25s ease, transform .25s ease;z-index:100;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+  .persona-section{display:none;}
+  .persona-section.active{display:block;}
+  .subpanel{display:none;}
+  .subpanel.active{display:block;}
+  .required-mark{color:var(--red);}
+  .divider{height:1px;background:var(--border-soft);margin:24px 0;}
+  .flag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;background:#eef1f6;color:var(--muted);margin-left:8px;vertical-align:middle;}
+  .headroom-track{height:8px;border-radius:5px;background:#eef0f5;overflow:hidden;margin-top:8px;}
+  .headroom-fill{height:100%;background:var(--blue);border-radius:5px;}
+  .headroom-fill.over{background:var(--red);}
+  .mini-label{font-size:11.5px;color:var(--muted);margin-top:6px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="page-title">AI4I-Switch</h1>
+  <p class="page-sub">Prototype — Tenant onboarding, budget allocation, Application &amp; API Key management</p>
+
+  <div class="persona-toggle">
+    <button class="persona-btn active" data-persona="adopter">Adopter Admin<span class="tag">Onboard tenants · allocate budget</span></button>
+    <button class="persona-btn" data-persona="institution">Institution Admin (Tenant)<span class="tag">Manage apps, budgets &amp; API keys</span></button>
+  </div>
+
+  <!-- ================= ADOPTER ADMIN ================= -->
+  <div class="persona-section active" id="persona-adopter">
+    <div class="panel">
+      <div class="subtabs">
+        <button class="subtab active" data-panel="create-inst">Create Institution</button>
+        <button class="subtab" data-panel="manage-inst">Manage Institutions</button>
+        <button class="subtab" data-panel="allocate-budget">Allocate Budget</button>
+      </div>
+
+      <!-- Create Institution -->
+      <div class="subpanel active" id="panel-create-inst">
+        <div class="panel-body">
+          <h2>Create Institution</h2>
+          <p class="panel-hint">Onboard a new Institution (Tenant) that will be permitted to consume hosted AI models under India AI Mission.</p>
+
+          <form id="form-create-inst" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Institution Name<span class="req">*</span></label>
+                <input type="text" id="inst-name" placeholder="e.g. Bharat Health Research Institute" required>
+                <div class="err-text" id="inst-name-err">An institution with this name already exists.</div>
+              </div>
+              <div class="form-group">
+                <label>Institution Type / Tier<span class="req">*</span></label>
+                <select id="inst-tier" required>
+                  <option value="" disabled selected>Select a tier</option>
+                  <option>Government Department</option>
+                  <option>Research Institution</option>
+                  <option>Startup</option>
+                  <option>Other Eligible Organization</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Contact Name<span class="req">*</span></label>
+                <input type="text" id="inst-contact-name" placeholder="Full name" required>
+              </div>
+              <div class="form-group">
+                <label>Contact Email<span class="req">*</span></label>
+                <input type="email" id="inst-contact-email" placeholder="name@organization.gov.in" required>
+              </div>
+              <div class="form-group">
+                <label>Contact Phone<span class="req">*</span></label>
+                <input type="tel" id="inst-contact-phone" placeholder="+91 XXXXX XXXXX" required>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Domain <span class="opt">optional</span></label>
+                <input type="text" id="inst-domain" placeholder="e.g. bhri.gov.in">
+              </div>
+              <div class="form-group">
+                <label>Initial Budget (₹ / month)<span class="req">*</span></label>
+                <div class="amt-input-wrap"><span class="prefix">₹</span>
+                  <input type="number" id="inst-budget" min="0" step="1000" placeholder="e.g. 1000000" required>
+                </div>
+                <div class="helper">Budget Type is fixed platform-wide as <b>Amount (INR)</b> by the Adopter Admin's initial setup. This can be revised later from <i>Allocate Budget</i>.</div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary">Create Institution</button>
+              <button type="reset" class="btn btn-secondary">Clear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Manage Institutions -->
+      <div class="subpanel" id="panel-manage-inst">
+        <div class="search-bar">
+          <input type="text" id="inst-search" placeholder="Search by Institution name...">
+          <select id="inst-filter-tier">
+            <option value="">All Tiers</option>
+            <option>Government Department</option>
+            <option>Research Institution</option>
+            <option>Startup</option>
+            <option>Other Eligible Organization</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Institution</th><th>Tier</th><th>Contact</th><th>Total Budget</th><th>Allocated to Apps</th><th>Applications</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inst-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Allocate Budget -->
+      <div class="subpanel" id="panel-allocate-budget">
+        <div class="panel-body">
+          <h2>Allocate Budget to Institution</h2>
+          <p class="panel-hint">Set or revise the total budget assigned to an Institution. The Institution Admin will then distribute this amount across their Applications — the sum of all Application budgets must stay at or below this total.</p>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Select Institution<span class="req">*</span></label>
+              <select id="ab-select-inst"></select>
+            </div>
+          </div>
+
+          <div class="info-banner" id="ab-current-info"></div>
+
+          <div class="form-row">
+            <div class="form-group" style="max-width:280px;">
+              <label>New Total Budget (₹ / month)<span class="req">*</span></label>
+              <div class="amt-input-wrap"><span class="prefix">₹</span>
+                <input type="number" id="ab-new-budget" min="0" step="1000" required>
+              </div>
+              <div class="err-text show" id="ab-err" style="display:none;">Budget cannot be reduced below the amount already committed to this Institution's Applications (<span id="ab-min-val"></span>).</div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" id="ab-save">Save Budget Allocation</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= INSTITUTION ADMIN ================= -->
+  <div class="persona-section" id="persona-institution">
+
+    <div class="institution-header">
+      <div>
+        <div class="ih-name" id="ih-name">Bharat Health Research Institute</div>
+        <div class="ih-meta">Logged in as Institution Admin · Tier: <span id="ih-tier"></span></div>
+      </div>
+      <div class="ih-stats">
+        <div class="ih-stat"><div class="v" id="ih-total-budget">—</div><div class="l">Total Budget / mo</div></div>
+        <div class="ih-stat"><div class="v" id="ih-allocated-amt">—</div><div class="l">Allocated to Apps</div></div>
+        <div class="ih-stat"><div class="v" id="ih-app-count">—</div><div class="l">Applications</div></div>
+        <div class="ih-stat"><div class="v" id="ih-key-count">—</div><div class="l">API Keys</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="subtabs">
+        <button class="subtab active" data-panel="create-app">Create Application</button>
+        <button class="subtab" data-panel="manage-app">Manage Applications</button>
+        <button class="subtab" data-panel="app-budget">Application Budgets</button>
+        <button class="subtab" data-panel="api-keys">API Keys</button>
+      </div>
+
+      <!-- Create Application -->
+      <div class="subpanel active" id="panel-create-app">
+        <div class="panel-body">
+          <h2>Create Application</h2>
+          <p class="panel-hint">Onboard an Application as an independent entity before any API key is issued against it. Each Application may consume NLP, LLM, or both Model task types.</p>
+
+          <div class="info-banner" id="app-alloc-info"></div>
+
+          <form id="form-create-app" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Application Name<span class="req">*</span></label>
+                <input type="text" id="app-name" placeholder="e.g. Diagnostic Assistant" required>
+                <div class="err-text" id="app-name-err">This name is already used by another Application in this Institution.</div>
+              </div>
+              <div class="form-group">
+                <label>Environment<span class="req">*</span></label>
+                <select id="app-env" required>
+                  <option value="" disabled selected>Select environment</option>
+                  <option>Development</option>
+                  <option>Staging</option>
+                  <option>Production</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Status</label>
+                <select id="app-status">
+                  <option selected>Active</option>
+                  <option>Inactive</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Owner <span class="opt">optional</span></label>
+                <input type="text" id="app-owner" placeholder="e.g. Dr. Ananya Rao">
+              </div>
+              <div class="form-group">
+                <label>Domain <span class="opt">optional</span></label>
+                <input type="text" id="app-domain" placeholder="e.g. diagnostics.bhri.gov.in">
+              </div>
+            </div>
+
+            <div class="form-group full">
+              <label>Description <span class="opt">optional</span></label>
+              <textarea id="app-desc" placeholder="What does this application do?"></textarea>
+            </div>
+
+            <div class="form-group" style="max-width:260px;">
+              <label>Budget (₹ / month) <span class="opt">optional</span></label>
+              <div class="amt-input-wrap"><span class="prefix">₹</span>
+                <input type="number" id="app-budget" min="0" step="1000" placeholder="0">
+              </div>
+              <div class="helper" id="app-budget-helper"></div>
+              <div class="err-text" id="app-budget-err"></div>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary">Create Application</button>
+              <button type="reset" class="btn btn-secondary">Clear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Manage Applications -->
+      <div class="subpanel" id="panel-manage-app">
+        <div class="search-bar">
+          <input type="text" id="app-search" placeholder="Search by Application, Owner or Domain...">
+          <select id="app-filter-env">
+            <option value="">All Environments</option>
+            <option>Development</option>
+            <option>Staging</option>
+            <option>Production</option>
+          </select>
+        </div>
+        <div id="app-status-banner-wrap" style="padding:20px 32px 0;"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Application</th><th>Env</th><th>Owner</th><th>Status</th><th>Budget / mo</th><th>Consumed</th><th>API Keys</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="app-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Application Budgets -->
+      <div class="subpanel" id="panel-app-budget">
+        <div class="panel-body">
+          <h2>Application Budgets</h2>
+          <p class="panel-hint">View every Application together and rebalance how much of the Institution's Budget each one holds. The <b>sum of all Application budgets must be less than or equal to</b> the Institution's total Budget — it does not need to use up the full amount.</p>
+
+          <div class="info-banner" id="app-budget-summary"></div>
+
+          <div class="table-wrap top-pad" style="padding-left:0;padding-right:0;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Application</th><th>Consumed</th><th>Budget (₹ / mo)</th><th>Keys Committed</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="appbudget-table-body"></tbody>
+              <tfoot>
+                <tr class="total-row">
+                  <td>Total</td>
+                  <td></td>
+                  <td><span class="total-badge" id="appbudget-total"></span></td>
+                  <td colspan="2" id="appbudget-of">of ₹0 Institution Budget</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="example-box" style="margin:22px 32px 0;">
+            <b>Rule:</b> an Application's budget can never be reduced below what it has already consumed, nor below the sum of budgets already committed to its own API Keys. Any unallocated headroom below the Institution's total Budget is fine and can be assigned to new Applications later.
+          </div>
+
+          <div style="padding:0 32px 30px;">
+            <div class="btn-row" style="margin-top:22px;">
+              <button class="btn btn-primary" id="appbudget-save" disabled>Save Application Budgets</button>
+              <span class="helper" id="appbudget-save-hint"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Keys -->
+      <div class="subpanel" id="panel-api-keys">
+        <div class="panel-body">
+          <h2>API Keys</h2>
+          <p class="panel-hint">Every API key is scoped to a single, already-onboarded Application. An Application can have one or more API keys, and the <b>sum of all its API Key budgets must be less than or equal to</b> that Application's budget.</p>
+
+          <div class="form-group" style="max-width:360px;">
+            <label>Select Application<span class="req">*</span></label>
+            <select id="key-select-app"></select>
+          </div>
+
+          <div class="info-banner" id="key-app-summary"></div>
+
+          <div class="divider"></div>
+
+          <h2 style="font-size:16px;">Create API Key</h2>
+          <form id="form-create-key" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Key Name<span class="req">*</span></label>
+                <input type="text" id="key-name" placeholder="e.g. Production Key" required>
+                <div class="err-text" id="key-name-err">This name is already used by another API Key on this Application.</div>
+              </div>
+              <div class="form-group" style="max-width:220px;">
+                <label>Budget (₹ / month) <span class="opt">optional</span></label>
+                <div class="amt-input-wrap"><span class="prefix">₹</span>
+                  <input type="number" id="key-budget" min="0" step="1000" placeholder="0">
+                </div>
+                <div class="err-text" id="key-budget-err"></div>
+              </div>
+              <div class="form-group" style="max-width:160px;">
+                <label>Status</label>
+                <select id="key-status">
+                  <option selected>Active</option>
+                  <option>Inactive</option>
+                </select>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary">Create API Key</button>
+            </div>
+          </form>
+
+          <div class="divider"></div>
+
+          <h2 style="font-size:16px;">Existing API Keys</h2>
+          <div class="table-wrap" style="padding:0;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Key Name</th><th>Status</th><th>Consumed</th><th>Budget (₹ / mo)</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="key-table-body"></tbody>
+              <tfoot>
+                <tr class="total-row">
+                  <td colspan="3">Total</td>
+                  <td><span class="total-badge" id="key-total"></span></td>
+                  <td></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+
+          <div class="btn-row" style="margin-top:22px;">
+            <button class="btn btn-primary" id="key-save" disabled>Save API Key Budgets</button>
+            <span class="helper" id="key-save-hint"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Application modal -->
+<div class="modal-overlay" id="edit-app-modal">
+  <div class="modal">
+    <button class="close-x" data-close-modal>&times;</button>
+    <h3>Edit Application</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Application Name<span class="req">*</span></label>
+        <input type="text" id="edit-app-name" required>
+      </div>
+      <div class="form-group">
+        <label>Environment<span class="req">*</span></label>
+        <select id="edit-app-env">
+          <option>Development</option>
+          <option>Staging</option>
+          <option>Production</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Owner <span class="opt">optional</span></label>
+        <input type="text" id="edit-app-owner">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="edit-app-status">
+          <option>Active</option>
+          <option>Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Domain <span class="opt">optional</span></label>
+      <input type="text" id="edit-app-domain">
+    </div>
+    <div class="form-group">
+      <label>Description <span class="opt">optional</span></label>
+      <textarea id="edit-app-desc"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Budget <span class="flag">Not editable here</span></label>
+      <input type="text" id="edit-app-budget" disabled>
+      <div class="helper">Use "Application Budgets" to change the budget amount.</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" id="edit-app-save">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ---------------- State ----------------
+let institutions = [
+  {id:1, name:"Bharat Health Research Institute", tier:"Research Institution", contactName:"Dr. Ananya Rao", contactEmail:"ananya.rao@bhri.gov.in", contactPhone:"+91 98765 43210", domain:"bhri.gov.in", budget:1000000, status:"Active"},
+  {id:2, name:"Sarvam Language Labs", tier:"Startup", contactName:"Rohit Malhotra", contactEmail:"rohit@sarvamlabs.in", contactPhone:"+91 91234 56780", domain:"sarvamlabs.in", budget:500000, status:"Active"},
+  {id:3, name:"National Rural Health Mission Cell", tier:"Government Department", contactName:"Priya Nair", contactEmail:"priya.nair@nrhm.gov.in", contactPhone:"+91 99887 66554", domain:"nrhm.gov.in", budget:250000, status:"Inactive"},
+];
+let nextInstId = 4;
+
+// Application now carries its own metadata; budget is an absolute ₹/month amount.
+let applications = [
+  {id:1, instId:1, name:"Diagnostic Assistant", environment:"Production", owner:"Dr. Ananya Rao", status:"Active", description:"AI-assisted diagnostic support for clinicians.", domain:"diagnostics.bhri.gov.in", budget:500000},
+  {id:2, instId:1, name:"Clinical NLP Engine", environment:"Production", owner:"Dr. Ananya Rao", status:"Active", description:"Extracts structured data from clinical notes.", domain:"nlp.bhri.gov.in", budget:300000},
+  {id:3, instId:1, name:"Voice Transcription Service", environment:"Staging", owner:"Kiran Shah", status:"Active", description:"Transcribes patient consultations.", domain:"voice.bhri.gov.in", budget:150000},
+];
+let nextAppId = 4;
+
+// Each API key belongs to exactly one Application and has its own ₹/month budget + consumption.
+let apiKeys = [
+  {id:1, appId:1, name:"Diagnostic Assistant - Prod Key", budget:300000, consumed:150000, status:"Active"},
+  {id:2, appId:1, name:"Diagnostic Assistant - Backup Key", budget:150000, consumed:50000, status:"Active"},
+  {id:3, appId:2, name:"Clinical NLP - Prod Key", budget:300000, consumed:300000, status:"Active"},
+  {id:4, appId:3, name:"Voice Transcription - Staging Key", budget:50000, consumed:7500, status:"Active"},
+];
+let nextKeyId = 5;
+
+const CURRENT_INST_ID = 1; // Institution Admin is scoped to this institution in the prototype
+
+function fmtINR(n){
+  return "₹" + Math.round(n).toLocaleString("en-IN");
+}
+function getInst(id){ return institutions.find(i=>i.id===id); }
+function getApp(id){ return applications.find(a=>a.id===id); }
+function appsFor(instId){ return applications.filter(a=>a.instId===instId); }
+function keysFor(appId){ return apiKeys.filter(k=>k.appId===appId); }
+function instAppBudgetSum(instId){ return appsFor(instId).reduce((s,a)=>s+a.budget,0); }
+function appKeyBudgetSum(appId){ return keysFor(appId).reduce((s,k)=>s+k.budget,0); }
+function appConsumed(appId){ return keysFor(appId).reduce((s,k)=>s+k.consumed,0); }
+function envBadgeClass(env){
+  if(env==="Production") return "badge-env-prod";
+  if(env==="Staging") return "badge-env-staging";
+  return "badge-env-dev";
+}
+
+// ---------------- Toast ----------------
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+
+// ---------------- Persona / Tab switching ----------------
+document.querySelectorAll(".persona-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".persona-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".persona-section").forEach(s=>s.classList.remove("active"));
+    document.getElementById("persona-"+btn.dataset.persona).classList.add("active");
+    if(btn.dataset.persona === "institution"){ renderInstitutionAdminViews(); }
+  });
+});
+
+document.querySelectorAll(".panel").forEach(panel=>{
+  const tabs = panel.querySelectorAll(".subtab");
+  tabs.forEach(tab=>{
+    tab.addEventListener("click", ()=>{
+      tabs.forEach(t=>t.classList.remove("active"));
+      tab.classList.add("active");
+      panel.querySelectorAll(".subpanel").forEach(p=>p.classList.remove("active"));
+      document.getElementById("panel-"+tab.dataset.panel).classList.add("active");
+      if(tab.dataset.panel === "manage-inst") renderInstitutionsTable();
+      if(tab.dataset.panel === "allocate-budget") renderAllocateBudgetPanel();
+      if(tab.dataset.panel === "manage-app") renderApplicationsTable();
+      if(tab.dataset.panel === "app-budget") renderAppBudgetTable();
+      if(tab.dataset.panel === "api-keys") renderApiKeysPanel();
+      if(tab.dataset.panel === "create-app") renderCreateAppHelper();
+    });
+  });
+});
+
+// ============================================================
+// ADOPTER ADMIN — Create Institution
+// ============================================================
+document.getElementById("form-create-inst").addEventListener("submit", function(e){
+  e.preventDefault();
+  const nameEl = document.getElementById("inst-name");
+  const name = nameEl.value.trim();
+  const nameErr = document.getElementById("inst-name-err");
+
+  if(!this.reportValidity()) return;
+
+  const dup = institutions.some(i=>i.name.toLowerCase() === name.toLowerCase());
+  if(dup){ nameErr.classList.add("show"); nameEl.focus(); return; }
+  nameErr.classList.remove("show");
+
+  const inst = {
+    id: nextInstId++,
+    name: name,
+    tier: document.getElementById("inst-tier").value,
+    contactName: document.getElementById("inst-contact-name").value.trim(),
+    contactEmail: document.getElementById("inst-contact-email").value.trim(),
+    contactPhone: document.getElementById("inst-contact-phone").value.trim(),
+    domain: document.getElementById("inst-domain").value.trim(),
+    budget: Number(document.getElementById("inst-budget").value) || 0,
+    status: "Active"
+  };
+  institutions.push(inst);
+  this.reset();
+  toast(`Institution "${inst.name}" created successfully.`);
+
+  document.querySelector('.subtab[data-panel="manage-inst"]').click();
+});
+
+document.getElementById("inst-name").addEventListener("input", ()=>{
+  document.getElementById("inst-name-err").classList.remove("show");
+});
+
+// ============================================================
+// ADOPTER ADMIN — Manage Institutions
+// ============================================================
+function renderInstitutionsTable(){
+  const q = (document.getElementById("inst-search").value||"").toLowerCase();
+  const tierFilter = document.getElementById("inst-filter-tier").value;
+  const tbody = document.getElementById("inst-table-body");
+  tbody.innerHTML = "";
+  institutions
+    .filter(i => i.name.toLowerCase().includes(q))
+    .filter(i => !tierFilter || i.tier === tierFilter)
+    .forEach(inst=>{
+      const count = appsFor(inst.id).length;
+      const allocated = instAppBudgetSum(inst.id);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong>${inst.name}</strong><div class="cell-sub">${inst.domain||"—"}</div></td>
+        <td>${inst.tier}</td>
+        <td>${inst.contactName}<div class="cell-sub">${inst.contactEmail}</div></td>
+        <td>${fmtINR(inst.budget)}</td>
+        <td>${fmtINR(allocated)}<div class="cell-sub">${inst.budget>0 ? Math.round((allocated/inst.budget)*100) : 0}% of total</div></td>
+        <td>${count}</td>
+        <td><span class="badge ${inst.status==='Active'?'badge-active':'badge-inactive'}">${inst.status}</span></td>
+        <td><button class="btn btn-secondary btn-sm" data-allocate="${inst.id}">Allocate Budget</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  tbody.querySelectorAll("[data-allocate]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      document.querySelector('.subtab[data-panel="allocate-budget"]').click();
+      document.getElementById("ab-select-inst").value = b.dataset.allocate;
+      renderAllocateBudgetPanel();
+    });
+  });
+}
+document.getElementById("inst-search").addEventListener("input", renderInstitutionsTable);
+document.getElementById("inst-filter-tier").addEventListener("change", renderInstitutionsTable);
+
+// ============================================================
+// ADOPTER ADMIN — Allocate Budget
+// ============================================================
+function populateInstDropdown(){
+  const sel = document.getElementById("ab-select-inst");
+  sel.innerHTML = institutions.map(i=>`<option value="${i.id}">${i.name}</option>`).join("");
+}
+function renderAllocateBudgetPanel(){
+  populateInstDropdown();
+  const inst = getInst(Number(document.getElementById("ab-select-inst").value) || institutions[0].id);
+  if(!inst) return;
+  document.getElementById("ab-select-inst").value = inst.id;
+  const allocated = instAppBudgetSum(inst.id);
+  document.getElementById("ab-current-info").innerHTML =
+    `Current Total Budget for <b>${inst.name}</b>: <b>${fmtINR(inst.budget)}</b> / month. ` +
+    (appsFor(inst.id).length ? `Already committed to Applications: <b>${fmtINR(allocated)}</b> (${inst.budget>0?Math.round((allocated/inst.budget)*100):0}%).` : `No Applications onboarded yet.`);
+  document.getElementById("ab-new-budget").value = inst.budget;
+  document.getElementById("ab-err").style.display = "none";
+}
+document.getElementById("ab-select-inst").addEventListener("change", renderAllocateBudgetPanel);
+document.getElementById("ab-save").addEventListener("click", ()=>{
+  const inst = getInst(Number(document.getElementById("ab-select-inst").value));
+  const newBudget = Number(document.getElementById("ab-new-budget").value);
+  const errEl = document.getElementById("ab-err");
+  if(!newBudget && newBudget !== 0){ return; }
+
+  const allocatedAmount = instAppBudgetSum(inst.id);
+  if(newBudget < allocatedAmount){
+    document.getElementById("ab-min-val").textContent = fmtINR(allocatedAmount);
+    errEl.style.display = "block";
+    return;
+  }
+  errEl.style.display = "none";
+  inst.budget = newBudget;
+  toast(`Budget for "${inst.name}" updated to ${fmtINR(newBudget)} / month.`);
+  renderAllocateBudgetPanel();
+  renderInstitutionsTable();
+  if(inst.id === CURRENT_INST_ID){ renderInstitutionAdminViews(); }
+});
+
+// ============================================================
+// INSTITUTION ADMIN — header
+// ============================================================
+function renderInstitutionAdminViews(){
+  const inst = getInst(CURRENT_INST_ID);
+  document.getElementById("ih-name").textContent = inst.name;
+  document.getElementById("ih-tier").textContent = inst.tier;
+  document.getElementById("ih-total-budget").textContent = fmtINR(inst.budget);
+  const apps = appsFor(inst.id);
+  document.getElementById("ih-allocated-amt").textContent = fmtINR(instAppBudgetSum(inst.id));
+  document.getElementById("ih-app-count").textContent = apps.length;
+  document.getElementById("ih-key-count").textContent = apps.reduce((s,a)=>s+keysFor(a.id).length,0);
+  renderCreateAppHelper();
+  renderApplicationsTable();
+  renderAppBudgetTable();
+  renderApiKeysPanel();
+}
+
+// ============================================================
+// INSTITUTION ADMIN — Create Application
+// ============================================================
+function renderCreateAppHelper(){
+  const inst = getInst(CURRENT_INST_ID);
+  const apps = appsFor(inst.id);
+  const allocated = instAppBudgetSum(inst.id);
+  const remaining = inst.budget - allocated;
+  const banner = document.getElementById("app-alloc-info");
+  if(remaining <= 0 && apps.length){
+    banner.className = "ok-banner";
+    banner.innerHTML = `Institution Budget is <b>fully committed</b> — ${fmtINR(allocated)} of ${fmtINR(inst.budget)} assigned across ${apps.length} Application${apps.length>1?'s':''}. New Applications can still be onboarded with <b>₹0 budget</b>, or free up room first via "Application Budgets".`;
+  } else {
+    banner.className = "info-banner";
+    banner.innerHTML = `Institution total Budget: <b>${fmtINR(inst.budget)}</b> / month. Committed to Applications so far: <b>${fmtINR(allocated)}</b>. Remaining headroom: <b>${fmtINR(remaining)}</b>.`;
+  }
+  document.getElementById("app-budget-helper").textContent =
+    `Optional. The sum of every Application's budget under this Institution must stay at or below ${fmtINR(inst.budget)} — it doesn't need to add up exactly.`;
+}
+
+document.getElementById("form-create-app").addEventListener("submit", function(e){
+  e.preventDefault();
+  if(!this.reportValidity()) return;
+
+  const inst = getInst(CURRENT_INST_ID);
+  const nameEl = document.getElementById("app-name");
+  const name = nameEl.value.trim();
+  const nameErr = document.getElementById("app-name-err");
+  const dup = appsFor(inst.id).some(a=>a.name.toLowerCase() === name.toLowerCase());
+  if(dup){ nameErr.classList.add("show"); nameEl.focus(); return; }
+  nameErr.classList.remove("show");
+
+  const budgetEl = document.getElementById("app-budget");
+  const budgetErr = document.getElementById("app-budget-err");
+  const budget = budgetEl.value === "" ? 0 : Number(budgetEl.value);
+  const existingTotal = instAppBudgetSum(inst.id);
+  const remaining = inst.budget - existingTotal;
+
+  if(budget > remaining){
+    budgetErr.textContent = `This exceeds the Institution's available headroom of ${fmtINR(remaining)} (Total Budget ${fmtINR(inst.budget)} − already committed ${fmtINR(existingTotal)}). Lower this value, or free up budget first via "Application Budgets".`;
+    budgetErr.classList.add("show");
+    budgetEl.focus();
+    return;
+  }
+  budgetErr.classList.remove("show");
+
+  const app = {
+    id: nextAppId++,
+    instId: inst.id,
+    name: name,
+    environment: document.getElementById("app-env").value,
+    owner: document.getElementById("app-owner").value.trim(),
+    status: document.getElementById("app-status").value,
+    description: document.getElementById("app-desc").value.trim(),
+    domain: document.getElementById("app-domain").value.trim(),
+    budget: budget
+  };
+  applications.push(app);
+  this.reset();
+  toast(`Application "${app.name}" created. No API key issued yet.`);
+  renderInstitutionAdminViews();
+  document.querySelector('#persona-institution .subtab[data-panel="manage-app"]').click();
+});
+
+document.getElementById("app-name").addEventListener("input", ()=>{
+  document.getElementById("app-name-err").classList.remove("show");
+});
+
+// ============================================================
+// INSTITUTION ADMIN — Manage Applications
+// ============================================================
+function renderApplicationsTable(){
+  const inst = getInst(CURRENT_INST_ID);
+  const q = (document.getElementById("app-search").value||"").toLowerCase();
+  const envFilter = document.getElementById("app-filter-env").value;
+
+  const apps = appsFor(inst.id);
+  const allocated = instAppBudgetSum(inst.id);
+  const bannerWrap = document.getElementById("app-status-banner-wrap");
+  if(apps.length === 0){
+    bannerWrap.innerHTML = "";
+  } else if(allocated === inst.budget){
+    bannerWrap.innerHTML = `<div class="ok-banner">✓ Institution Budget fully committed — ${fmtINR(allocated)} of ${fmtINR(inst.budget)} assigned across ${apps.length} Application${apps.length>1?'s':''}.</div>`;
+  } else {
+    bannerWrap.innerHTML = `<div class="info-banner">${fmtINR(allocated)} of ${fmtINR(inst.budget)} committed to Applications. ${fmtINR(inst.budget-allocated)} remains as headroom — this is allowed, it does not need to be fully assigned.</div>`;
+  }
+
+  const tbody = document.getElementById("app-table-body");
+  tbody.innerHTML = "";
+  apps
+    .filter(a => a.name.toLowerCase().includes(q) || (a.domain||"").toLowerCase().includes(q) || (a.owner||"").toLowerCase().includes(q))
+    .filter(a => !envFilter || a.environment === envFilter)
+    .forEach(app=>{
+      const consumed = appConsumed(app.id);
+      const keys = keysFor(app.id);
+      const keyBudgetSum = appKeyBudgetSum(app.id);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td><strong>${app.name}</strong><div class="cell-sub">${app.domain||"—"}</div></td>
+        <td><span class="badge ${envBadgeClass(app.environment)}">${app.environment}</span></td>
+        <td>${app.owner||"—"}</td>
+        <td><span class="badge ${app.status==='Active'?'badge-active':'badge-inactive'}">${app.status}</span></td>
+        <td>${fmtINR(app.budget)}</td>
+        <td>${fmtINR(consumed)}<div class="cell-sub">${app.budget>0 ? Math.round((consumed/app.budget)*100)+"% of budget" : "—"}</div></td>
+        <td>${keys.length}<div class="cell-sub">${fmtINR(keyBudgetSum)} committed</div></td>
+        <td>
+          <button class="btn btn-secondary btn-sm" data-edit="${app.id}">Edit</button>
+          <button class="btn btn-secondary btn-sm" data-editbudget="${app.id}">Budget</button>
+          <button class="btn btn-secondary btn-sm" data-keys="${app.id}">Keys</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  tbody.querySelectorAll("[data-edit]").forEach(b=>{
+    b.addEventListener("click", ()=>openEditAppModal(Number(b.dataset.edit)));
+  });
+  tbody.querySelectorAll("[data-editbudget]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      document.querySelector('#persona-institution .subtab[data-panel="app-budget"]').click();
+    });
+  });
+  tbody.querySelectorAll("[data-keys]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      document.querySelector('#persona-institution .subtab[data-panel="api-keys"]').click();
+      document.getElementById("key-select-app").value = b.dataset.keys;
+      renderApiKeysPanel();
+    });
+  });
+}
+document.getElementById("app-search").addEventListener("input", renderApplicationsTable);
+document.getElementById("app-filter-env").addEventListener("change", renderApplicationsTable);
+
+// ---------------- Edit Application modal ----------------
+let editingAppId = null;
+function openEditAppModal(id){
+  const app = applications.find(a=>a.id===id);
+  editingAppId = id;
+  document.getElementById("edit-app-name").value = app.name;
+  document.getElementById("edit-app-env").value = app.environment;
+  document.getElementById("edit-app-owner").value = app.owner;
+  document.getElementById("edit-app-status").value = app.status;
+  document.getElementById("edit-app-desc").value = app.description;
+  document.getElementById("edit-app-domain").value = app.domain;
+  document.getElementById("edit-app-budget").value = fmtINR(app.budget) + " / month";
+  document.getElementById("edit-app-modal").classList.add("show");
+}
+document.querySelectorAll("[data-close-modal]").forEach(b=>{
+  b.addEventListener("click", ()=>document.getElementById("edit-app-modal").classList.remove("show"));
+});
+document.getElementById("edit-app-save").addEventListener("click", ()=>{
+  const app = applications.find(a=>a.id===editingAppId);
+  const nameVal = document.getElementById("edit-app-name").value.trim();
+  if(!nameVal){ document.getElementById("edit-app-name").focus(); return; }
+  const dup = appsFor(app.instId).some(a=>a.id!==app.id && a.name.toLowerCase()===nameVal.toLowerCase());
+  if(dup){ alert("This name is already used by another Application in this Institution."); return; }
+  app.name = nameVal;
+  app.environment = document.getElementById("edit-app-env").value;
+  app.owner = document.getElementById("edit-app-owner").value.trim();
+  app.status = document.getElementById("edit-app-status").value;
+  app.description = document.getElementById("edit-app-desc").value.trim();
+  app.domain = document.getElementById("edit-app-domain").value.trim();
+  document.getElementById("edit-app-modal").classList.remove("show");
+  toast(`Application "${app.name}" updated.`);
+  renderApplicationsTable();
+});
+
+// ============================================================
+// INSTITUTION ADMIN — Application Budgets (sum <= Institution budget)
+// ============================================================
+function renderAppBudgetTable(){
+  const inst = getInst(CURRENT_INST_ID);
+  const apps = appsFor(inst.id);
+  const tbody = document.getElementById("appbudget-table-body");
+  tbody.innerHTML = "";
+
+  document.getElementById("app-budget-summary").innerHTML =
+    `Institution Total Budget: <b>${fmtINR(inst.budget)}</b> / month. The sum of Application budgets below may be anywhere from ₹0 up to this amount.`;
+
+  apps.forEach(app=>{
+    const consumed = appConsumed(app.id);
+    const keySum = appKeyBudgetSum(app.id);
+    const minAllowed = Math.max(consumed, keySum);
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${app.name}</strong><div class="cell-sub">${app.domain||"—"} · <span class="badge ${envBadgeClass(app.environment)}">${app.environment}</span></div></td>
+      <td>${fmtINR(consumed)}${app.budget>0 && consumed>=app.budget ? ' <span class="badge badge-full">Exhausted</span>' : ''}</td>
+      <td class="amt-cell"><span class="prefix">₹</span>
+        <input type="number" min="0" step="1000" value="${app.budget}" data-appbudget-input="${app.id}">
+        <div class="min-note">Min: ${fmtINR(minAllowed)}${keySum>consumed?' (API Keys committed)':''}</div>
+        <div class="row-error" data-appbudget-error="${app.id}"></div>
+      </td>
+      <td>${fmtINR(keySum)}<div class="cell-sub">${keysFor(app.id).length} key${keysFor(app.id).length===1?'':'s'}</div></td>
+      <td></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll("[data-appbudget-input]").forEach(inp=>{
+    inp.addEventListener("input", recomputeAppBudgetTotals);
+  });
+  recomputeAppBudgetTotals();
+}
+
+function recomputeAppBudgetTotals(){
+  const inst = getInst(CURRENT_INST_ID);
+  const apps = appsFor(inst.id);
+  let total = 0;
+  let hasError = false;
+
+  apps.forEach(app=>{
+    const inp = document.querySelector(`[data-appbudget-input="${app.id}"]`);
+    const errEl = document.querySelector(`[data-appbudget-error="${app.id}"]`);
+    const val = Number(inp.value) || 0;
+    total += val;
+
+    const consumed = appConsumed(app.id);
+    const keySum = appKeyBudgetSum(app.id);
+    const minAllowed = Math.max(consumed, keySum);
+
+    if(val < minAllowed){
+      errEl.textContent = keySum > consumed
+        ? `Cannot go below ${fmtINR(minAllowed)} already committed to this Application's API Keys.`
+        : `Cannot go below ${fmtINR(minAllowed)} already consumed.`;
+      inp.style.borderColor = "var(--red)";
+      hasError = true;
+    } else {
+      errEl.textContent = "";
+      inp.style.borderColor = "";
+    }
+  });
+
+  const totalEl = document.getElementById("appbudget-total");
+  const overBudget = total > inst.budget;
+  totalEl.textContent = fmtINR(total);
+  totalEl.className = "total-badge " + (overBudget ? "bad" : "ok");
+  document.getElementById("appbudget-of").textContent = `of ${fmtINR(inst.budget)} Institution Budget` + (overBudget ? " — exceeds available budget" : "");
+
+  const saveBtn = document.getElementById("appbudget-save");
+  const hint = document.getElementById("appbudget-save-hint");
+  if(hasError){
+    saveBtn.disabled = true;
+    hint.textContent = "Resolve the highlighted budget(s) below their minimum before saving.";
+  } else if(overBudget){
+    saveBtn.disabled = true;
+    hint.textContent = `Total (${fmtINR(total)}) exceeds the Institution's Budget of ${fmtINR(inst.budget)}.`;
+  } else {
+    saveBtn.disabled = false;
+    hint.textContent = total < inst.budget ? `${fmtINR(inst.budget-total)} will remain unallocated headroom — that's allowed.` : "";
+  }
+}
+
+document.getElementById("appbudget-save").addEventListener("click", ()=>{
+  const inst = getInst(CURRENT_INST_ID);
+  appsFor(inst.id).forEach(app=>{
+    const inp = document.querySelector(`[data-appbudget-input="${app.id}"]`);
+    app.budget = Number(inp.value) || 0;
+  });
+  toast("Application budgets saved.");
+  renderInstitutionAdminViews();
+});
+
+// ============================================================
+// INSTITUTION ADMIN — API Keys (sum <= Application budget)
+// ============================================================
+function populateKeyAppDropdown(){
+  const inst = getInst(CURRENT_INST_ID);
+  const sel = document.getElementById("key-select-app");
+  const currentVal = sel.value;
+  sel.innerHTML = appsFor(inst.id).map(a=>`<option value="${a.id}">${a.name} (${a.environment})</option>`).join("");
+  if(currentVal && appsFor(inst.id).some(a=>String(a.id)===currentVal)){
+    sel.value = currentVal;
+  }
+}
+
+function renderApiKeysPanel(){
+  populateKeyAppDropdown();
+  const appId = Number(document.getElementById("key-select-app").value);
+  const app = getApp(appId);
+  if(!app){
+    document.getElementById("key-app-summary").innerHTML = "No Applications onboarded yet for this Institution — create one first.";
+    document.getElementById("key-table-body").innerHTML = "";
+    document.getElementById("key-total").textContent = "";
+    document.getElementById("key-save").disabled = true;
+    return;
+  }
+
+  const keySum = appKeyBudgetSum(app.id);
+  const remaining = app.budget - keySum;
+  document.getElementById("key-app-summary").innerHTML =
+    `<b>${app.name}</b> Budget: <b>${fmtINR(app.budget)}</b> / month. Committed to API Keys: <b>${fmtINR(keySum)}</b>. Remaining headroom: <b>${fmtINR(Math.max(remaining,0))}</b>${remaining<0?' <span class="badge badge-full">Over-committed</span>':''}.`;
+
+  renderKeyTable(app.id);
+}
+
+document.getElementById("key-select-app").addEventListener("change", renderApiKeysPanel);
+
+document.getElementById("form-create-key").addEventListener("submit", function(e){
+  e.preventDefault();
+  if(!this.reportValidity()) return;
+
+  const app = getApp(Number(document.getElementById("key-select-app").value));
+  if(!app) return;
+
+  const nameEl = document.getElementById("key-name");
+  const name = nameEl.value.trim();
+  const nameErr = document.getElementById("key-name-err");
+  const dup = keysFor(app.id).some(k=>k.name.toLowerCase() === name.toLowerCase());
+  if(dup){ nameErr.classList.add("show"); nameEl.focus(); return; }
+  nameErr.classList.remove("show");
+
+  const budgetEl = document.getElementById("key-budget");
+  const budgetErr = document.getElementById("key-budget-err");
+  const budget = budgetEl.value === "" ? 0 : Number(budgetEl.value);
+  const existingKeySum = appKeyBudgetSum(app.id);
+  const remaining = app.budget - existingKeySum;
+
+  if(budget > remaining){
+    budgetErr.textContent = `This exceeds the Application's available headroom of ${fmtINR(remaining)} (Application Budget ${fmtINR(app.budget)} − already committed ${fmtINR(existingKeySum)}).`;
+    budgetErr.classList.add("show");
+    budgetEl.focus();
+    return;
+  }
+  budgetErr.classList.remove("show");
+
+  apiKeys.push({
+    id: nextKeyId++,
+    appId: app.id,
+    name: name,
+    budget: budget,
+    consumed: 0,
+    status: document.getElementById("key-status").value
+  });
+  this.reset();
+  toast(`API Key "${name}" created under "${app.name}".`);
+  renderApiKeysPanel();
+  renderInstitutionAdminViews();
+});
+
+document.getElementById("key-name").addEventListener("input", ()=>{
+  document.getElementById("key-name-err").classList.remove("show");
+});
+
+function renderKeyTable(appId){
+  const app = getApp(appId);
+  const tbody = document.getElementById("key-table-body");
+  tbody.innerHTML = "";
+
+  keysFor(appId).forEach(key=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${key.name}</strong></td>
+      <td><span class="badge ${key.status==='Active'?'badge-active':'badge-inactive'}">${key.status}</span></td>
+      <td>${fmtINR(key.consumed)}${key.budget>0 && key.consumed>=key.budget ? ' <span class="badge badge-full">Exhausted</span>' : ''}</td>
+      <td class="amt-cell"><span class="prefix">₹</span>
+        <input type="number" min="0" step="1000" value="${key.budget}" data-key-input="${key.id}">
+        <div class="min-note">Min: ${fmtINR(key.consumed)}</div>
+        <div class="row-error" data-key-error="${key.id}"></div>
+      </td>
+      <td></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll("[data-key-input]").forEach(inp=>{
+    inp.addEventListener("input", ()=>recomputeKeyTotals(appId));
+  });
+  recomputeKeyTotals(appId);
+}
+
+function recomputeKeyTotals(appId){
+  const app = getApp(appId);
+  const keys = keysFor(appId);
+  let total = 0;
+  let hasError = false;
+
+  keys.forEach(key=>{
+    const inp = document.querySelector(`[data-key-input="${key.id}"]`);
+    const errEl = document.querySelector(`[data-key-error="${key.id}"]`);
+    const val = Number(inp.value) || 0;
+    total += val;
+
+    if(val < key.consumed){
+      errEl.textContent = `Cannot go below ${fmtINR(key.consumed)} already consumed.`;
+      inp.style.borderColor = "var(--red)";
+      hasError = true;
+    } else {
+      errEl.textContent = "";
+      inp.style.borderColor = "";
+    }
+  });
+
+  const totalEl = document.getElementById("key-total");
+  const overBudget = total > app.budget;
+  totalEl.textContent = fmtINR(total);
+  totalEl.className = "total-badge " + (overBudget ? "bad" : "ok");
+
+  const saveBtn = document.getElementById("key-save");
+  const hint = document.getElementById("key-save-hint");
+  if(keys.length === 0){
+    saveBtn.disabled = true;
+    hint.textContent = "No API Keys yet for this Application.";
+  } else if(hasError){
+    saveBtn.disabled = true;
+    hint.textContent = "Resolve the highlighted key budget(s) below their consumed usage before saving.";
+  } else if(overBudget){
+    saveBtn.disabled = true;
+    hint.textContent = `Total (${fmtINR(total)}) exceeds this Application's Budget of ${fmtINR(app.budget)}.`;
+  } else {
+    saveBtn.disabled = false;
+    hint.textContent = total < app.budget ? `${fmtINR(app.budget-total)} will remain unallocated headroom on this Application — that's allowed.` : "";
+  }
+}
+
+document.getElementById("key-save").addEventListener("click", ()=>{
+  const appId = Number(document.getElementById("key-select-app").value);
+  keysFor(appId).forEach(key=>{
+    const inp = document.querySelector(`[data-key-input="${key.id}"]`);
+    key.budget = Number(inp.value) || 0;
+  });
+  toast("API Key budgets saved.");
+  renderApiKeysPanel();
+  renderInstitutionAdminViews();
+});
+
+// ---------------- Init ----------------
+renderInstitutionsTable();
+populateInstDropdown();
+renderAllocateBudgetPanel();
+renderInstitutionAdminViews();
+</script>
+</body>
+</html>
