@@ -33,7 +33,7 @@
     color:var(--text);
     padding:40px 20px 80px;
   }
-  .wrap{max-width:1160px;margin:0 auto;}
+  .wrap{max-width:1200px;margin:0 auto;}
   .page-title{font-size:30px;font-weight:800;text-align:center;margin:0 0 6px;letter-spacing:-0.01em;}
   .page-sub{font-size:15px;color:var(--muted);text-align:center;margin:0 0 28px;}
 
@@ -56,7 +56,7 @@
   }
   .subtabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);flex-wrap:wrap;}
   .subtab{
-    padding:16px 22px;font-size:14.5px;font-weight:600;color:var(--muted);
+    padding:16px 20px;font-size:14px;font-weight:600;color:var(--muted);
     border-bottom:3px solid transparent;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;
     font-family:inherit;white-space:nowrap;
   }
@@ -86,6 +86,9 @@
   .amt-input-wrap{position:relative;}
   .amt-input-wrap .prefix{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;}
   .amt-input-wrap input{padding-left:26px;}
+  .pct-input-wrap{position:relative;max-width:180px;}
+  .pct-input-wrap input{padding-right:30px;}
+  .pct-input-wrap .suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;}
 
   .btn{
     border:none;border-radius:8px;padding:12px 24px;font-size:14px;font-weight:600;
@@ -112,6 +115,7 @@
   td{padding:14px 16px;border-bottom:1px solid var(--border-soft);font-size:14px;vertical-align:middle;}
   tr:last-child td{border-bottom:none;}
   .cell-sub{color:var(--muted);font-size:12.5px;margin-top:2px;}
+  .group-row td{background:#fbfcfe;font-weight:700;font-size:12.5px;color:#374151;text-transform:uppercase;letter-spacing:.04em;padding:9px 16px;border-bottom:1px solid var(--border);}
 
   .badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;}
   .badge-active{background:var(--green-tint);color:#146c42;}
@@ -129,6 +133,7 @@
 
   .table-wrap{padding:0 32px 28px;overflow-x:auto;}
   .table-wrap.top-pad{padding-top:24px;}
+  .table-wrap.flush{padding:0;}
 
   .institution-header{
     display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;
@@ -141,9 +146,9 @@
   .ih-stat .v{font-size:16px;font-weight:700;}
   .ih-stat .l{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;}
 
-  .amt-cell input{width:130px;padding:8px 10px 8px 22px;display:inline-block;}
-  .amt-cell{white-space:nowrap;position:relative;}
-  .amt-cell .prefix{position:absolute;left:12px;top:9px;color:var(--muted);font-size:13px;}
+  .pct-cell{white-space:nowrap;position:relative;}
+  .pct-cell input{width:80px;padding:8px 24px 8px 10px;display:inline-block;}
+  .pct-cell .suffix-inline{margin-left:-24px;color:var(--muted);font-size:13px;pointer-events:none;}
   .min-note{font-size:11.5px;color:var(--muted);margin-top:4px;}
   .row-error{font-size:12px;color:var(--red);margin-top:4px;}
 
@@ -176,10 +181,6 @@
   .required-mark{color:var(--red);}
   .divider{height:1px;background:var(--border-soft);margin:24px 0;}
   .flag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;background:#eef1f6;color:var(--muted);margin-left:8px;vertical-align:middle;}
-  .headroom-track{height:8px;border-radius:5px;background:#eef0f5;overflow:hidden;margin-top:8px;}
-  .headroom-fill{height:100%;background:var(--blue);border-radius:5px;}
-  .headroom-fill.over{background:var(--red);}
-  .mini-label{font-size:11.5px;color:var(--muted);margin-top:6px;}
 </style>
 </head>
 <body>
@@ -247,11 +248,11 @@
                 <input type="text" id="inst-domain" placeholder="e.g. bhri.gov.in">
               </div>
               <div class="form-group">
-                <label>Initial Budget (₹ / month)<span class="req">*</span></label>
+                <label>Contract Budget (₹)<span class="req">*</span></label>
                 <div class="amt-input-wrap"><span class="prefix">₹</span>
                   <input type="number" id="inst-budget" min="0" step="1000" placeholder="e.g. 1000000" required>
                 </div>
-                <div class="helper">Budget Type is fixed platform-wide as <b>Amount (INR)</b> by the Adopter Admin's initial setup. This can be revised later from <i>Allocate Budget</i>.</div>
+                <div class="helper">Total budget for the entire duration of the Institution's contract (not a monthly figure). Budget Type is fixed platform-wide as <b>Amount (INR)</b> by the Adopter Admin's initial setup. This can be revised later from <i>Allocate Budget</i>.</div>
               </div>
             </div>
 
@@ -279,7 +280,7 @@
           <table>
             <thead>
               <tr>
-                <th>Institution</th><th>Tier</th><th>Contact</th><th>Total Budget</th><th>Allocated to Apps</th><th>Applications</th><th>Status</th><th>Actions</th>
+                <th>Institution</th><th>Tier</th><th>Contact</th><th>Contract Budget (₹)</th><th>Allocated to Apps</th><th>Applications</th><th>Status</th><th>Actions</th>
               </tr>
             </thead>
             <tbody id="inst-table-body"></tbody>
@@ -291,7 +292,7 @@
       <div class="subpanel" id="panel-allocate-budget">
         <div class="panel-body">
           <h2>Allocate Budget to Institution</h2>
-          <p class="panel-hint">Set or revise the total budget assigned to an Institution. The Institution Admin will then distribute this amount across their Applications — the sum of all Application budgets must stay at or below this total.</p>
+          <p class="panel-hint">Set or revise the total budget assigned to an Institution for the duration of its contract. The Institution Admin will then distribute this amount, as a percentage split, across their Applications.</p>
 
           <div class="form-row">
             <div class="form-group">
@@ -304,7 +305,7 @@
 
           <div class="form-row">
             <div class="form-group" style="max-width:280px;">
-              <label>New Total Budget (₹ / month)<span class="req">*</span></label>
+              <label>New Contract Budget (₹)<span class="req">*</span></label>
               <div class="amt-input-wrap"><span class="prefix">₹</span>
                 <input type="number" id="ab-new-budget" min="0" step="1000" required>
               </div>
@@ -329,7 +330,7 @@
         <div class="ih-meta">Logged in as Institution Admin · Tier: <span id="ih-tier"></span></div>
       </div>
       <div class="ih-stats">
-        <div class="ih-stat"><div class="v" id="ih-total-budget">—</div><div class="l">Total Budget / mo</div></div>
+        <div class="ih-stat"><div class="v" id="ih-total-budget">—</div><div class="l">Contract Budget</div></div>
         <div class="ih-stat"><div class="v" id="ih-allocated-amt">—</div><div class="l">Allocated to Apps</div></div>
         <div class="ih-stat"><div class="v" id="ih-app-count">—</div><div class="l">Applications</div></div>
         <div class="ih-stat"><div class="v" id="ih-key-count">—</div><div class="l">API Keys</div></div>
@@ -342,6 +343,7 @@
         <button class="subtab" data-panel="manage-app">Manage Applications</button>
         <button class="subtab" data-panel="app-budget">Application Budgets</button>
         <button class="subtab" data-panel="api-keys">API Keys</button>
+        <button class="subtab" data-panel="key-budget">Edit API Key Budgets</button>
       </div>
 
       <!-- Create Application -->
@@ -360,46 +362,37 @@
                 <div class="err-text" id="app-name-err">This name is already used by another Application in this Institution.</div>
               </div>
               <div class="form-group">
-                <label>Environment<span class="req">*</span></label>
-                <select id="app-env" required>
-                  <option value="" disabled selected>Select environment</option>
-                  <option>Development</option>
-                  <option>Staging</option>
-                  <option>Production</option>
-                </select>
-              </div>
-              <div class="form-group">
                 <label>Status</label>
                 <select id="app-status">
                   <option selected>Active</option>
                   <option>Inactive</option>
                 </select>
               </div>
-            </div>
-
-            <div class="form-row">
               <div class="form-group">
                 <label>Owner <span class="opt">optional</span></label>
                 <input type="text" id="app-owner" placeholder="e.g. Dr. Ananya Rao">
               </div>
+            </div>
+
+            <div class="form-row">
               <div class="form-group">
                 <label>Domain <span class="opt">optional</span></label>
                 <input type="text" id="app-domain" placeholder="e.g. diagnostics.bhri.gov.in">
+              </div>
+              <div class="form-group" style="max-width:220px;">
+                <label>Budget Allocation <span class="opt">optional</span></label>
+                <div class="pct-input-wrap">
+                  <input type="number" id="app-budget-pct" min="0" max="100" step="1" placeholder="0">
+                  <span class="suffix">%</span>
+                </div>
+                <div class="helper" id="app-budget-helper"></div>
+                <div class="err-text" id="app-budget-err"></div>
               </div>
             </div>
 
             <div class="form-group full">
               <label>Description <span class="opt">optional</span></label>
               <textarea id="app-desc" placeholder="What does this application do?"></textarea>
-            </div>
-
-            <div class="form-group" style="max-width:260px;">
-              <label>Budget (₹ / month) <span class="opt">optional</span></label>
-              <div class="amt-input-wrap"><span class="prefix">₹</span>
-                <input type="number" id="app-budget" min="0" step="1000" placeholder="0">
-              </div>
-              <div class="helper" id="app-budget-helper"></div>
-              <div class="err-text" id="app-budget-err"></div>
             </div>
 
             <div class="btn-row">
@@ -414,19 +407,13 @@
       <div class="subpanel" id="panel-manage-app">
         <div class="search-bar">
           <input type="text" id="app-search" placeholder="Search by Application, Owner or Domain...">
-          <select id="app-filter-env">
-            <option value="">All Environments</option>
-            <option>Development</option>
-            <option>Staging</option>
-            <option>Production</option>
-          </select>
         </div>
         <div id="app-status-banner-wrap" style="padding:20px 32px 0;"></div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Application</th><th>Env</th><th>Owner</th><th>Status</th><th>Budget / mo</th><th>Consumed</th><th>API Keys</th><th>Actions</th>
+                <th>Application</th><th>Owner</th><th>Status</th><th>Budget %</th><th>Amount (₹)</th><th>Consumed %</th><th>API Keys</th><th>Actions</th>
               </tr>
             </thead>
             <tbody id="app-table-body"></tbody>
@@ -438,7 +425,7 @@
       <div class="subpanel" id="panel-app-budget">
         <div class="panel-body">
           <h2>Application Budgets</h2>
-          <p class="panel-hint">View every Application together and rebalance how much of the Institution's Budget each one holds. The <b>sum of all Application budgets must be less than or equal to</b> the Institution's total Budget — it does not need to use up the full amount.</p>
+          <p class="panel-hint">View every Application together and rebalance what percentage of the Institution's contract Budget each one holds. The <b>sum of all Application allocation percentages must be less than or equal to 100%</b> — it does not need to use up the full amount.</p>
 
           <div class="info-banner" id="app-budget-summary"></div>
 
@@ -446,7 +433,7 @@
             <table>
               <thead>
                 <tr>
-                  <th>Application</th><th>Consumed</th><th>Budget (₹ / mo)</th><th>Keys Committed</th><th></th>
+                  <th>Application</th><th>Consumed %</th><th>Allocation %</th><th>Amount (₹)</th><th>Keys Committed</th>
                 </tr>
               </thead>
               <tbody id="appbudget-table-body"></tbody>
@@ -454,15 +441,16 @@
                 <tr class="total-row">
                   <td>Total</td>
                   <td></td>
-                  <td><span class="total-badge" id="appbudget-total"></span></td>
-                  <td colspan="2" id="appbudget-of">of ₹0 Institution Budget</td>
+                  <td><span class="total-badge" id="appbudget-total-pct"></span></td>
+                  <td id="appbudget-total-amt"></td>
+                  <td></td>
                 </tr>
               </tfoot>
             </table>
           </div>
 
           <div class="example-box" style="margin:22px 32px 0;">
-            <b>Rule:</b> an Application's budget can never be reduced below what it has already consumed, nor below the sum of budgets already committed to its own API Keys. Any unallocated headroom below the Institution's total Budget is fine and can be assigned to new Applications later.
+            <b>Rule:</b> an Application's allocation can never be reduced below the percentage it has already consumed, nor below the percentage already committed to its own API Keys. Any unallocated headroom below 100% is fine and can be assigned to new Applications later.
           </div>
 
           <div style="padding:0 32px 30px;">
@@ -478,7 +466,7 @@
       <div class="subpanel" id="panel-api-keys">
         <div class="panel-body">
           <h2>API Keys</h2>
-          <p class="panel-hint">Every API key is scoped to a single, already-onboarded Application. An Application can have one or more API keys, and the <b>sum of all its API Key budgets must be less than or equal to</b> that Application's budget.</p>
+          <p class="panel-hint">Every API key is scoped to a single, already-onboarded Application. An Application can have one or more API keys, and the <b>sum of all its API Key allocation percentages must be less than or equal to 100%</b> of that Application's budget.</p>
 
           <div class="form-group" style="max-width:360px;">
             <label>Select Application<span class="req">*</span></label>
@@ -494,17 +482,27 @@
             <div class="form-row">
               <div class="form-group">
                 <label>Key Name<span class="req">*</span></label>
-                <input type="text" id="key-name" placeholder="e.g. Production Key" required>
+                <input type="text" id="key-name" placeholder="e.g. DiagnosticAssistant_Dev" required>
                 <div class="err-text" id="key-name-err">This name is already used by another API Key on this Application.</div>
               </div>
-              <div class="form-group" style="max-width:220px;">
-                <label>Budget (₹ / month) <span class="opt">optional</span></label>
-                <div class="amt-input-wrap"><span class="prefix">₹</span>
-                  <input type="number" id="key-budget" min="0" step="1000" placeholder="0">
+              <div class="form-group" style="max-width:170px;">
+                <label>Environment<span class="req">*</span></label>
+                <select id="key-env" required>
+                  <option value="" disabled selected>Select</option>
+                  <option>Dev</option>
+                  <option>Staging</option>
+                  <option>Prod</option>
+                </select>
+              </div>
+              <div class="form-group" style="max-width:180px;">
+                <label>Budget Allocation <span class="opt">optional</span></label>
+                <div class="pct-input-wrap">
+                  <input type="number" id="key-budget-pct" min="0" max="100" step="1" placeholder="0">
+                  <span class="suffix">%</span>
                 </div>
                 <div class="err-text" id="key-budget-err"></div>
               </div>
-              <div class="form-group" style="max-width:160px;">
+              <div class="form-group" style="max-width:150px;">
                 <label>Status</label>
                 <select id="key-status">
                   <option selected>Active</option>
@@ -512,6 +510,7 @@
                 </select>
               </div>
             </div>
+            <div class="helper" id="key-budget-helper" style="margin:-10px 0 16px;"></div>
             <div class="btn-row">
               <button type="submit" class="btn btn-primary">Create API Key</button>
             </div>
@@ -519,28 +518,49 @@
 
           <div class="divider"></div>
 
-          <h2 style="font-size:16px;">Existing API Keys</h2>
-          <div class="table-wrap" style="padding:0;">
+          <div class="btn-row" style="justify-content:space-between;">
+            <h2 style="font-size:16px;margin:0;">Existing API Keys for this Application</h2>
+            <button class="btn btn-secondary btn-sm" id="key-goto-edit-budget">Edit Budget</button>
+          </div>
+          <div class="table-wrap flush" style="margin-top:14px;">
             <table>
               <thead>
                 <tr>
-                  <th>Key Name</th><th>Status</th><th>Consumed</th><th>Budget (₹ / mo)</th><th></th>
+                  <th>Key Name</th><th>Environment</th><th>Status</th><th>Allocation %</th><th>Amount (₹)</th><th>Consumed %</th>
                 </tr>
               </thead>
-              <tbody id="key-table-body"></tbody>
-              <tfoot>
-                <tr class="total-row">
-                  <td colspan="3">Total</td>
-                  <td><span class="total-badge" id="key-total"></span></td>
-                  <td></td>
+              <tbody id="key-view-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit API Key Budgets (centralized, across all Applications) -->
+      <div class="subpanel" id="panel-key-budget">
+        <div class="panel-body">
+          <h2>Edit API Key Budgets</h2>
+          <p class="panel-hint">Every Application's API Keys are listed together. For each Application, the <b>sum of its Keys' allocation percentages must be less than or equal to 100%</b> of that Application's own budget.</p>
+
+          <div class="table-wrap top-pad" style="padding-left:0;padding-right:0;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Application</th><th>API Key Name</th><th>Status</th><th>Allocation %</th><th>Consumed %</th><th>Amount (₹)</th>
                 </tr>
-              </tfoot>
+              </thead>
+              <tbody id="keybudget-table-body"></tbody>
             </table>
           </div>
 
-          <div class="btn-row" style="margin-top:22px;">
-            <button class="btn btn-primary" id="key-save" disabled>Save API Key Budgets</button>
-            <span class="helper" id="key-save-hint"></span>
+          <div class="example-box" style="margin:22px 32px 0;">
+            <b>Rule:</b> a Key's allocation can never be reduced below the percentage it has already consumed. Each Application group must total 100% or less — unused headroom stays available for new Keys.
+          </div>
+
+          <div style="padding:0 32px 30px;">
+            <div class="btn-row" style="margin-top:22px;">
+              <button class="btn btn-primary" id="keybudget-save" disabled>Save API Key Budgets</button>
+              <span class="helper" id="keybudget-save-hint"></span>
+            </div>
           </div>
         </div>
       </div>
@@ -559,26 +579,16 @@
         <input type="text" id="edit-app-name" required>
       </div>
       <div class="form-group">
-        <label>Environment<span class="req">*</span></label>
-        <select id="edit-app-env">
-          <option>Development</option>
-          <option>Staging</option>
-          <option>Production</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label>Owner <span class="opt">optional</span></label>
-        <input type="text" id="edit-app-owner">
-      </div>
-      <div class="form-group">
         <label>Status</label>
         <select id="edit-app-status">
           <option>Active</option>
           <option>Inactive</option>
         </select>
       </div>
+    </div>
+    <div class="form-group">
+      <label>Owner <span class="opt">optional</span></label>
+      <input type="text" id="edit-app-owner">
     </div>
     <div class="form-group">
       <label>Domain <span class="opt">optional</span></label>
@@ -589,9 +599,9 @@
       <textarea id="edit-app-desc"></textarea>
     </div>
     <div class="form-group">
-      <label>Budget <span class="flag">Not editable here</span></label>
+      <label>Budget Allocation <span class="flag">Not editable here</span></label>
       <input type="text" id="edit-app-budget" disabled>
-      <div class="helper">Use "Application Budgets" to change the budget amount.</div>
+      <div class="helper">Use "Application Budgets" to change the allocation percentage.</div>
     </div>
     <div class="btn-row">
       <button class="btn btn-secondary" data-close-modal>Cancel</button>
@@ -611,20 +621,22 @@ let institutions = [
 ];
 let nextInstId = 4;
 
-// Application now carries its own metadata; budget is an absolute ₹/month amount.
+// Application metadata; budgetPct = % of the Institution's contract Budget (no Environment here anymore).
 let applications = [
-  {id:1, instId:1, name:"Diagnostic Assistant", environment:"Production", owner:"Dr. Ananya Rao", status:"Active", description:"AI-assisted diagnostic support for clinicians.", domain:"diagnostics.bhri.gov.in", budget:500000},
-  {id:2, instId:1, name:"Clinical NLP Engine", environment:"Production", owner:"Dr. Ananya Rao", status:"Active", description:"Extracts structured data from clinical notes.", domain:"nlp.bhri.gov.in", budget:300000},
-  {id:3, instId:1, name:"Voice Transcription Service", environment:"Staging", owner:"Kiran Shah", status:"Active", description:"Transcribes patient consultations.", domain:"voice.bhri.gov.in", budget:150000},
+  {id:1, instId:1, name:"Diagnostic Assistant", owner:"Dr. Ananya Rao", status:"Active", description:"AI-assisted diagnostic support for clinicians.", domain:"diagnostics.bhri.gov.in", budgetPct:50},
+  {id:2, instId:1, name:"Clinical NLP Engine", owner:"Dr. Ananya Rao", status:"Active", description:"Extracts structured data from clinical notes.", domain:"nlp.bhri.gov.in", budgetPct:30},
+  {id:3, instId:1, name:"Voice Transcription Service", owner:"Kiran Shah", status:"Active", description:"Transcribes patient consultations.", domain:"voice.bhri.gov.in", budgetPct:15},
 ];
 let nextAppId = 4;
 
-// Each API key belongs to exactly one Application and has its own ₹/month budget + consumption.
+// Each API key belongs to exactly one Application, carries its own Environment,
+// and budgetPct = % of that Application's own (₹) budget. `consumed` is the actual
+// spend to date in ₹ — a fixed baseline used to enforce the "can't reduce below usage" rule.
 let apiKeys = [
-  {id:1, appId:1, name:"Diagnostic Assistant - Prod Key", budget:300000, consumed:150000, status:"Active"},
-  {id:2, appId:1, name:"Diagnostic Assistant - Backup Key", budget:150000, consumed:50000, status:"Active"},
-  {id:3, appId:2, name:"Clinical NLP - Prod Key", budget:300000, consumed:300000, status:"Active"},
-  {id:4, appId:3, name:"Voice Transcription - Staging Key", budget:50000, consumed:7500, status:"Active"},
+  {id:1, appId:1, name:"DiagnosticAssistant_Prod", environment:"Prod", budgetPct:60, consumed:150000, status:"Active"},
+  {id:2, appId:1, name:"DiagnosticAssistant_Staging", environment:"Staging", budgetPct:30, consumed:50000, status:"Active"},
+  {id:3, appId:2, name:"ClinicalNLP_Prod", environment:"Prod", budgetPct:100, consumed:300000, status:"Active"},
+  {id:4, appId:3, name:"VoiceTranscription_Staging", environment:"Staging", budgetPct:34, consumed:7500, status:"Active"},
 ];
 let nextKeyId = 5;
 
@@ -633,15 +645,33 @@ const CURRENT_INST_ID = 1; // Institution Admin is scoped to this institution in
 function fmtINR(n){
   return "₹" + Math.round(n).toLocaleString("en-IN");
 }
+function fmtPct(n){
+  const r = Math.round(n*100)/100;
+  return (Number.isInteger(r) ? r : r.toFixed(2)) + "%";
+}
 function getInst(id){ return institutions.find(i=>i.id===id); }
 function getApp(id){ return applications.find(a=>a.id===id); }
 function appsFor(instId){ return applications.filter(a=>a.instId===instId); }
 function keysFor(appId){ return apiKeys.filter(k=>k.appId===appId); }
-function instAppBudgetSum(instId){ return appsFor(instId).reduce((s,a)=>s+a.budget,0); }
-function appKeyBudgetSum(appId){ return keysFor(appId).reduce((s,k)=>s+k.budget,0); }
-function appConsumed(appId){ return keysFor(appId).reduce((s,k)=>s+k.consumed,0); }
+
+// Amount in ₹ that an Application's current budgetPct represents.
+function appAmount(app){ const inst = getInst(app.instId); return inst.budget * app.budgetPct/100; }
+// Amount in ₹ that an API Key's current budgetPct represents (relative to its Application's amount).
+function keyAmount(key){ const app = getApp(key.appId); return appAmount(app) * key.budgetPct/100; }
+
+function instAppPctSum(instId){ return appsFor(instId).reduce((s,a)=>s+a.budgetPct,0); }
+function instAppAmountSum(instId){ return appsFor(instId).reduce((s,a)=>s+appAmount(a),0); }
+function appKeyPctSum(appId){ return keysFor(appId).reduce((s,k)=>s+k.budgetPct,0); }
+function appKeyAmountSum(appId){ return keysFor(appId).reduce((s,k)=>s+keyAmount(k),0); }
+// Consumed ₹ for an Application = sum of the actual ₹ spend of its Keys.
+function appConsumedAmount(appId){ return keysFor(appId).reduce((s,k)=>s+k.consumed,0); }
+// Consumed % for an Application, relative to the Institution's total Budget (same base as its allocation %).
+function appConsumedPct(app){ const inst = getInst(app.instId); return inst.budget>0 ? appConsumedAmount(app.id)/inst.budget*100 : 0; }
+// Consumed % for a Key, relative to its own Application's amount (same base as its allocation %).
+function keyConsumedPct(key){ const app = getApp(key.appId); const amt = appAmount(app); return amt>0 ? key.consumed/amt*100 : (key.consumed>0?100:0); }
+
 function envBadgeClass(env){
-  if(env==="Production") return "badge-env-prod";
+  if(env==="Prod") return "badge-env-prod";
   if(env==="Staging") return "badge-env-staging";
   return "badge-env-dev";
 }
@@ -666,6 +696,17 @@ document.querySelectorAll(".persona-btn").forEach(btn=>{
   });
 });
 
+function activateInstitutionTab(panelName){
+  const panel = document.getElementById("persona-institution");
+  panel.querySelectorAll(".subtab").forEach(t=>t.classList.toggle("active", t.dataset.panel===panelName));
+  panel.querySelectorAll(".subpanel").forEach(p=>p.classList.toggle("active", p.id==="panel-"+panelName));
+  if(panelName === "manage-app") renderApplicationsTable();
+  if(panelName === "app-budget") renderAppBudgetTable();
+  if(panelName === "api-keys") renderApiKeysPanel();
+  if(panelName === "key-budget") renderKeyBudgetTable();
+  if(panelName === "create-app") renderCreateAppHelper();
+}
+
 document.querySelectorAll(".panel").forEach(panel=>{
   const tabs = panel.querySelectorAll(".subtab");
   tabs.forEach(tab=>{
@@ -679,6 +720,7 @@ document.querySelectorAll(".panel").forEach(panel=>{
       if(tab.dataset.panel === "manage-app") renderApplicationsTable();
       if(tab.dataset.panel === "app-budget") renderAppBudgetTable();
       if(tab.dataset.panel === "api-keys") renderApiKeysPanel();
+      if(tab.dataset.panel === "key-budget") renderKeyBudgetTable();
       if(tab.dataset.panel === "create-app") renderCreateAppHelper();
     });
   });
@@ -734,7 +776,7 @@ function renderInstitutionsTable(){
     .filter(i => !tierFilter || i.tier === tierFilter)
     .forEach(inst=>{
       const count = appsFor(inst.id).length;
-      const allocated = instAppBudgetSum(inst.id);
+      const allocated = instAppAmountSum(inst.id);
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td><strong>${inst.name}</strong><div class="cell-sub">${inst.domain||"—"}</div></td>
@@ -771,9 +813,9 @@ function renderAllocateBudgetPanel(){
   const inst = getInst(Number(document.getElementById("ab-select-inst").value) || institutions[0].id);
   if(!inst) return;
   document.getElementById("ab-select-inst").value = inst.id;
-  const allocated = instAppBudgetSum(inst.id);
+  const allocated = instAppAmountSum(inst.id);
   document.getElementById("ab-current-info").innerHTML =
-    `Current Total Budget for <b>${inst.name}</b>: <b>${fmtINR(inst.budget)}</b> / month. ` +
+    `Current Contract Budget for <b>${inst.name}</b>: <b>${fmtINR(inst.budget)}</b>. ` +
     (appsFor(inst.id).length ? `Already committed to Applications: <b>${fmtINR(allocated)}</b> (${inst.budget>0?Math.round((allocated/inst.budget)*100):0}%).` : `No Applications onboarded yet.`);
   document.getElementById("ab-new-budget").value = inst.budget;
   document.getElementById("ab-err").style.display = "none";
@@ -785,7 +827,7 @@ document.getElementById("ab-save").addEventListener("click", ()=>{
   const errEl = document.getElementById("ab-err");
   if(!newBudget && newBudget !== 0){ return; }
 
-  const allocatedAmount = instAppBudgetSum(inst.id);
+  const allocatedAmount = instAppAmountSum(inst.id);
   if(newBudget < allocatedAmount){
     document.getElementById("ab-min-val").textContent = fmtINR(allocatedAmount);
     errEl.style.display = "block";
@@ -793,7 +835,7 @@ document.getElementById("ab-save").addEventListener("click", ()=>{
   }
   errEl.style.display = "none";
   inst.budget = newBudget;
-  toast(`Budget for "${inst.name}" updated to ${fmtINR(newBudget)} / month.`);
+  toast(`Contract Budget for "${inst.name}" updated to ${fmtINR(newBudget)}.`);
   renderAllocateBudgetPanel();
   renderInstitutionsTable();
   if(inst.id === CURRENT_INST_ID){ renderInstitutionAdminViews(); }
@@ -808,13 +850,14 @@ function renderInstitutionAdminViews(){
   document.getElementById("ih-tier").textContent = inst.tier;
   document.getElementById("ih-total-budget").textContent = fmtINR(inst.budget);
   const apps = appsFor(inst.id);
-  document.getElementById("ih-allocated-amt").textContent = fmtINR(instAppBudgetSum(inst.id));
+  document.getElementById("ih-allocated-amt").textContent = fmtINR(instAppAmountSum(inst.id));
   document.getElementById("ih-app-count").textContent = apps.length;
   document.getElementById("ih-key-count").textContent = apps.reduce((s,a)=>s+keysFor(a.id).length,0);
   renderCreateAppHelper();
   renderApplicationsTable();
   renderAppBudgetTable();
   renderApiKeysPanel();
+  renderKeyBudgetTable();
 }
 
 // ============================================================
@@ -823,19 +866,26 @@ function renderInstitutionAdminViews(){
 function renderCreateAppHelper(){
   const inst = getInst(CURRENT_INST_ID);
   const apps = appsFor(inst.id);
-  const allocated = instAppBudgetSum(inst.id);
-  const remaining = inst.budget - allocated;
+  const allocatedPct = instAppPctSum(inst.id);
+  const allocatedAmt = instAppAmountSum(inst.id);
+  const remainingPct = 100 - allocatedPct;
   const banner = document.getElementById("app-alloc-info");
-  if(remaining <= 0 && apps.length){
+  if(remainingPct <= 0 && apps.length){
     banner.className = "ok-banner";
-    banner.innerHTML = `Institution Budget is <b>fully committed</b> — ${fmtINR(allocated)} of ${fmtINR(inst.budget)} assigned across ${apps.length} Application${apps.length>1?'s':''}. New Applications can still be onboarded with <b>₹0 budget</b>, or free up room first via "Application Budgets".`;
+    banner.innerHTML = `Institution Budget is <b>fully committed</b> — ${fmtPct(allocatedPct)} (${fmtINR(allocatedAmt)}) of the ${fmtINR(inst.budget)} contract budget assigned across ${apps.length} Application${apps.length>1?'s':''}. New Applications can still be onboarded with <b>0% budget</b>, or free up room first via "Application Budgets".`;
   } else {
     banner.className = "info-banner";
-    banner.innerHTML = `Institution total Budget: <b>${fmtINR(inst.budget)}</b> / month. Committed to Applications so far: <b>${fmtINR(allocated)}</b>. Remaining headroom: <b>${fmtINR(remaining)}</b>.`;
+    banner.innerHTML = `Institution Contract Budget: <b>${fmtINR(inst.budget)}</b>. Committed to Applications so far: <b>${fmtPct(allocatedPct)}</b> (${fmtINR(allocatedAmt)}). Remaining headroom: <b>${fmtPct(remainingPct)}</b> (${fmtINR(inst.budget-allocatedAmt)}).`;
   }
   document.getElementById("app-budget-helper").textContent =
-    `Optional. The sum of every Application's budget under this Institution must stay at or below ${fmtINR(inst.budget)} — it doesn't need to add up exactly.`;
+    `Optional. The sum of every Application's allocation under this Institution must stay at or below 100%.`;
 }
+
+document.getElementById("app-budget-pct").addEventListener("input", function(){
+  const inst = getInst(CURRENT_INST_ID);
+  const val = Number(this.value)||0;
+  document.getElementById("app-budget-helper").textContent = `= ${fmtINR((val/100)*inst.budget)} of the Institution's ${fmtINR(inst.budget)} contract budget.`;
+});
 
 document.getElementById("form-create-app").addEventListener("submit", function(e){
   e.preventDefault();
@@ -849,30 +899,29 @@ document.getElementById("form-create-app").addEventListener("submit", function(e
   if(dup){ nameErr.classList.add("show"); nameEl.focus(); return; }
   nameErr.classList.remove("show");
 
-  const budgetEl = document.getElementById("app-budget");
-  const budgetErr = document.getElementById("app-budget-err");
-  const budget = budgetEl.value === "" ? 0 : Number(budgetEl.value);
-  const existingTotal = instAppBudgetSum(inst.id);
-  const remaining = inst.budget - existingTotal;
+  const pctEl = document.getElementById("app-budget-pct");
+  const pctErr = document.getElementById("app-budget-err");
+  const pct = pctEl.value === "" ? 0 : Number(pctEl.value);
+  const existingPct = instAppPctSum(inst.id);
+  const remainingPct = 100 - existingPct;
 
-  if(budget > remaining){
-    budgetErr.textContent = `This exceeds the Institution's available headroom of ${fmtINR(remaining)} (Total Budget ${fmtINR(inst.budget)} − already committed ${fmtINR(existingTotal)}). Lower this value, or free up budget first via "Application Budgets".`;
-    budgetErr.classList.add("show");
-    budgetEl.focus();
+  if(pct > remainingPct){
+    pctErr.textContent = `This exceeds the Institution's available headroom of ${fmtPct(remainingPct)} (100% − ${fmtPct(existingPct)} already committed). Lower this value, or free up budget first via "Application Budgets".`;
+    pctErr.classList.add("show");
+    pctEl.focus();
     return;
   }
-  budgetErr.classList.remove("show");
+  pctErr.classList.remove("show");
 
   const app = {
     id: nextAppId++,
     instId: inst.id,
     name: name,
-    environment: document.getElementById("app-env").value,
     owner: document.getElementById("app-owner").value.trim(),
     status: document.getElementById("app-status").value,
     description: document.getElementById("app-desc").value.trim(),
     domain: document.getElementById("app-domain").value.trim(),
-    budget: budget
+    budgetPct: pct
   };
   applications.push(app);
   this.reset();
@@ -891,37 +940,36 @@ document.getElementById("app-name").addEventListener("input", ()=>{
 function renderApplicationsTable(){
   const inst = getInst(CURRENT_INST_ID);
   const q = (document.getElementById("app-search").value||"").toLowerCase();
-  const envFilter = document.getElementById("app-filter-env").value;
 
   const apps = appsFor(inst.id);
-  const allocated = instAppBudgetSum(inst.id);
+  const allocatedPct = instAppPctSum(inst.id);
+  const allocatedAmt = instAppAmountSum(inst.id);
   const bannerWrap = document.getElementById("app-status-banner-wrap");
   if(apps.length === 0){
     bannerWrap.innerHTML = "";
-  } else if(allocated === inst.budget){
-    bannerWrap.innerHTML = `<div class="ok-banner">✓ Institution Budget fully committed — ${fmtINR(allocated)} of ${fmtINR(inst.budget)} assigned across ${apps.length} Application${apps.length>1?'s':''}.</div>`;
+  } else if(allocatedPct >= 100){
+    bannerWrap.innerHTML = `<div class="ok-banner">✓ Institution Budget fully committed — ${fmtPct(allocatedPct)} (${fmtINR(allocatedAmt)} of ${fmtINR(inst.budget)}) assigned across ${apps.length} Application${apps.length>1?'s':''}.</div>`;
   } else {
-    bannerWrap.innerHTML = `<div class="info-banner">${fmtINR(allocated)} of ${fmtINR(inst.budget)} committed to Applications. ${fmtINR(inst.budget-allocated)} remains as headroom — this is allowed, it does not need to be fully assigned.</div>`;
+    bannerWrap.innerHTML = `<div class="info-banner">${fmtPct(allocatedPct)} (${fmtINR(allocatedAmt)}) of the contract Budget committed to Applications. ${fmtPct(100-allocatedPct)} remains as headroom — this is allowed, it does not need to be fully assigned.</div>`;
   }
 
   const tbody = document.getElementById("app-table-body");
   tbody.innerHTML = "";
   apps
     .filter(a => a.name.toLowerCase().includes(q) || (a.domain||"").toLowerCase().includes(q) || (a.owner||"").toLowerCase().includes(q))
-    .filter(a => !envFilter || a.environment === envFilter)
     .forEach(app=>{
-      const consumed = appConsumed(app.id);
       const keys = keysFor(app.id);
-      const keyBudgetSum = appKeyBudgetSum(app.id);
+      const keyPctSum = appKeyPctSum(app.id);
+      const consumedPct = appConsumedPct(app);
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td><strong>${app.name}</strong><div class="cell-sub">${app.domain||"—"}</div></td>
-        <td><span class="badge ${envBadgeClass(app.environment)}">${app.environment}</span></td>
         <td>${app.owner||"—"}</td>
         <td><span class="badge ${app.status==='Active'?'badge-active':'badge-inactive'}">${app.status}</span></td>
-        <td>${fmtINR(app.budget)}</td>
-        <td>${fmtINR(consumed)}<div class="cell-sub">${app.budget>0 ? Math.round((consumed/app.budget)*100)+"% of budget" : "—"}</div></td>
-        <td>${keys.length}<div class="cell-sub">${fmtINR(keyBudgetSum)} committed</div></td>
+        <td>${fmtPct(app.budgetPct)}</td>
+        <td>${fmtINR(appAmount(app))}</td>
+        <td>${fmtPct(consumedPct)}</td>
+        <td>${keys.length}<div class="cell-sub">${fmtPct(keyPctSum)} committed</div></td>
         <td>
           <button class="btn btn-secondary btn-sm" data-edit="${app.id}">Edit</button>
           <button class="btn btn-secondary btn-sm" data-editbudget="${app.id}">Budget</button>
@@ -935,20 +983,17 @@ function renderApplicationsTable(){
     b.addEventListener("click", ()=>openEditAppModal(Number(b.dataset.edit)));
   });
   tbody.querySelectorAll("[data-editbudget]").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      document.querySelector('#persona-institution .subtab[data-panel="app-budget"]').click();
-    });
+    b.addEventListener("click", ()=>activateInstitutionTab("app-budget"));
   });
   tbody.querySelectorAll("[data-keys]").forEach(b=>{
     b.addEventListener("click", ()=>{
-      document.querySelector('#persona-institution .subtab[data-panel="api-keys"]').click();
+      activateInstitutionTab("api-keys");
       document.getElementById("key-select-app").value = b.dataset.keys;
       renderApiKeysPanel();
     });
   });
 }
 document.getElementById("app-search").addEventListener("input", renderApplicationsTable);
-document.getElementById("app-filter-env").addEventListener("change", renderApplicationsTable);
 
 // ---------------- Edit Application modal ----------------
 let editingAppId = null;
@@ -956,12 +1001,11 @@ function openEditAppModal(id){
   const app = applications.find(a=>a.id===id);
   editingAppId = id;
   document.getElementById("edit-app-name").value = app.name;
-  document.getElementById("edit-app-env").value = app.environment;
   document.getElementById("edit-app-owner").value = app.owner;
   document.getElementById("edit-app-status").value = app.status;
   document.getElementById("edit-app-desc").value = app.description;
   document.getElementById("edit-app-domain").value = app.domain;
-  document.getElementById("edit-app-budget").value = fmtINR(app.budget) + " / month";
+  document.getElementById("edit-app-budget").value = fmtPct(app.budgetPct) + "  (" + fmtINR(appAmount(app)) + ")";
   document.getElementById("edit-app-modal").classList.add("show");
 }
 document.querySelectorAll("[data-close-modal]").forEach(b=>{
@@ -974,7 +1018,6 @@ document.getElementById("edit-app-save").addEventListener("click", ()=>{
   const dup = appsFor(app.instId).some(a=>a.id!==app.id && a.name.toLowerCase()===nameVal.toLowerCase());
   if(dup){ alert("This name is already used by another Application in this Institution."); return; }
   app.name = nameVal;
-  app.environment = document.getElementById("edit-app-env").value;
   app.owner = document.getElementById("edit-app-owner").value.trim();
   app.status = document.getElementById("edit-app-status").value;
   app.description = document.getElementById("edit-app-desc").value.trim();
@@ -985,7 +1028,7 @@ document.getElementById("edit-app-save").addEventListener("click", ()=>{
 });
 
 // ============================================================
-// INSTITUTION ADMIN — Application Budgets (sum <= Institution budget)
+// INSTITUTION ADMIN — Application Budgets (% split, sum <= 100%)
 // ============================================================
 function renderAppBudgetTable(){
   const inst = getInst(CURRENT_INST_ID);
@@ -994,23 +1037,24 @@ function renderAppBudgetTable(){
   tbody.innerHTML = "";
 
   document.getElementById("app-budget-summary").innerHTML =
-    `Institution Total Budget: <b>${fmtINR(inst.budget)}</b> / month. The sum of Application budgets below may be anywhere from ₹0 up to this amount.`;
+    `Institution Contract Budget: <b>${fmtINR(inst.budget)}</b>. The Allocation % below may total anywhere from 0% up to 100%.`;
 
   apps.forEach(app=>{
-    const consumed = appConsumed(app.id);
-    const keySum = appKeyBudgetSum(app.id);
-    const minAllowed = Math.max(consumed, keySum);
+    const consumedPct = appConsumedPct(app);
+    const keyPctOfApp = appKeyPctSum(app.id); // % of THIS app's own budget committed to its keys
+    const keyPctOfInst = inst.budget>0 ? (appKeyAmountSum(app.id)/inst.budget*100) : 0; // same base as app.budgetPct
+    const minAllowed = Math.max(consumedPct, keyPctOfInst);
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><strong>${app.name}</strong><div class="cell-sub">${app.domain||"—"} · <span class="badge ${envBadgeClass(app.environment)}">${app.environment}</span></div></td>
-      <td>${fmtINR(consumed)}${app.budget>0 && consumed>=app.budget ? ' <span class="badge badge-full">Exhausted</span>' : ''}</td>
-      <td class="amt-cell"><span class="prefix">₹</span>
-        <input type="number" min="0" step="1000" value="${app.budget}" data-appbudget-input="${app.id}">
-        <div class="min-note">Min: ${fmtINR(minAllowed)}${keySum>consumed?' (API Keys committed)':''}</div>
+      <td><strong>${app.name}</strong><div class="cell-sub">${app.domain||"—"}</div></td>
+      <td>${fmtPct(consumedPct)}${app.budgetPct>0 && consumedPct>=app.budgetPct ? ' <span class="badge badge-full">Exhausted</span>' : ''}</td>
+      <td class="pct-cell">
+        <input type="number" min="0" max="100" step="1" value="${app.budgetPct}" data-appbudget-input="${app.id}"><span class="suffix-inline">%</span>
+        <div class="min-note">Min: ${fmtPct(minAllowed)}${keyPctOfInst>consumedPct?' (API Keys committed)':''}</div>
         <div class="row-error" data-appbudget-error="${app.id}"></div>
       </td>
-      <td>${fmtINR(keySum)}<div class="cell-sub">${keysFor(app.id).length} key${keysFor(app.id).length===1?'':'s'}</div></td>
-      <td></td>
+      <td data-appbudget-amt="${app.id}">${fmtINR(appAmount(app))}</td>
+      <td>${fmtPct(keyPctOfApp)} of app<div class="cell-sub">${keysFor(app.id).length} key${keysFor(app.id).length===1?'':'s'}</div></td>
     `;
     tbody.appendChild(tr);
   });
@@ -1024,23 +1068,25 @@ function renderAppBudgetTable(){
 function recomputeAppBudgetTotals(){
   const inst = getInst(CURRENT_INST_ID);
   const apps = appsFor(inst.id);
-  let total = 0;
+  let totalPct = 0;
   let hasError = false;
 
   apps.forEach(app=>{
     const inp = document.querySelector(`[data-appbudget-input="${app.id}"]`);
     const errEl = document.querySelector(`[data-appbudget-error="${app.id}"]`);
+    const amtEl = document.querySelector(`[data-appbudget-amt="${app.id}"]`);
     const val = Number(inp.value) || 0;
-    total += val;
+    totalPct += val;
+    amtEl.textContent = fmtINR((val/100)*inst.budget);
 
-    const consumed = appConsumed(app.id);
-    const keySum = appKeyBudgetSum(app.id);
-    const minAllowed = Math.max(consumed, keySum);
+    const consumedPct = appConsumedPct(app);
+    const keyPctOfInst = inst.budget>0 ? (appKeyAmountSum(app.id)/inst.budget*100) : 0;
+    const minAllowed = Math.max(consumedPct, keyPctOfInst);
 
-    if(val < minAllowed){
-      errEl.textContent = keySum > consumed
-        ? `Cannot go below ${fmtINR(minAllowed)} already committed to this Application's API Keys.`
-        : `Cannot go below ${fmtINR(minAllowed)} already consumed.`;
+    if(val < minAllowed - 0.001){
+      errEl.textContent = keyPctOfInst > consumedPct
+        ? `Cannot go below ${fmtPct(minAllowed)} already committed to this Application's API Keys.`
+        : `Cannot go below ${fmtPct(minAllowed)} already consumed.`;
       inp.style.borderColor = "var(--red)";
       hasError = true;
     } else {
@@ -1049,23 +1095,23 @@ function recomputeAppBudgetTotals(){
     }
   });
 
-  const totalEl = document.getElementById("appbudget-total");
-  const overBudget = total > inst.budget;
-  totalEl.textContent = fmtINR(total);
+  const totalEl = document.getElementById("appbudget-total-pct");
+  const overBudget = totalPct > 100.001;
+  totalEl.textContent = fmtPct(totalPct);
   totalEl.className = "total-badge " + (overBudget ? "bad" : "ok");
-  document.getElementById("appbudget-of").textContent = `of ${fmtINR(inst.budget)} Institution Budget` + (overBudget ? " — exceeds available budget" : "");
+  document.getElementById("appbudget-total-amt").textContent = fmtINR((totalPct/100)*inst.budget) + (overBudget ? " — exceeds 100%" : "");
 
   const saveBtn = document.getElementById("appbudget-save");
   const hint = document.getElementById("appbudget-save-hint");
   if(hasError){
     saveBtn.disabled = true;
-    hint.textContent = "Resolve the highlighted budget(s) below their minimum before saving.";
+    hint.textContent = "Resolve the highlighted allocation(s) below their minimum before saving.";
   } else if(overBudget){
     saveBtn.disabled = true;
-    hint.textContent = `Total (${fmtINR(total)}) exceeds the Institution's Budget of ${fmtINR(inst.budget)}.`;
+    hint.textContent = `Total (${fmtPct(totalPct)}) exceeds 100% of the Institution's Budget.`;
   } else {
     saveBtn.disabled = false;
-    hint.textContent = total < inst.budget ? `${fmtINR(inst.budget-total)} will remain unallocated headroom — that's allowed.` : "";
+    hint.textContent = totalPct < 100 ? `${fmtPct(100-totalPct)} will remain unallocated headroom — that's allowed.` : "";
   }
 }
 
@@ -1073,20 +1119,20 @@ document.getElementById("appbudget-save").addEventListener("click", ()=>{
   const inst = getInst(CURRENT_INST_ID);
   appsFor(inst.id).forEach(app=>{
     const inp = document.querySelector(`[data-appbudget-input="${app.id}"]`);
-    app.budget = Number(inp.value) || 0;
+    app.budgetPct = Number(inp.value) || 0;
   });
   toast("Application budgets saved.");
   renderInstitutionAdminViews();
 });
 
 // ============================================================
-// INSTITUTION ADMIN — API Keys (sum <= Application budget)
+// INSTITUTION ADMIN — API Keys (create + per-app read-only view)
 // ============================================================
 function populateKeyAppDropdown(){
   const inst = getInst(CURRENT_INST_ID);
   const sel = document.getElementById("key-select-app");
   const currentVal = sel.value;
-  sel.innerHTML = appsFor(inst.id).map(a=>`<option value="${a.id}">${a.name} (${a.environment})</option>`).join("");
+  sel.innerHTML = appsFor(inst.id).map(a=>`<option value="${a.id}">${a.name}</option>`).join("");
   if(currentVal && appsFor(inst.id).some(a=>String(a.id)===currentVal)){
     sel.value = currentVal;
   }
@@ -1096,23 +1142,37 @@ function renderApiKeysPanel(){
   populateKeyAppDropdown();
   const appId = Number(document.getElementById("key-select-app").value);
   const app = getApp(appId);
+  const summaryEl = document.getElementById("key-app-summary");
+  const tbody = document.getElementById("key-view-table-body");
+
   if(!app){
-    document.getElementById("key-app-summary").innerHTML = "No Applications onboarded yet for this Institution — create one first.";
-    document.getElementById("key-table-body").innerHTML = "";
-    document.getElementById("key-total").textContent = "";
-    document.getElementById("key-save").disabled = true;
+    summaryEl.innerHTML = "No Applications onboarded yet for this Institution — create one first.";
+    tbody.innerHTML = "";
     return;
   }
 
-  const keySum = appKeyBudgetSum(app.id);
-  const remaining = app.budget - keySum;
-  document.getElementById("key-app-summary").innerHTML =
-    `<b>${app.name}</b> Budget: <b>${fmtINR(app.budget)}</b> / month. Committed to API Keys: <b>${fmtINR(keySum)}</b>. Remaining headroom: <b>${fmtINR(Math.max(remaining,0))}</b>${remaining<0?' <span class="badge badge-full">Over-committed</span>':''}.`;
+  const keyPctSum = appKeyPctSum(app.id);
+  const remainingPct = 100 - keyPctSum;
+  summaryEl.innerHTML =
+    `<b>${app.name}</b> Budget: <b>${fmtINR(appAmount(app))}</b> (${fmtPct(app.budgetPct)} of contract). Committed to API Keys: <b>${fmtPct(keyPctSum)}</b>. Remaining headroom: <b>${fmtPct(Math.max(remainingPct,0))}</b>${remainingPct<0?' <span class="badge badge-full">Over-committed</span>':''}.`;
 
-  renderKeyTable(app.id);
+  tbody.innerHTML = "";
+  keysFor(app.id).forEach(key=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>${key.name}</strong></td>
+      <td><span class="badge ${envBadgeClass(key.environment)}">${key.environment}</span></td>
+      <td><span class="badge ${key.status==='Active'?'badge-active':'badge-inactive'}">${key.status}</span></td>
+      <td>${fmtPct(key.budgetPct)}</td>
+      <td>${fmtINR(keyAmount(key))}</td>
+      <td>${fmtPct(keyConsumedPct(key))}${key.budgetPct>0 && keyConsumedPct(key)>=key.budgetPct ? ' <span class="badge badge-full">Exhausted</span>' : ''}</td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 document.getElementById("key-select-app").addEventListener("change", renderApiKeysPanel);
+document.getElementById("key-goto-edit-budget").addEventListener("click", ()=>activateInstitutionTab("key-budget"));
 
 document.getElementById("form-create-key").addEventListener("submit", function(e){
   e.preventDefault();
@@ -1128,25 +1188,26 @@ document.getElementById("form-create-key").addEventListener("submit", function(e
   if(dup){ nameErr.classList.add("show"); nameEl.focus(); return; }
   nameErr.classList.remove("show");
 
-  const budgetEl = document.getElementById("key-budget");
-  const budgetErr = document.getElementById("key-budget-err");
-  const budget = budgetEl.value === "" ? 0 : Number(budgetEl.value);
-  const existingKeySum = appKeyBudgetSum(app.id);
-  const remaining = app.budget - existingKeySum;
+  const pctEl = document.getElementById("key-budget-pct");
+  const pctErr = document.getElementById("key-budget-err");
+  const pct = pctEl.value === "" ? 0 : Number(pctEl.value);
+  const existingPct = appKeyPctSum(app.id);
+  const remainingPct = 100 - existingPct;
 
-  if(budget > remaining){
-    budgetErr.textContent = `This exceeds the Application's available headroom of ${fmtINR(remaining)} (Application Budget ${fmtINR(app.budget)} − already committed ${fmtINR(existingKeySum)}).`;
-    budgetErr.classList.add("show");
-    budgetEl.focus();
+  if(pct > remainingPct){
+    pctErr.textContent = `This exceeds the Application's available headroom of ${fmtPct(remainingPct)} (100% − ${fmtPct(existingPct)} already committed to other Keys).`;
+    pctErr.classList.add("show");
+    pctEl.focus();
     return;
   }
-  budgetErr.classList.remove("show");
+  pctErr.classList.remove("show");
 
   apiKeys.push({
     id: nextKeyId++,
     appId: app.id,
     name: name,
-    budget: budget,
+    environment: document.getElementById("key-env").value,
+    budgetPct: pct,
     consumed: 0,
     status: document.getElementById("key-status").value
   });
@@ -1159,86 +1220,132 @@ document.getElementById("form-create-key").addEventListener("submit", function(e
 document.getElementById("key-name").addEventListener("input", ()=>{
   document.getElementById("key-name-err").classList.remove("show");
 });
+document.getElementById("key-budget-pct").addEventListener("input", function(){
+  const app = getApp(Number(document.getElementById("key-select-app").value));
+  if(!app) return;
+  const val = Number(this.value)||0;
+  document.getElementById("key-budget-helper").textContent = `= ${fmtINR((val/100)*appAmount(app))} of "${app.name}"'s ${fmtINR(appAmount(app))} budget.`;
+});
 
-function renderKeyTable(appId){
-  const app = getApp(appId);
-  const tbody = document.getElementById("key-table-body");
+// ============================================================
+// INSTITUTION ADMIN — Edit API Key Budgets (centralized, grouped by Application)
+// ============================================================
+function renderKeyBudgetTable(){
+  const inst = getInst(CURRENT_INST_ID);
+  const apps = appsFor(inst.id);
+  const tbody = document.getElementById("keybudget-table-body");
   tbody.innerHTML = "";
 
-  keysFor(appId).forEach(key=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><strong>${key.name}</strong></td>
-      <td><span class="badge ${key.status==='Active'?'badge-active':'badge-inactive'}">${key.status}</span></td>
-      <td>${fmtINR(key.consumed)}${key.budget>0 && key.consumed>=key.budget ? ' <span class="badge badge-full">Exhausted</span>' : ''}</td>
-      <td class="amt-cell"><span class="prefix">₹</span>
-        <input type="number" min="0" step="1000" value="${key.budget}" data-key-input="${key.id}">
-        <div class="min-note">Min: ${fmtINR(key.consumed)}</div>
-        <div class="row-error" data-key-error="${key.id}"></div>
-      </td>
+  apps.forEach(app=>{
+    const keys = keysFor(app.id);
+    if(keys.length === 0) return;
+
+    const groupRow = document.createElement("tr");
+    groupRow.className = "group-row";
+    groupRow.innerHTML = `<td colspan="6">${app.name} <span style="font-weight:600;text-transform:none;color:var(--muted);">— Budget ${fmtINR(appAmount(app))} (${fmtPct(app.budgetPct)} of contract)</span></td>`;
+    tbody.appendChild(groupRow);
+
+    keys.forEach(key=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${app.name}</td>
+        <td><strong>${key.name}</strong><div class="cell-sub"><span class="badge ${envBadgeClass(key.environment)}">${key.environment}</span></div></td>
+        <td><span class="badge ${key.status==='Active'?'badge-active':'badge-inactive'}">${key.status}</span></td>
+        <td class="pct-cell">
+          <input type="number" min="0" max="100" step="1" value="${key.budgetPct}" data-key-input="${key.id}"><span class="suffix-inline">%</span>
+          <div class="min-note">Min: ${fmtPct(keyConsumedPct(key))}</div>
+          <div class="row-error" data-key-error="${key.id}"></div>
+        </td>
+        <td>${fmtPct(keyConsumedPct(key))}${key.budgetPct>0 && keyConsumedPct(key)>=key.budgetPct ? ' <span class="badge badge-full">Exhausted</span>' : ''}</td>
+        <td data-key-amt="${key.id}">${fmtINR(keyAmount(key))}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    const subtotalRow = document.createElement("tr");
+    subtotalRow.className = "total-row";
+    subtotalRow.innerHTML = `
+      <td colspan="3">${app.name} — Subtotal</td>
+      <td><span class="total-badge" data-key-subtotal="${app.id}"></span></td>
       <td></td>
+      <td data-key-subtotal-amt="${app.id}"></td>
     `;
-    tbody.appendChild(tr);
+    tbody.appendChild(subtotalRow);
   });
 
   tbody.querySelectorAll("[data-key-input]").forEach(inp=>{
-    inp.addEventListener("input", ()=>recomputeKeyTotals(appId));
+    inp.addEventListener("input", recomputeKeyBudgetTotals);
   });
-  recomputeKeyTotals(appId);
+  recomputeKeyBudgetTotals();
 }
 
-function recomputeKeyTotals(appId){
-  const app = getApp(appId);
-  const keys = keysFor(appId);
-  let total = 0;
-  let hasError = false;
+function recomputeKeyBudgetTotals(){
+  const inst = getInst(CURRENT_INST_ID);
+  const apps = appsFor(inst.id);
+  let anyError = false;
+  let anyOverBudget = false;
+  let hasAnyKeys = false;
 
-  keys.forEach(key=>{
-    const inp = document.querySelector(`[data-key-input="${key.id}"]`);
-    const errEl = document.querySelector(`[data-key-error="${key.id}"]`);
-    const val = Number(inp.value) || 0;
-    total += val;
+  apps.forEach(app=>{
+    const keys = keysFor(app.id);
+    if(keys.length === 0) return;
+    hasAnyKeys = true;
+    let subtotal = 0;
 
-    if(val < key.consumed){
-      errEl.textContent = `Cannot go below ${fmtINR(key.consumed)} already consumed.`;
-      inp.style.borderColor = "var(--red)";
-      hasError = true;
-    } else {
-      errEl.textContent = "";
-      inp.style.borderColor = "";
-    }
+    keys.forEach(key=>{
+      const inp = document.querySelector(`[data-key-input="${key.id}"]`);
+      const errEl = document.querySelector(`[data-key-error="${key.id}"]`);
+      const amtEl = document.querySelector(`[data-key-amt="${key.id}"]`);
+      const val = Number(inp.value) || 0;
+      subtotal += val;
+      amtEl.textContent = fmtINR((val/100)*appAmount(app));
+
+      const minPct = keyConsumedPct(key);
+      if(val < minPct - 0.001){
+        errEl.textContent = `Cannot go below ${fmtPct(minPct)} already consumed.`;
+        inp.style.borderColor = "var(--red)";
+        anyError = true;
+      } else {
+        errEl.textContent = "";
+        inp.style.borderColor = "";
+      }
+    });
+
+    const subtotalEl = document.querySelector(`[data-key-subtotal="${app.id}"]`);
+    const subtotalAmtEl = document.querySelector(`[data-key-subtotal-amt="${app.id}"]`);
+    const overBudget = subtotal > 100.001;
+    if(overBudget) anyOverBudget = true;
+    subtotalEl.textContent = fmtPct(subtotal);
+    subtotalEl.className = "total-badge " + (overBudget ? "bad" : "ok");
+    subtotalAmtEl.textContent = fmtINR((subtotal/100)*appAmount(app)) + (overBudget ? " — exceeds 100%" : "");
   });
 
-  const totalEl = document.getElementById("key-total");
-  const overBudget = total > app.budget;
-  totalEl.textContent = fmtINR(total);
-  totalEl.className = "total-badge " + (overBudget ? "bad" : "ok");
-
-  const saveBtn = document.getElementById("key-save");
-  const hint = document.getElementById("key-save-hint");
-  if(keys.length === 0){
+  const saveBtn = document.getElementById("keybudget-save");
+  const hint = document.getElementById("keybudget-save-hint");
+  if(!hasAnyKeys){
     saveBtn.disabled = true;
-    hint.textContent = "No API Keys yet for this Application.";
-  } else if(hasError){
+    hint.textContent = "No API Keys yet — create one from the API Keys tab.";
+  } else if(anyError){
     saveBtn.disabled = true;
-    hint.textContent = "Resolve the highlighted key budget(s) below their consumed usage before saving.";
-  } else if(overBudget){
+    hint.textContent = "Resolve the highlighted Key allocation(s) below their consumed usage before saving.";
+  } else if(anyOverBudget){
     saveBtn.disabled = true;
-    hint.textContent = `Total (${fmtINR(total)}) exceeds this Application's Budget of ${fmtINR(app.budget)}.`;
+    hint.textContent = "One or more Applications have Keys totalling over 100% of their budget.";
   } else {
     saveBtn.disabled = false;
-    hint.textContent = total < app.budget ? `${fmtINR(app.budget-total)} will remain unallocated headroom on this Application — that's allowed.` : "";
+    hint.textContent = "";
   }
 }
 
-document.getElementById("key-save").addEventListener("click", ()=>{
-  const appId = Number(document.getElementById("key-select-app").value);
-  keysFor(appId).forEach(key=>{
-    const inp = document.querySelector(`[data-key-input="${key.id}"]`);
-    key.budget = Number(inp.value) || 0;
+document.getElementById("keybudget-save").addEventListener("click", ()=>{
+  const inst = getInst(CURRENT_INST_ID);
+  appsFor(inst.id).forEach(app=>{
+    keysFor(app.id).forEach(key=>{
+      const inp = document.querySelector(`[data-key-input="${key.id}"]`);
+      if(inp) key.budgetPct = Number(inp.value) || 0;
+    });
   });
   toast("API Key budgets saved.");
-  renderApiKeysPanel();
   renderInstitutionAdminViews();
 });
 
