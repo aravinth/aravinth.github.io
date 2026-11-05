@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iGOT Karmayogi × AI4I Orchestrate — AI Control Plane</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#F6F8FB}
+a{color:#2563B8}a:hover{color:#1E4F94}
+*{box-sizing:border-box}
+button{font-family:inherit}
+.nav{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:0 14px;border:0;background:transparent;border-radius:10px;color:#1E293B;font-size:15px;font-weight:500;text-align:left;cursor:pointer;position:relative}
+.nav:hover{background:#F1F5F9}
+.nav.on{background:#EAF4FD;color:#0F172A;font-weight:600}
+.nav.on::before{content:"";position:absolute;left:-12px;top:10px;bottom:10px;width:3px;border-radius:2px;background:#2563B8}
+.nav svg{width:19px;height:19px;flex:none;color:#475569}
+.navh{font-size:12px;letter-spacing:.12em;font-weight:600;color:#64748B;margin:18px 0 6px 2px}
+.card{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:14px}
+.kpi{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.kl{font-size:12px;letter-spacing:.08em;font-weight:600;color:#475569;text-transform:uppercase}
+.kv{font-size:34px;font-weight:700;color:#0F172A;line-height:1.15}
+.ks{font-size:13px;color:#64748B}
+.up{color:#15803D;font-size:14px;font-weight:500}
+.sec{font-size:12px;letter-spacing:.1em;font-weight:600;color:#64748B;text-transform:uppercase;margin:4px 0 0}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:.04em;white-space:nowrap}
+.ok{background:#DCFCE7;color:#166534}
+.bad{background:#FEE2E2;color:#991B1B}
+.warn{background:#FEF3C7;color:#92400E}
+.neu{background:#F1F5F9;color:#334155}
+.blue{background:#DBEAFE;color:#1E40AF}
+.t-LLM{background:#EDE9FE;color:#5B21B6}
+.t-ASR{background:#CCFBF1;color:#115E59}
+.t-NMT{background:#DBEAFE;color:#1E40AF}
+.t-TTS{background:#FEF3C7;color:#92400E}
+.t-PII{background:#FCE7F3;color:#9D174D}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:10px;border:0;background:#2563B8;color:#FFFFFF;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#1E4F94}
+.btn2{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:10px;border:1px solid #E2E8F0;background:#FFFFFF;color:#0F172A;font-size:15px;font-weight:500;cursor:pointer;white-space:nowrap}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:180px;flex:1 1 180px;max-width:340px}
+.fld label{font-size:14px;font-weight:600;color:#0F172A}
+.in{height:44px;border:1px solid #CBD5E1;border-radius:9px;padding:0 12px;font-size:15px;font-family:inherit;color:#0F172A;background:#FFFFFF;width:100%}
+.seg{display:inline-flex;background:#F1F5F9;border:1px solid #E2E8F0;border-radius:10px;padding:3px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;min-height:38px;padding:0 16px;border-radius:8px;font-size:15px;color:#334155;cursor:pointer}
+.seg button.on{background:#FFFFFF;color:#0F172A;font-weight:600;box-shadow:0 1px 2px rgba(15,23,42,.08)}
+.rng{display:inline-flex;border:1px solid #E2E8F0;border-radius:999px;overflow:hidden;background:#FFFFFF}
+.rng button{border:0;background:transparent;min-height:42px;padding:0 18px;font-size:15px;color:#0F172A;cursor:pointer;border-right:1px solid #E2E8F0}
+.rng button:last-child{border-right:0}
+.rng button.on{background:#B4552A;color:#FFFFFF}
+.tabs{display:flex;gap:28px;border-bottom:1px solid #E2E8F0;flex-wrap:wrap}
+.tabs button{border:0;background:transparent;min-height:46px;padding:0 4px;font-size:17px;color:#1E293B;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:#2563B8;border-bottom-color:#2563B8;font-weight:500}
+.tbox{border:1px solid #E2E8F0;border-radius:14px;background:#FFFFFF;overflow-x:auto}
+.tr{display:grid;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid #EEF2F6;font-size:15px;color:#0F172A;min-width:980px}
+.th{background:#F8FAFC;font-size:12px;letter-spacing:.07em;font-weight:600;color:#475569;text-transform:uppercase;padding:14px 20px}
+.tf{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 20px;background:#F8FAFC;font-size:14px;color:#334155;flex-wrap:wrap;min-width:980px}
+.mono{font-family:'JetBrains Mono',monospace;font-size:14px}
+.mut{color:#64748B;font-size:13px}
+.ico{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;border-radius:8px;color:#334155;cursor:pointer}
+.ico:hover{background:#F1F5F9}
+.ico svg{width:18px;height:18px}
+.av{width:36px;height:36px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#FFFFFF;font-size:13px;font-weight:700;flex:none}
+.bar{height:8px;border-radius:999px;background:#EEF2F6;overflow:hidden}
+.bar > div{height:100%;border-radius:999px}
+.g-logs{grid-template-columns:1.3fr .8fr .6fr 1.3fr 1.6fr 1.2fr .6fr .3fr}
+.g-mod{grid-template-columns:1.5fr .6fr 1fr .7fr .9fr .8fr .8fr .2fr}
+.g-svc{grid-template-columns:1.6fr .6fr 1.8fr 1.1fr .8fr .8fr .9fr}
+.g-inst{grid-template-columns:2.2fr 1.2fr 1.1fr .7fr 1.2fr 1fr .7fr}
+.g-key{grid-template-columns:1.6fr 1.2fr 1.3fr 1.1fr .7fr .8fr .8fr 1fr}
+.g-not{grid-template-columns:2.4fr 1.3fr 1.2fr 1fr}
+.g-tier{grid-template-columns:1.4fr .8fr 1.3fr .7fr .8fr 1fr .8fr}
+.g-pol{grid-template-columns:2fr 1.6fr 1fr .8fr .7fr .6fr}
+.g-acc{grid-template-columns:1fr 2.2fr 1.4fr .8fr}
+.chk{width:18px;height:18px;accent-color:#2563B8}
+.sgl{display:inline-flex;border:1px solid #E2E8F0;border-radius:8px;overflow:hidden}
+.sgl button{border:0;background:#FFFFFF;min-height:36px;padding:0 12px;font-size:14px;color:#0F172A;cursor:pointer}
+.sgl button.on{background:#4F8FDC;color:#FFFFFF}
+.studio{position:relative;overflow:hidden;padding:24px;display:flex;flex-direction:column;gap:16px}
+.try{min-height:44px;border:0;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;color:#0F172A}
+</style>
+
+</head>
+<body>
+<div id="root"></div>
+<template id="tpl">
+
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #0F172A; background: #F6F8FB">
+
+<!-- SIDEBAR -->
+<nav aria-label="Main" style="flex: 1 1 260px; max-width: 100%; background: #FFFFFF; border-right: 1px solid #E2E8F0; padding: 0 12px 24px 24px; display: flex; flex-direction: column">
+  <div style="display: flex; align-items: center; gap: 10px; padding: 20px 0 18px; border-bottom: 1px solid #EEF2F6; margin: 0 0 6px -12px; padding-left: 12px">
+    <div style="display: flex; flex-direction: column; align-items: center; line-height: 1">
+      <span style="background: #4B5563; color: #FFFFFF; font-weight: 800; font-size: 15px; padding: 3px 5px; border-radius: 3px; letter-spacing: .02em">AI4</span>
+      <span style="font-size: 7px; font-weight: 800; letter-spacing: .06em; margin-top: 2px; color: #1F2937">INCLUSION</span>
+    </div>
+    <span aria-hidden="true" style="color: #94A3B8; font-size: 14px">×</span>
+    <div style="display: flex; flex-direction: column; line-height: 1.15">
+      <span style="font-size: 15px; font-weight: 800; color: #B4552A">iGOT Karmayogi</span>
+      <span style="font-size: 11px; font-weight: 500; color: #475569">AI Control Plane</span>
+    </div>
+  </div>
+
+  <p class="navh">TRY</p>
+  <button class="nav {{nav.explore}}" onClick="{{go.explore}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M15.5 8.5l-2 5-5 2 2-5z"></path></svg><span>Karmayogi AI Studio</span></button>
+
+  <p class="navh">MONITOR</p>
+  <button class="nav {{nav.usage}}" onClick="{{go.usage}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M5 20V12M9.5 20V8M14 20V4M18.5 20v-9"></path></svg><span>Usage Dashboard</span></button>
+  <button class="nav {{nav.logs}}" onClick="{{go.logs}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6v18h12V7z"></path><path d="M14 3v4h4M9 12h6M9 16h6"></path></svg><span>Logs Dashboard</span></button>
+  <button class="nav {{nav.pilot}}" onClick="{{go.pilot}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4M5 4h11l-2 4 2 4H5"></path></svg><span>Pilot Tracker</span><span class="pill warn" style="margin-left: auto; font-size: 11px">WK 7</span></button>
+
+  <p class="navh">MANAGE</p>
+  <button class="nav {{nav.models}}" onClick="{{go.models}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="7" ry="2.5"></ellipse><path d="M5 5.5v13c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5v-13M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"></path></svg><span>Model Management</span></button>
+  <button class="nav {{nav.services}}" onClick="{{go.services}}"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="6" cy="6" r="1.6"></circle><circle cx="12" cy="6" r="1.6"></circle><circle cx="18" cy="6" r="1.6"></circle><circle cx="6" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="18" cy="12" r="1.6"></circle><circle cx="6" cy="18" r="1.6"></circle><circle cx="12" cy="18" r="1.6"></circle><circle cx="18" cy="18" r="1.6"></circle></svg><span>Services Management</span></button>
+  <button class="nav {{nav.depts}}" onClick="{{go.depts}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V10M19 21V10M9.5 21V10M14.5 21V10M3 10l9-6 9 6z"></path></svg><span>Department Management</span></button>
+  <button class="nav {{nav.keys}}" onClick="{{go.keys}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="9" r="5"></circle><path d="M11.5 12.5L4 20v-3h2v-2h2l1.5-1.5"></path></svg><span>API Key Management</span></button>
+  <button class="nav {{nav.settings}}" onClick="{{go.settings}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 0112 0v5l2 2H4z"></path><path d="M10 20a2 2 0 004 0"></path></svg><span>Platform Settings</span></button>
+  <button class="nav {{nav.tiers}}" onClick="{{go.tiers}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z"></path><circle cx="7.5" cy="7.5" r="1.2"></circle></svg><span>Tier Management</span></button>
+
+  <p class="navh">ORCHESTRATION</p>
+  <button class="nav {{nav.policy}}" onClick="{{go.policy}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"></path></svg><span>Policy Management</span></button>
+
+  <div style="margin-top: auto; padding-top: 28px">
+    <div style="border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; display: flex; gap: 10px; align-items: center">
+      <span class="av" style="background: #B4552A">KB</span>
+      <div style="display: flex; flex-direction: column; min-width: 0">
+        <span style="font-size: 14px; font-weight: 600">Adopter Admin</span>
+        <span class="mut">Karmayogi Bharat</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<main style="flex: 999 1 560px; min-width: 0; padding: 28px 32px 48px">
+<div class="card" style="padding: 28px 32px 36px; max-width: 1480px; margin: 0 auto">
+
+<!-- ================= EXPLORE ================= -->
+<sc-if value="{{is.explore}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 24px">
+    <div>
+      <p class="mut" style="margin: 0 0 8px; font-size: 15px">Usage Dashboard  ›  <span style="color: #0F172A; font-weight: 500">Karmayogi AI Studio</span></p>
+      <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Karmayogi AI Studio</h1>
+      <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Test the models behind iGOT's AI services before you route a department's traffic to them.</p>
+    </div>
+    <div style="height: 1px; background: #E2E8F0"></div>
+    <div class="g3">
+      <sc-for list="{{studio}}" as="s" hint-placeholder-count="6">
+        <div class="card studio" style="border-top: 3px solid {{s.color}}">
+          <div style="display: flex; gap: 16px; align-items: flex-start">
+            <span style="width: 56px; height: 56px; border-radius: 12px; background: {{s.tint}}; color: {{s.color}}; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; flex: none">{{s.abbr}}</span>
+            <div style="flex: 1; min-width: 0">
+              <h2 style="margin: 0; font-size: 19px; font-weight: 700">{{s.name}}</h2>
+              <p class="mut" style="margin: 4px 0 0">Powers {{s.powers}}</p>
+            </div>
+            <span class="pill t-{{s.task}}">{{s.task}}</span>
+          </div>
+          <p style="margin: 0; color: #334155; font-size: 15px; line-height: 1.55">{{s.desc}}</p>
+          <button class="try" style="background: {{s.tint}}" onClick="{{s.pick}}">Try it now →</button>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{tryOpen}}" hint-placeholder-val="{{ false }}">
+      <section class="card" aria-label="Playground" style="padding: 24px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap">
+          <h2 style="margin: 0; font-size: 20px">Playground · {{tryCard.name}}</h2>
+          <span class="mut">Routed through AI4I Orchestrate · metered to <b style="color: #0F172A">Karmayogi Bharat / Studio</b></span>
+        </div>
+        <div style="display: flex; gap: 14px; flex-wrap: wrap">
+          <div class="fld"><label for="pg-model">Model</label><select id="pg-model" class="in"><option>{{tryCard.model}}</option></select></div>
+          <div class="fld"><label for="pg-lang">Language</label><select id="pg-lang" class="in"><option>{{tryCard.lang}}</option></select></div>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px">
+          <div class="fld" style="max-width: none"><label for="pg-in">Input</label><textarea id="pg-in" class="in" style="height: 130px; padding: 12px; line-height: 1.5; resize: vertical">{{tryCard.input}}</textarea></div>
+          <div class="fld" style="max-width: none"><span style="font-size: 14px; font-weight: 600">Output</span><div style="min-height: 130px; border: 1px solid #E2E8F0; border-radius: 9px; padding: 12px; background: #F8FAFC; font-size: 15px; line-height: 1.6; white-space: pre-line">{{tryCard.output}}</div></div>
+        </div>
+        <div style="display: flex; gap: 18px; flex-wrap: wrap; align-items: center">
+          <button class="btn">Run</button>
+          <span class="mut">Latency {{tryCard.lat}} · Cost {{tryCard.cost}} · Trace <span class="mono">{{tryCard.trace}}</span></span>
+        </div>
+      </section>
+    </sc-if>
+  </div>
+</sc-if>
+
+<!-- ================= USAGE ================= -->
+<sc-if value="{{is.usage}}" hint-placeholder-val="{{ true }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <div>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Usage Dashboard</h1>
+        <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Monitor AI consumption and spend across ministries, departments and iGOT applications.</p>
+      </div>
+      <span class="pill neu">Demo data</span>
+    </div>
+    <div style="height: 1px; background: #E2E8F0"></div>
+    <div>
+      <h2 style="margin: 0; font-size: 20px">Key metrics</h2>
+      <p class="mut" style="margin: 4px 0 0; font-size: 14px">Platform-wide department, model and spend indicators</p>
+    </div>
+    <p class="sec">Department metrics</p>
+    <div class="g4">
+      <div class="kpi"><span class="kl">Total departments</span><span class="kv">10</span><span class="ks">Ministries, states and bodies onboarded</span></div>
+      <div class="kpi"><span class="kl">Active departments</span><span class="kv">8</span><span class="ks">In the last 30 days</span></div>
+      <div class="kpi"><span class="kl">New departments</span><span class="kv">2</span><span class="ks">In the last 15 days · Govt of Odisha, MoRD</span></div>
+      <div class="kpi"><span class="kl">Budget exhausted</span><span class="kv" style="color: #B91C1C">1</span><span class="ks">Ministry of Railways</span></div>
+    </div>
+    <p class="sec">Model &amp; spend metrics</p>
+    <div class="g4">
+      <div class="kpi"><span class="kl">Total models</span><span class="kv">11</span><span class="ks">LLM · ASR · NMT · TTS · PII</span></div>
+      <div class="kpi"><span class="kl">Active models</span><span class="kv">9</span><span class="ks">In the last 30 days</span></div>
+      <div class="kpi"><span class="kl">Spend this month</span><span class="kv">₹19.4 L</span><span class="ks">of ₹39 L allocated · 50%</span></div>
+      <div class="kpi"><span class="kl">Cost per 1K requests</span><span class="kv">₹41.8</span><span class="up">↓ 12.4% vs previous 30</span></div>
+    </div>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 6px">
+      <div class="rng" role="group" aria-label="Time range">
+        <button class="{{rng.today}}" onClick="{{setRng.today}}">Today</button>
+        <button class="{{rng.yday}}" onClick="{{setRng.yday}}">Yesterday</button>
+        <button class="{{rng.d7}}" onClick="{{setRng.d7}}">Last 7 days</button>
+        <button class="{{rng.d30}}" onClick="{{setRng.d30}}">Last 30 days</button>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center">
+      <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center">
+        <select class="in" aria-label="Department" style="width: 280px; border-color: #0F172A"><option>All departments</option><option>DoPT</option><option>MoAFW</option><option>Govt of Odisha</option></select>
+        <div class="seg" role="group" aria-label="Breakdown">
+          <button class="{{dt.dept}}" onClick="{{setDt.dept}}">Department</button>
+          <button class="{{dt.model}}" onClick="{{setDt.model}}">Model</button>
+          <button class="{{dt.budget}}" onClick="{{setDt.budget}}">Budget</button>
+          <button class="{{dt.app}}" onClick="{{setDt.app}}">Applications</button>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+        <span style="font-size: 14px; color: #475569; font-style: italic"><span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #16A34A; margin-right: 6px"></span>Last refreshed: 28 sec ago</span>
+        <button class="btn2" style="border: 0; min-height: 36px; padding: 0 4px; color: #334155">↻ Refresh</button>
+      </div>
+    </div>
+    <div class="g4">
+      <div class="kpi"><span class="kl">Total requests</span><span class="kv">{{u.total}}</span><span class="up">↑ {{u.growth}} vs previous</span><span class="ks">Across all departments</span></div>
+      <div class="kpi"><span class="kl">Successful</span><span class="kv" style="color: #15803D">{{u.ok}}</span><span class="up">↑ {{u.growth}} vs previous</span><span class="ks">98.27% success rate</span></div>
+      <div class="kpi"><span class="kl">Failed</span><span class="kv" style="color: #B91C1C">{{u.fail}}</span><span class="ks">1.73% failure rate · 61% provider timeouts</span></div>
+      <div class="kpi"><span class="kl">Average RPS</span><span class="kv">{{u.rps}}</span><span class="ks">Requests per second · peak {{u.peak}}</span></div>
+    </div>
+
+    <section class="card" style="padding: 26px 28px; display: flex; flex-direction: column; gap: 22px">
+      <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+        <div>
+          <p class="sec" style="margin: 0">{{conc.title}}</p>
+          <p class="mut" style="margin: 6px 0 0; font-size: 14px">{{conc.sub}}</p>
+        </div>
+        <div class="seg" role="group" aria-label="Top N"><button class="on">Top 10</button><button>Top 25</button></div>
+      </div>
+      <div style="display: flex; height: 22px; border-radius: 6px; overflow: hidden; gap: 2px" aria-hidden="true">
+        <sc-for list="{{conc.rows}}" as="r" hint-placeholder-count="6">
+          <div style="width: {{r.share}}%; background: {{r.color}}"></div>
+        </sc-for>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 14px; color: #334155; font-weight: 500; flex-wrap: wrap; gap: 8px">
+        <span>{{conc.colA}}</span><span>{{conc.colB}}</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 18px">
+        <sc-for list="{{conc.rows}}" as="r" hint-placeholder-count="6">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+              <span style="color: #64748B; font-size: 14px; width: 28px">#{{r.rank}}</span>
+              <span style="width: 10px; height: 10px; border-radius: 50%; background: {{r.color}}"></span>
+              <span style="font-size: 16px; font-weight: 500">{{r.label}}</span>
+              <span class="mut">{{r.note}}</span>
+              <span style="margin-left: auto; background: #F1F5F9; border-radius: 999px; padding: 3px 14px; font-size: 14px; font-weight: 600; min-width: 90px; text-align: center">{{r.val}}</span>
+              <span style="width: 64px; text-align: right; color: #475569; font-size: 15px">{{r.pctLabel}}</span>
+            </div>
+            <div class="bar"><div style="width: {{r.barW}}%; background: {{r.color}}"></div></div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+</sc-if>
+
+<!-- ================= LOGS ================= -->
+<sc-if value="{{is.logs}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div>
+      <p class="mut" style="margin: 0 0 8px; font-size: 15px">Usage Dashboard  ›  <span style="color: #0F172A; font-weight: 500">Logs Dashboard</span></p>
+      <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Logs Dashboard</h1>
+      <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Telemetry traces and request outcomes for every iGOT AI call — attributable to a department and application.</p>
+    </div>
+    <div style="height: 1px; background: #E2E8F0"></div>
+    <div class="g3">
+      <div class="kpi"><span style="font-size: 15px; color: #334155">Total requests</span><span class="kv" style="font-size: 28px">{{lg.total}}</span></div>
+      <div class="kpi" style="border-color: #86EFAC"><span style="font-size: 15px; color: #334155">Success</span><span class="kv" style="font-size: 28px; color: #15803D">{{lg.ok}}</span></div>
+      <div class="kpi" style="border-color: #FCA5A5"><span style="font-size: 15px; color: #334155">Failures</span><span class="kv" style="font-size: 28px; color: #B91C1C">{{lg.fail}}</span></div>
+    </div>
+    <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-start">
+      <div class="fld"><label for="lg-s">Search</label><input id="lg-s" class="in" placeholder="Trace ID, URL, service…"></div>
+      <div class="fld"><label for="lg-d">Department</label><select id="lg-d" class="in"><option>All departments</option><option>DoPT</option><option>MoAFW</option><option>Govt of Odisha</option></select></div>
+      <div class="fld"><label for="lg-a">Application</label><select id="lg-a" class="in"><option>All applications</option><option>AI Sarthi</option><option>AI Tutor</option><option>Subtitle &amp; Transcript</option><option>AI-CBP Tool</option></select></div>
+      <div class="fld" style="max-width: 200px"><label for="lg-t">Task type</label><select id="lg-t" class="in" value="{{logTask}}" onChange="{{onLogTask}}"><option>All</option><option>LLM</option><option>ASR</option><option>NMT</option><option>TTS</option><option>PII</option></select></div>
+      <div class="fld" style="max-width: 200px"><label for="lg-st">Status</label><select id="lg-st" class="in" value="{{logStatus}}" onChange="{{onLogStatus}}"><option>All</option><option>SUCCESS</option><option>FAILED</option></select></div>
+      <div class="fld"><label for="lg-u">Karmayogi ID</label><input id="lg-u" class="in" placeholder="e.g. KY-4471209"></div>
+      <div class="fld"><label for="lg-m">Metadata</label><input id="lg-m" class="in" placeholder="course_id=do_1139…"></div>
+      <div class="fld"><label for="lg-from">Start time</label><input id="lg-from" class="in" value="05/11/2026, 11:14 AM"></div>
+      <div class="fld"><label for="lg-to">End time</label><input id="lg-to" class="in" value="05/11/2026, 12:14 PM"></div>
+    </div>
+    <div class="tbox">
+      <div class="tr th g-logs"><span>Timestamp</span><span>Status</span><span>Task</span><span>Service · App</span><span>URL</span><span>Department</span><span>Latency</span><span></span></div>
+      <sc-for list="{{logs}}" as="l" hint-placeholder-count="8">
+        <div class="tr g-logs">
+          <span>{{l.ts}}</span>
+          <span><span class="pill {{l.tone}}">{{l.status}}</span></span>
+          <span><span class="pill t-{{l.task}}">{{l.task}}</span></span>
+          <span style="display: flex; flex-direction: column"><span>{{l.svc}}</span><span class="mut">{{l.app}}</span></span>
+          <span class="mono">{{l.url}}</span>
+          <span>{{l.dept}}</span>
+          <span>{{l.lat}}</span>
+          <button class="ico" aria-label="View trace"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+        </div>
+      </sc-for>
+      <div class="tf"><span>{{lg.shown}} shown</span><span>Page 1 of 412</span></div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ================= PILOT ================= -->
+<sc-if value="{{is.pilot}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 24px">
+    <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <div>
+        <p class="mut" style="margin: 0 0 8px; font-size: 15px">Usage Dashboard  ›  <span style="color: #0F172A; font-weight: 500">Pilot Tracker</span></p>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Subtitle &amp; Transcript Pilot</h1>
+        <p style="margin: 8px 0 0; color: #475569; font-size: 17px">12-week proof of concept · 11 languages · Govt of Odisha and MoAFW as tenants</p>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap"><span class="pill ok">G1 PASSED</span><span class="pill warn">WEEK 7 OF 12</span><span class="pill neu">G2 PENDING</span></div>
+    </div>
+    <div style="height: 1px; background: #E2E8F0"></div>
+    <section class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 18px">
+      <p class="sec" style="margin: 0">Adoption roadmap</p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px">
+        <sc-for list="{{phases}}" as="p" hint-placeholder-count="6">
+          <div style="display: flex; flex-direction: column; gap: 8px">
+            <div style="height: 8px; border-radius: 999px; background: {{p.color}}"></div>
+            <span class="mut" style="font-weight: 600">{{p.wk}}</span>
+            <span style="font-size: 15px; font-weight: 600">{{p.name}}</span>
+            <span class="mut">{{p.out}}</span>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 20px">
+      <section class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap">
+          <p class="sec" style="margin: 0">Language quality vs threshold</p>
+          <span class="mut">Reviewer score · threshold 0.85</span>
+        </div>
+        <sc-for list="{{langs}}" as="g" hint-placeholder-count="11">
+          <div style="display: grid; grid-template-columns: 96px 1fr 50px; gap: 12px; align-items: center">
+            <span style="font-size: 15px">{{g.name}}</span>
+            <div style="position: relative; height: 10px; background: #EEF2F6; border-radius: 999px">
+              <div style="width: {{g.w}}%; height: 100%; border-radius: 999px; background: {{g.color}}"></div>
+              <div style="position: absolute; left: 85%; top: -4px; bottom: -4px; width: 2px; background: #0F172A"></div>
+            </div>
+            <span style="font-size: 14px; font-weight: 600; text-align: right; color: {{g.text}}">{{g.score}}</span>
+          </div>
+        </sc-for>
+        <p class="mut" style="margin: 0">Assamese is below threshold — routed to fallback ASR <span class="mono">saarika-v2.5</span> for A/B comparison.</p>
+      </section>
+      <section class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 16px">
+        <p class="sec" style="margin: 0">Pilot volume</p>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+          <div class="kpi"><span class="kl">Course videos processed</span><span class="kv" style="font-size: 28px">1,284</span><span class="ks">of 2,000 batch</span></div>
+          <div class="kpi"><span class="kl">Audio hours</span><span class="kv" style="font-size: 28px">2,916 h</span><span class="ks">ASR · IndicConformer</span></div>
+          <div class="kpi"><span class="kl">Subtitle tracks</span><span class="kv" style="font-size: 28px">14,124</span><span class="ks">11 languages · NMT</span></div>
+          <div class="kpi"><span class="kl">Invoice variance</span><span class="kv" style="font-size: 28px; color: #15803D">1.8%</span><span class="ks">Tolerance 3% · Oct invoice</span></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px">
+          <span class="kl">Cost per subtitle track</span>
+          <div style="display: flex; justify-content: space-between; font-size: 15px"><span>Baseline (direct provider)</span><b>₹18.60</b></div>
+          <div class="bar"><div style="width: 100%; background: #94A3B8"></div></div>
+          <div style="display: flex; justify-content: space-between; font-size: 15px"><span>Through Orchestrate</span><b>₹14.20</b></div>
+          <div class="bar"><div style="width: 76%; background: #2563B8"></div></div>
+          <span class="mut">Savings are a hypothesis being measured, like-for-like quality and workload.</span>
+        </div>
+      </section>
+    </div>
+    <div>
+      <p class="sec" style="margin: 0 0 12px">Acceptance criteria — gate G2</p>
+      <div class="tbox">
+        <div class="tr th g-acc"><span>Dimension</span><span>Acceptance measure</span><span>Current evidence</span><span>Status</span></div>
+        <sc-for list="{{acc}}" as="a" hint-placeholder-count="7">
+          <div class="tr g-acc"><span style="font-weight: 600">{{a.dim}}</span><span style="color: #334155">{{a.measure}}</span><span>{{a.ev}}</span><span><span class="pill {{a.tone}}">{{a.status}}</span></span></div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ================= MODELS ================= -->
+<sc-if value="{{is.models}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <div>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Model Management</h1>
+        <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Register and configure the LLM, speech, translation and redaction models iGOT can route to.</p>
+      </div>
+      <button class="btn">＋ Register Model</button>
+    </div>
+    <div style="height: 1px; background: #E2E8F0"></div>
+    <div style="display: flex; gap: 14px; flex-wrap: wrap">
+      <div class="fld"><label for="m-s">Search</label><input id="m-s" class="in" placeholder="Search by model name…"></div>
+      <div class="fld"><label for="m-p">Provider</label><select id="m-p" class="in"><option>All providers</option><option>AI4Bharat</option><option>Sarvam AI</option><option>Self-hosted (NIC)</option></select></div>
+      <div class="fld"><label for="m-t">Task type</label><select id="m-t" class="in" value="{{modelTask}}" onChange="{{onModelTask}}"><option>All</option><option>LLM</option><option>ASR</option><option>NMT</option><option>TTS</option><option>PII</option></select></div>
+    </div>
+    <div class="tbox">
+      <div class="tr th g-mod"><span>Name</span><span>Version</span><span>Provider</span><span>Task</span><span>Hosting</span><span>Status</span><span>Created</span><span></span></div>
+      <sc-for list="{{models}}" as="m" hint-placeholder-count="8">
+        <div class="tr g-mod">
+          <span style="display: flex; flex-direction: column"><span style="font-weight: 500">{{m.name}}</span><span class="mut">{{m.langs}}</span></span>
+          <span>{{m.ver}}</span><span>{{m.prov}}</span>
+          <span><span class="pill t-{{m.task}}">{{m.task}}</span></span>
+          <span>{{m.host}}</span>
+          <span><span class="pill {{m.tone}}">{{m.status}}</span></span>
+          <span>{{m.created}}</span><span style="color: #94A3B8">›</span>
+        </div>
+      </sc-for>
+      <div class="tf"><span>1–{{modelCount}} of {{modelCount}}</span><span>Rows per page 25 · Page 1 of 1</span></div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ================= SERVICES ================= -->
+<sc-if value="{{is.services}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <div>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Services Management</h1>
+        <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Services are what iGOT apps call. Bind each to models and tiers, then publish it for departments.</p>
+      </div>
+      <button class="btn">＋ Create Service</button>
+    </div>
+    <div style="height: 1px; background: #E2E8F0"></div>
+    <div style="display: flex; gap: 14px; flex-wrap: wrap">
+      <div class="fld"><label for="s-s">Search</label><input id="s-s" class="in" placeholder="Search by service name…"></div>
+      <div class="fld"><label for="s-st">Status</label><select id="s-st" class="in"><option>All</option><option>Published</option><option>Draft</option></select></div>
+      <div class="fld"><label for="s-t">Model task type</label><select id="s-t" class="in"><option>All</option><option>LLM</option><option>ASR</option><option>NMT</option></select></div>
+      <div class="fld"><label for="s-ti">Tier</label><select id="s-ti" class="in"><option>All</option><option>karmayogi-pilot</option><option>ministry-standard</option><option>state-ati</option></select></div>
+    </div>
+    <div class="tbox">
+      <div class="tr th g-svc"><span>Name</span><span>Task</span><span>Tiers</span><span>Used by</span><span>Status</span><span>Created</span><span>Actions</span></div>
+      <sc-for list="{{services}}" as="s" hint-placeholder-count="9">
+        <div class="tr g-svc">
+          <span style="display: flex; flex-direction: column"><span style="font-weight: 500">{{s.name}}</span><span class="mut">{{s.models}}</span></span>
+          <span><span class="pill t-{{s.task}}">{{s.task}}</span></span>
+          <span style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{s.tiers}}" as="t" hint-placeholder-count="1"><span class="pill neu mono" style="font-size: 11px">{{t}}</span></sc-for></span>
+          <span class="mut" style="color: #334155">{{s.apps}}</span>
+          <span><span class="pill {{s.tone}}">{{s.status}}</span></span>
+          <span>{{s.created}}</span>
+          <span style="display: flex"><button class="ico" aria-label="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button><button class="ico" aria-label="Unpublish" style="color: #DC2626"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M6.5 6.5l11 11"></path></svg></button><button class="ico" aria-label="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"></path></svg></button></span>
+        </div>
+      </sc-for>
+      <div class="tf"><span>1–9 of 9</span><span>Rows per page 25 · Page 1 of 1</span></div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ================= DEPARTMENTS ================= -->
+<sc-if value="{{is.depts}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <div>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Department Management</h1>
+        <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Onboard ministries, state ATIs and bodies as tenants on iGOT's AI layer — add users, assign tiers, set budgets.</p>
+      </div>
+      <button class="btn">＋ Onboard Department</button>
+    </div>
+    <div style="height: 1px; background: #E2E8F0"></div>
+    <div style="display: flex; gap: 14px; flex-wrap: wrap">
+      <div class="fld"><label for="d-s">Search</label><input id="d-s" class="in" placeholder="Search by department or tenant ID"></div>
+      <div class="fld"><label for="d-ty">Type</label><select id="d-ty" class="in"><option>All types</option><option>Central ministry</option><option>State government</option><option>Autonomous body</option></select></div>
+      <div class="fld"><label for="d-st">Status</label><select id="d-st" class="in"><option>All statuses</option><option>Active</option><option>Suspended</option></select></div>
+      <div class="fld"><label for="d-t">Tier</label><select id="d-t" class="in"><option>All tiers</option><option>karmayogi-pilot</option><option>ministry-standard</option><option>state-ati</option></select></div>
+    </div>
+    <div class="tbox">
+      <div class="tr th g-inst"><span>Department</span><span>Nodal officer</span><span>Type</span><span>Status</span><span>Tier</span><span>Onboarded</span><span>Actions</span></div>
+      <sc-for list="{{depts}}" as="d" hint-placeholder-count="10">
+        <div class="tr g-inst">
+          <span style="display: flex; align-items: center; gap: 12px; min-width: 0"><span class="av" style="background: {{d.color}}">{{d.ini}}</span><span style="display: flex; flex-direction: column; min-width: 0"><span style="font-weight: 500">{{d.name}} <sc-if value="{{d.isDefault}}" hint-placeholder-val="{{ false }}"><span class="pill t-LLM" style="font-size: 11px">Default</span></sc-if></span><span class="mut">{{d.email}}</span></span></span>
+          <span>{{d.contact}}</span>
+          <span class="mut" style="color: #334155">{{d.type}}</span>
+          <span><span class="pill {{d.tone}}">{{d.status}}</span></span>
+          <span><span class="pill neu mono" style="font-size: 11px">{{d.tier}}</span></span>
+          <span>{{d.onb}}</span>
+          <span style="display: flex"><button class="ico" aria-label="Edit department"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button><button class="ico" aria-label="Assign tier" style="color: #4F46E5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5"></circle><path d="M9 13.5L7.5 21l4.5-2.5 4.5 2.5L15 13.5"></path></svg></button></span>
+        </div>
+      </sc-for>
+      <div class="tf"><span>1–10 of 10</span><span>Rows per page 25 · Page 1 of 1</span></div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ================= API KEYS ================= -->
+<sc-if value="{{is.keys}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <div>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">API Key Management</h1>
+        <p style="margin: 8px 0 0; color: #475569; font-size: 17px">One key per iGOT application per department — with permissions, budget allocation and expiry.</p>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap"><button class="btn2">↻ Refresh</button><button class="btn2">Bulk Update Budgets</button><button class="btn">＋ Create API Key</button></div>
+    </div>
+    <div class="card" style="padding: 20px 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 18px; background: #F8FAFC">
+      <div><span class="kl">API keys</span><div class="kv" style="font-size: 30px">10</div><span class="ks">Across 6 iGOT applications</span></div>
+      <div><span class="kl">Allocated</span><div class="kv" style="font-size: 30px; color: #1E4F94">₹39,00,000</div><span class="ks">assigned to active keys · FY 2026–27</span></div>
+      <div><span class="kl">Expiring in 30 days</span><div class="kv" style="font-size: 30px; color: #B45309">2</div><span class="ks">Rotate before expiry</span></div>
+    </div>
+    <div style="display: flex; gap: 14px; flex-wrap: wrap">
+      <div class="fld"><label for="k-s">Search</label><input id="k-s" class="in" placeholder="Search API keys…"></div>
+      <div class="fld"><label for="k-a">Application</label><select id="k-a" class="in"><option>All applications</option><option>AI Sarthi</option><option>AI Tutor</option><option>Subtitle &amp; Transcript</option></select></div>
+      <div class="fld"><label for="k-d">Department</label><select id="k-d" class="in"><option>All departments</option></select></div>
+      <div class="fld"><label for="k-st">Status</label><select id="k-st" class="in"><option>All</option><option>Active</option><option>Inactive</option></select></div>
+    </div>
+    <div class="tbox">
+      <div class="tr th g-key"><span>Key</span><span>Application</span><span>Department</span><span>Allocation</span><span>Used</span><span>Status</span><span>Expiry</span><span>Actions</span></div>
+      <sc-for list="{{keys}}" as="k" hint-placeholder-count="10">
+        <div class="tr g-key">
+          <span style="display: flex; flex-direction: column"><span style="font-weight: 600">{{k.name}}</span><span class="mut mono" style="font-size: 12px">{{k.mask}}</span></span>
+          <span>{{k.app}}</span>
+          <span>{{k.dept}}</span>
+          <span style="display: flex; flex-direction: column"><b>{{k.alloc}}</b><span class="mut">{{k.amt}}</span></span>
+          <span>{{k.used}}</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px"><span style="width: 7px; height: 7px; border-radius: 50%; background: {{k.dot}}"></span>{{k.status}}</span>
+          <span>{{k.exp}}</span>
+          <span style="display: flex"><button class="ico" aria-label="View key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"></path><circle cx="12" cy="12" r="3"></circle></svg></button><button class="ico" aria-label="Edit key"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button><button class="ico" aria-label="Revoke key" style="color: #DC2626"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M6.5 6.5l11 11"></path></svg></button></span>
+        </div>
+      </sc-for>
+      <div class="tf"><span>1–10 of 10</span><span>Rows per page 25 · Page 1 of 1</span></div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ================= SETTINGS ================= -->
+<sc-if value="{{is.settings}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div>
+      <p class="mut" style="margin: 0 0 8px; font-size: 15px">Usage Dashboard  ›  <span style="color: #0F172A; font-weight: 500">Platform Settings</span></p>
+      <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Platform Settings</h1>
+      <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Configure the notification and alert catalog for Karmayogi Bharat and department admins.</p>
+    </div>
+    <div class="tabs" role="tablist"><button class="on">Metering</button><button>Monitoring</button><button>Data residency</button></div>
+    <section class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 18px">
+      <div>
+        <h2 style="margin: 0; font-size: 18px">Notifications Catalog</h2>
+        <p style="margin: 6px 0 0; color: #475569; font-size: 15px; line-height: 1.55; max-width: 900px">Global notifications reach every Department Admin with no opt-out; Department notifications are subscribable. Choose whether a copy should also reach the Karmayogi Bharat Adopter Admin, then submit.</p>
+      </div>
+      <div class="tabs" role="tablist" style="gap: 24px"><button class="on" style="font-size: 16px">Notifications Catalog</button><button style="font-size: 16px">Alerts Catalog</button></div>
+      <div class="tbox">
+        <div class="tr th g-not"><span>Notification</span><span>Scope</span><span>Recipient</span><span>Delivery channel</span></div>
+        <sc-for list="{{notifs}}" as="n" hint-placeholder-count="9">
+          <div class="tr g-not">
+            <span style="display: flex; flex-direction: column; gap: 2px"><span>{{n.name}}</span><span class="mut">{{n.desc}}</span></span>
+            <span><span class="sgl"><button class="{{n.gCls}}" onClick="{{n.setG}}">Global</button><button class="{{n.iCls}}" onClick="{{n.setI}}">Department</button></span></span>
+            <span><label style="display: inline-flex; gap: 10px; align-items: center; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 12px; font-size: 14px"><input type="checkbox" class="chk" checked="{{n.adopter}}" onChange="{{n.toggle}}">Adopter Admin</label></span>
+            <span><select class="in" aria-label="Channel" style="height: 38px; max-width: 170px"><option>{{n.channel}}</option><option>Email</option><option>Email + SMS</option><option>iGOT in-app</option></select></span>
+          </div>
+        </sc-for>
+        <div class="tf"><span>1–9 of 9</span><span>Rows per page 25 · Page 1 of 1</span></div>
+      </div>
+      <div style="display: flex; justify-content: flex-end"><button class="btn">Submit</button></div>
+    </section>
+  </div>
+</sc-if>
+
+<!-- ================= TIERS ================= -->
+<sc-if value="{{is.tiers}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <div>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Tier Management</h1>
+        <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Tiers bundle services, quotas and rate limits that a department gets access to.</p>
+      </div>
+      <button class="btn">＋ Create Tier</button>
+    </div>
+    <div style="height: 1px; background: #E2E8F0"></div>
+    <div style="display: flex; gap: 14px; flex-wrap: wrap">
+      <div class="fld"><label for="t-s">Search</label><input id="t-s" class="in" placeholder="Search tiers…"></div>
+      <div class="fld"><label for="t-t">Model task type</label><select id="t-t" class="in"><option>All</option><option>LLM</option><option>ASR</option></select></div>
+      <div class="fld"><label for="t-st">Status</label><select id="t-st" class="in"><option>All</option><option>Active</option><option>Inactive</option></select></div>
+    </div>
+    <div class="tbox">
+      <div class="tr th g-tier"><span>Tier name</span><span>Status</span><span>Task types</span><span>Services</span><span>Departments</span><span>Monthly quota</span><span>Actions</span></div>
+      <sc-for list="{{tiers}}" as="t" hint-placeholder-count="4">
+        <div class="tr g-tier">
+          <span style="display: flex; flex-direction: column"><span style="font-weight: 500">{{t.name}}</span><span class="mut">{{t.desc}}</span></span>
+          <span><span class="pill {{t.tone}}">{{t.status}}</span></span>
+          <span style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{t.tasks}}" as="x" hint-placeholder-count="2"><span class="pill t-{{x}}">{{x}}</span></sc-for></span>
+          <span><span class="pill neu">{{t.svc}}</span></span>
+          <span><span class="pill neu">{{t.depts}}</span></span>
+          <span>{{t.quota}}</span>
+          <span style="display: flex"><button class="ico" aria-label="Edit tier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button><button class="ico" aria-label="Delete tier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"></path></svg></button></span>
+        </div>
+      </sc-for>
+      <div class="tf"><span>1–4 of 4</span><span>Rows per page 25 · Page 1 of 1</span></div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ================= POLICY ================= -->
+<sc-if value="{{is.policy}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <div>
+        <p class="mut" style="margin: 0 0 8px; font-size: 15px">Usage Dashboard  ›  <span style="color: #0F172A; font-weight: 500">Policy Management</span></p>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">Policy Management</h1>
+        <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Guardrails applied to every request — privacy, content safety, quality and data handling.</p>
+      </div>
+      <button class="btn">＋ Create Policy</button>
+    </div>
+    <div class="tabs" role="tablist"><button class="on">Policies</button><button>Categories</button><button>Configuration</button><button>Playground</button></div>
+    <div style="display: flex; gap: 14px; flex-wrap: wrap">
+      <div class="fld"><label for="p-s">Search</label><input id="p-s" class="in" placeholder="Search policies…"></div>
+      <div class="fld"><label for="p-c">Category</label><select id="p-c" class="in"><option>All categories</option><option>Privacy</option><option>Content safety</option><option>Quality</option><option>Data handling</option></select></div>
+      <div class="fld"><label for="p-d">Domain</label><select id="p-d" class="in"><option>All domains</option><option>Learner queries</option><option>Course content</option></select></div>
+    </div>
+    <div class="tbox">
+      <div class="tr th g-pol"><span>Policy name</span><span>Category / sub-category</span><span>Applies to</span><span>Languages</span><span>Status</span><span>Actions</span></div>
+      <sc-for list="{{policies}}" as="p" hint-placeholder-count="7">
+        <div class="tr g-pol">
+          <span style="display: flex; flex-direction: column"><span style="font-weight: 500">{{p.name}}</span><span class="mut">{{p.desc}}</span></span>
+          <span>{{p.cat}}</span>
+          <span>{{p.apps}}</span>
+          <span>{{p.langs}}</span>
+          <span><span class="pill {{p.tone}}">{{p.status}}</span></span>
+          <span style="display: flex"><button class="ico" aria-label="Edit policy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"></path></svg></button></span>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+</main>
+</div>
+</template>
+<script>
+class DCLogic{constructor(p){this.props=p||{};this.state={};}setState(s){this.state=Object.assign({},this.state,typeof s==='function'?s(this.state):s);__render();}forceUpdate(){__render();}}
+function __look(scope,path){path=path.trim();if(path==='true')return true;if(path==='false')return false;if(/^-?\d+(\.\d+)?$/.test(path))return +path;var v=scope;path.split('.').forEach(function(k){v=(v==null)?undefined:v[k];});return v;}
+var __whole=/^\s*\{\{([^}]+)\}\}\s*$/;
+function __interp(str,scope){return str.replace(/\{\{([^}]+)\}\}/g,function(_,p){var v=__look(scope,p);return v==null?'':String(v);});}
+function __renderNode(node,scope,out){
+  if(node.nodeType===3){out.appendChild(document.createTextNode(__interp(node.nodeValue,scope)));return;}
+  if(node.nodeType!==1)return;
+  var tag=node.localName;
+  if(tag==='sc-if'){var m=(node.getAttribute('value')||'').match(__whole);if(m&&__look(scope,m[1]))node.childNodes.forEach(function(c){__renderNode(c,scope,out);});return;}
+  if(tag==='sc-for'){var m2=(node.getAttribute('list')||'').match(__whole);var list=m2?__look(scope,m2[1]):[];var as=node.getAttribute('as')||'item';
+    (list||[]).forEach(function(it,i){var s=Object.create(scope);s[as]=it;s.$index=i;node.childNodes.forEach(function(c){__renderNode(c,s,out);});});return;}
+  var el=node.cloneNode(false);var post=[];
+  Array.from(node.attributes).forEach(function(a){var n=a.name,v=a.value;if(n.indexOf('hint-')===0){el.removeAttribute(n);return;}
+    var w=v.match(__whole);
+    if(n.indexOf('on')===0&&w){el.removeAttribute(n);var fn=__look(scope,w[1]);if(typeof fn==='function')el.addEventListener(n.slice(2),fn);return;}
+    if(v.indexOf('{{')<0)return;
+    if(n==='checked'){el.removeAttribute(n);var cv=!!__look(scope,w?w[1]:'');post.push(function(){el.checked=cv;});return;}
+    if(n==='value'&&w){el.removeAttribute(n);var vv=__look(scope,w[1]);post.push(function(){el.value=vv;});return;}
+    el.setAttribute(n,__interp(v,scope));});
+  var kids=node.localName==='template'?node.content.childNodes:node.childNodes;
+  kids.forEach(function(c){__renderNode(c,scope,el);});
+  post.forEach(function(f){f();});out.appendChild(el);}
+var __comp;
+function __render(){var vals=__comp.renderVals();var frag=document.createDocumentFragment();var tpl=document.getElementById('tpl').content;tpl.childNodes.forEach(function(c){__renderNode(c,vals,frag);});var root=document.getElementById('root');var y=window.scrollY;root.replaceChildren(frag);window.scrollTo(0,y);}
+
+
+var PAGES = ['explore','usage','logs','pilot','models','services','depts','keys','settings','tiers','policy'];
+var PALETTE = ['#B4552A','#2563B8','#0F8C7E','#7C3AED','#C58A0B','#DB2777','#475569','#0284C7','#65A30D','#9A3412'];
+
+var DEPT_ROWS = [
+  ['Karmayogi Bharat','Platform-wide · AI Sarthi',18420],['Dept. of Personnel & Training','DoPT',9310],['Min. of Agriculture & Farmers Welfare','MoAFW · pilot',6045],
+  ['Government of Odisha','State ATI · pilot',4880],['Min. of Health & Family Welfare','MoHFW',3512],['Ministry of Railways','Budget exhausted',2640],
+  ['Capacity Building Commission','CBC',1890],['Min. of Electronics & IT','MeitY',920],['Min. of Rural Development','MoRD · new',410],['Government of Uttar Pradesh','UPAAM',189]];
+var MODEL_ROWS = [['sarvam-m','LLM · Sarvam AI',16200],['gemma-3-27b-it','LLM · self-hosted',9800],['indictrans2-en-indic-1B','NMT · AI4Bharat',8450],['indic-conformer-600m','ASR · AI4Bharat',6100],['llama-3.3-70b-instruct','LLM · self-hosted',3900],['saarika-v2.5','ASR · Sarvam AI',2300],['indic-parler-tts','TTS · AI4Bharat',900],['presidio-indic-pii','PII · self-hosted',566]];
+var APP_ROWS = [['AI Sarthi','Search, Q&A, recommendations',20110],['AI Tutor','In-course learning companion',11430],['Subtitle & Transcript','Batch · 11 languages',9962],['AI-CBP Tool','Course & assessment authoring',3820],['Karmayogi Classroom','Live sessions',2104],['Competency Mapping','FRAC role mapping',790]];
+var BUDGET_ROWS = [['Karmayogi Bharat','₹6.2 L of ₹15 L',41],['Dept. of Personnel & Training','₹4.1 L of ₹5 L',82],['Min. of Agriculture & Farmers Welfare','₹2.6 L of ₹4 L',65],['Government of Odisha','₹1.9 L of ₹3 L',63],['Min. of Health & Family Welfare','₹1.4 L of ₹4 L',35],['Ministry of Railways','₹2.0 L of ₹2 L',100],['Capacity Building Commission','₹0.8 L of ₹2 L',40],['Min. of Electronics & IT','₹0.3 L of ₹2 L',15],['Min. of Rural Development','₹0.1 L of ₹1 L',10],['Government of Uttar Pradesh','₹0.05 L of ₹1 L',5]];
+var RANGES = {today:[1,'18.6%',1.42],yday:[0.94,'9.1%',1.38],d7:[6.6,'24.3%',1.61],d30:[27.4,'38.2%',1.74]};
+
+var LOGS = [
+ ['11/5/2026, 12:13:36 PM','SUCCESS','LLM','AI Sarthi Assist','AI Sarthi','/api/v1/chat/completions','DoPT','1.8 s'],
+ ['11/5/2026, 12:13:35 PM','SUCCESS','ASR','Subtitle Generation','Subtitle & Transcript','/api/v1/asr/transcribe','Govt of Odisha','42.6 s'],
+ ['11/5/2026, 12:13:22 PM','SUCCESS','NMT','Transcript Translation','Subtitle & Transcript','/api/v1/nmt/translate','Govt of Odisha','0.9 s'],
+ ['11/5/2026, 12:13:13 PM','SUCCESS','PII','Learner PII Redaction','AI Tutor','/api/v1/pii/redact','MoHFW','0.2 s'],
+ ['11/5/2026, 12:13:12 PM','SUCCESS','LLM','AI Tutor Companion','AI Tutor','/api/v1/chat/completions','MoHFW','2.4 s'],
+ ['11/5/2026, 12:13:02 PM','FAILED','LLM','AI Sarthi Assist','AI Sarthi','/api/v1/chat/completions','Ministry of Railways','—'],
+ ['11/5/2026, 12:12:31 PM','SUCCESS','NMT','Transcript Translation','Subtitle & Transcript','/api/v1/nmt/translate','MoAFW','1.1 s'],
+ ['11/5/2026, 12:11:56 PM','SUCCESS','LLM','Assessment Generation','AI-CBP Tool','/api/v1/chat/completions','CBC','6.2 s'],
+ ['11/5/2026, 12:11:10 PM','SUCCESS','TTS','Audio Narration','AI-CBP Tool','/api/v1/tts/synthesize','CBC','3.0 s'],
+ ['11/5/2026, 12:11:10 PM','FAILED','ASR','Subtitle Generation','Subtitle & Transcript','/api/v1/asr/transcribe','MoAFW','120 s'],
+ ['11/5/2026, 12:11:06 PM','SUCCESS','LLM','Competency Mapping','Competency Mapping','/api/v1/chat/completions','DoPT','4.7 s'],
+ ['11/5/2026, 12:10:48 PM','SUCCESS','LLM','Course Summarization','AI Tutor','/api/v1/chat/completions','MeitY','3.3 s']];
+
+var MODELS = [
+ ['sarvam-m','v1','Sarvam AI','LLM','Sarvam API','ACTIVE','9/21/2026','English + 10 Indic'],
+ ['gemma-3-27b-it','1.0.0','Google (open weights)','LLM','Self-hosted · NIC','ACTIVE','8/6/2026','140+ languages'],
+ ['llama-3.3-70b-instruct','v1','Meta (open weights)','LLM','Self-hosted · NIC','ACTIVE','8/9/2026','Multilingual'],
+ ['indictrans2-en-indic-1B','v2','AI4Bharat','NMT','Self-hosted · NIC','ACTIVE','9/17/2026','22 scheduled languages'],
+ ['indictrans2-indic-en-1B','v2','AI4Bharat','NMT','Self-hosted · NIC','ACTIVE','9/17/2026','22 scheduled languages'],
+ ['indic-conformer-600m','v1','AI4Bharat','ASR','Self-hosted · NIC','ACTIVE','9/17/2026','22 scheduled languages'],
+ ['saarika-v2.5','v2.5','Sarvam AI','ASR','Sarvam API','ACTIVE','9/21/2026','11 languages'],
+ ['whisper-large-v3','v3','OpenAI (open weights)','ASR','Self-hosted · NIC','INACTIVE','8/9/2026','Fallback only'],
+ ['indic-parler-tts','v1','AI4Bharat','TTS','Self-hosted · NIC','ACTIVE','10/2/2026','21 languages'],
+ ['bulbul-v2','v2','Sarvam AI','TTS','Sarvam API','TESTING','10/14/2026','11 languages'],
+ ['presidio-indic-pii','0.4.1','Open source','PII','Self-hosted · NIC','ACTIVE','10/2/2026','Aadhaar, PAN, phone, email']];
+
+var SERVICES = [
+ ['AI Sarthi Assist','LLM',['ministry-standard','state-ati'],'AI Sarthi','PUBLISHED','9/21/2026','sarvam-m → gemma-3-27b fallback'],
+ ['AI Tutor Companion','LLM',['ministry-standard'],'AI Tutor','PUBLISHED','9/21/2026','gemma-3-27b-it'],
+ ['Course Summarization','LLM',['ministry-standard','state-ati'],'AI Tutor, AI Sarthi','PUBLISHED','9/17/2026','llama-3.3-70b'],
+ ['Assessment Generation','LLM',['ministry-standard'],'AI-CBP Tool','PUBLISHED','9/17/2026','gemma-3-27b-it'],
+ ['Competency Mapping','LLM',['ministry-standard'],'Competency Mapping','DRAFT','10/20/2026','sarvam-m'],
+ ['Subtitle Generation','ASR',['karmayogi-pilot'],'Subtitle & Transcript','PUBLISHED','9/17/2026','indic-conformer · A/B saarika'],
+ ['Transcript Translation','NMT',['karmayogi-pilot','state-ati'],'Subtitle & Transcript','PUBLISHED','9/17/2026','indictrans2-en-indic'],
+ ['Audio Narration','TTS',['ministry-standard'],'AI-CBP Tool','DRAFT','10/14/2026','indic-parler-tts'],
+ ['Learner PII Redaction','PII',['karmayogi-pilot','ministry-standard','state-ati'],'All apps (pre-processing)','PUBLISHED','10/2/2026','presidio-indic-pii']];
+
+var DEPTS = [
+ ['Karmayogi Bharat','KB','Platform Admin','a***@karmayogibharat.gov.in','Autonomous body','—','8/6/2026',true],
+ ['Dept. of Personnel & Training','DP','Joint Secretary (Trg)','j***@nic.in','Central ministry','ministry-standard','8/7/2026',false],
+ ['Min. of Agriculture & Farmers Welfare','MA','MoAFW Nodal Officer','b***@gov.in','Central ministry','karmayogi-pilot','8/9/2026',false],
+ ['Government of Odisha','OD','Gopabandhu Academy','o***@odisha.gov.in','State government','karmayogi-pilot','10/22/2026',false],
+ ['Min. of Health & Family Welfare','MH','MoHFW Nodal Officer','h***@nic.in','Central ministry','ministry-standard','8/12/2026',false],
+ ['Ministry of Railways','MR','IRITM Lucknow','r***@rb.railnet.gov.in','Central ministry','ministry-standard','8/18/2026',false],
+ ['Capacity Building Commission','CB','CBC Secretariat','c***@cbc.gov.in','Autonomous body','ministry-standard','8/9/2026',false],
+ ['Min. of Electronics & IT','ME','MeitY Nodal Officer','m***@meity.gov.in','Central ministry','ministry-standard','9/2/2026',false],
+ ['Min. of Rural Development','RD','NIRDPR Hyderabad','n***@nirdpr.org.in','Central ministry','ministry-standard','10/27/2026',false],
+ ['Government of Uttar Pradesh','UP','UPAAM Lucknow','u***@up.gov.in','State government','state-ati','9/30/2026',false]];
+
+var KEYS = [
+ ['ai-sarthi-prod','a91f******3644','AI Sarthi','Karmayogi Bharat','38%','₹15,00,000','41%','Active','6/30/2027'],
+ ['ai-tutor-prod','12a3******023b','AI Tutor','Karmayogi Bharat','—','Shared budget','—','Active','6/30/2027'],
+ ['subtitle-pilot-odisha','53dc******0b0c','Subtitle & Transcript','Government of Odisha','100%','₹3,00,000','63%','Active','2/28/2027'],
+ ['subtitle-pilot-moafw','1519******a20c','Subtitle & Transcript','MoAFW','100%','₹4,00,000','65%','Active','2/28/2027'],
+ ['dopt-competency','abf2******7325','Competency Mapping','DoPT','100%','₹5,00,000','82%','Active','6/5/2027'],
+ ['cbc-ai-cbp','9ffa******d352','AI-CBP Tool','CBC','100%','₹2,00,000','40%','Active','6/5/2027'],
+ ['mohfw-tutor','e606******a0ae','AI Tutor','MoHFW','100%','₹4,00,000','35%','Active','11/30/2026'],
+ ['railways-sarthi','7165******42de','AI Sarthi','Ministry of Railways','100%','₹2,00,000','100%','Active','11/17/2026'],
+ ['classroom-live','c0d4******9e11','Karmayogi Classroom','CBC','No ceiling','—','—','Active','3/31/2027'],
+ ['sarthi-staging','6fb0******031b','AI Sarthi','Karmayogi Bharat','No ceiling','—','—','Inactive','9/6/2026']];
+
+var NOTIFS = [
+ ['tier_assigned','Tier Assigned','Fires when a tier is assigned to a department','institution',false,'Email'],
+ ['tier_reassigned','Tier Reassigned','Fires when a department moves between tiers','global',true,'Email'],
+ ['budget_assigned','Budget Assigned','Fires when a budget is set for a department or key','institution',false,'Email'],
+ ['budget_revised','Budget Revised','Fires when an existing budget amount changes','global',true,'Email'],
+ ['quota_updated','Quota Limit Updated','Fires when a quota limit changes for a department','global',false,'Email'],
+ ['quota_exhausted','Quota Exhausted','Fires at 100% quota; new requests are throttled','global',true,'Email + SMS'],
+ ['budget_exhausted','Budget Exhausted','Fires when a budget is depleted; requests are blocked','global',true,'Email + SMS'],
+ ['lang_quality','Language Quality Below Threshold','Fires when a language falls below its reviewer score','global',true,'Email'],
+ ['invoice_mismatch','Invoice Reconciliation Variance','Fires when metered usage differs from provider invoice > tolerance','global',true,'Email']];
+
+var TIERS = [
+ ['karmayogi-pilot','Subtitle pilot · 11 languages','ACTIVE',['ASR','NMT','PII'],3,2,'2,000 videos / batch'],
+ ['ministry-standard','Central ministries','ACTIVE',['LLM','NMT','TTS','PII'],7,6,'5 L requests'],
+ ['state-ati','State training institutes','ACTIVE',['LLM','NMT','PII'],3,2,'1 L requests'],
+ ['ministry-premium','Higher limits, priority routing','INACTIVE',['LLM'],0,0,'—']];
+
+var POLICIES = [
+ ['Learner PII redaction','Strip Aadhaar, PAN, phone and email before any external provider call','Privacy / PII','All applications','23','ACTIVE'],
+ ['No learner data to external providers without consent','Route consent-less traffic to self-hosted models only','Data handling / Residency','AI Sarthi, AI Tutor','23','ACTIVE'],
+ ['Log retention — 90 days','Traces purged after 90 days; aggregates kept for audit','Data handling / Retention','All applications','—','ACTIVE'],
+ ['Civil service conduct guardrail','Block responses that conflict with conduct rules','Content safety / Conduct','AI Sarthi, AI Tutor','23','ACTIVE'],
+ ['Political neutrality','Decline opinion on parties, candidates and elections','Content safety / Neutrality','AI Sarthi','23','ACTIVE'],
+ ['Subtitle quality gate','Hold tracks below reviewer score 0.85 for human review','Quality / Translation','Subtitle & Transcript','11','ACTIVE'],
+ ['Provider fallback on timeout','Switch to secondary model after 30 s','Reliability / Routing','All applications','—','DRAFT']];
+
+var STUDIO = [
+ {abbr:'LLM',name:'Large Language Model',task:'LLM',color:'#BE185D',tint:'#FCE7F3',powers:'AI Sarthi, AI Tutor',desc:'Contextual Q&A, course summaries and assessment drafting for civil servants, in English and Indic languages.',model:'sarvam-m',lang:'Hindi',input:'Mission Karmayogi के अंतर्गत iGOT पर अनिवार्य पाठ्यक्रम कौन-से हैं?',output:'2025–26 से केंद्र सरकार और अखिल भारतीय सेवा के अधिकारियों के लिए निर्धारित पाठ्यक्रम iGOT पर अनिवार्य हैं। आप अपने "My Learning" पृष्ठ पर अपने विभाग के निर्धारित पाठ्यक्रम देख सकते हैं।',lat:'1.6 s',cost:'₹0.042',trace:'tr_8f21c0'},
+ {abbr:'ASR',name:'Speech Recognition',task:'ASR',color:'#0F766E',tint:'#CCFBF1',powers:'Subtitle & Transcript',desc:'Transcribe course videos and Karmayogi Classroom sessions across Indian languages.',model:'indic-conformer-600m',lang:'Odia',input:'[audio] module_04_lecture.wav · 18 min 42 s',output:'00:00:03 → ଆଜିର ଅଧିବେଶନରେ ଆମେ ଜନ ସେବା ବିତରଣ ବିଷୟରେ ଆଲୋଚନା କରିବା…\n00:00:09 → …',lat:'38.4 s',cost:'₹3.10',trace:'tr_2a9d14'},
+ {abbr:'NMT',name:'Machine Translation',task:'NMT',color:'#1D4ED8',tint:'#DBEAFE',powers:'Subtitles, course content',desc:'Translate transcripts and course text into 22 scheduled languages with IndicTrans2.',model:'indictrans2-en-indic-1B',lang:'English → Tamil',input:'Citizen-centricity is the foundation of good governance.',output:'குடிமக்களை மையமாகக் கொண்டிருப்பதே நல்லாட்சியின் அடித்தளம்.',lat:'0.8 s',cost:'₹0.006',trace:'tr_c41e77'},
+ {abbr:'TTS',name:'Text to Speech',task:'TTS',color:'#B45309',tint:'#FEF3C7',powers:'AI-CBP Tool, accessibility',desc:'Generate natural narration for course modules and accessible audio for learners.',model:'indic-parler-tts',lang:'Marathi',input:'या अभ्यासक्रमात आपले स्वागत आहे.',output:'[audio] narration_mr.wav · 3.2 s · 24 kHz',lat:'2.9 s',cost:'₹0.11',trace:'tr_7bd901'},
+ {abbr:'PII',name:'PII Redaction',task:'PII',color:'#9D174D',tint:'#FCE7F3',powers:'All apps (pre-processing)',desc:'Detect and mask Aadhaar, PAN, phone numbers and emails before prompts leave the platform.',model:'presidio-indic-pii',lang:'Auto-detect',input:'My Aadhaar is 4521 8890 1123, please update my HRMS profile. Call 98450 12345.',output:'My Aadhaar is [AADHAAR], please update my HRMS profile. Call [PHONE].',lat:'0.2 s',cost:'₹0.001',trace:'tr_19ae5f'},
+ {abbr:'CC',name:'Subtitle Pipeline',task:'ASR',color:'#7C3AED',tint:'#EDE9FE',powers:'Pilot · 11 languages',desc:'Orchestrated flow: ASR → translation → quality gate → subtitle tracks, metered per department.',model:'indic-conformer → indictrans2',lang:'Hindi → 10 languages',input:'[video] do_11394_ethics_in_governance.mp4',output:'11 subtitle tracks generated\n10 passed quality gate · 1 held (Assamese, 0.82)',lat:'4 m 12 s',cost:'₹156.20',trace:'tr_pipe_0412'}];
+
+var LANGS = [['Hindi',0.93],['Bengali',0.90],['Marathi',0.91],['Telugu',0.88],['Tamil',0.89],['Gujarati',0.90],['Kannada',0.87],['Malayalam',0.86],['Odia',0.88],['Punjabi',0.89],['Assamese',0.82]];
+var PHASES = [['Wk 1–3','Align internally','Cost baseline','done'],['Wk 3–6','Inventory AI','Expansion plan','done'],['Wk 5–8','Win sponsors','Approved approach','done'],['Wk 8–10','Get approval','Named owner · G1','done'],['Wk 11–22','12-week pilot','Gate G2','now'],['Wk 25+','Expand','AI Tutor, AI Sarthi, MoU states','next']];
+var ACC = [
+ ['Cost visibility','Every request attributable to a department, with usage and cost reporting','100% of 412K requests attributed','On track','ok'],
+ ['Financial reconciliation','Metered usage matches provider invoices within agreed tolerance','1.8% variance (tolerance 3%)','On track','ok'],
+ ['Multilingual quality','Passes reviewer-defined thresholds for all 11 languages','10 of 11 pass · Assamese 0.82','At risk','warn'],
+ ['Operational continuity','No learner-facing outage or disruption caused by the pilot','0 incidents','On track','ok'],
+ ['Model flexibility','Registry and switching validated against provider test cases','2 of 3 switch tests passed','In progress','blue'],
+ ['Governance','Traces and reports give enough evidence for oversight','Weekly report to DoPT','On track','ok'],
+ ['Business value','Baseline vs pilot cost per unit, like-for-like','₹18.60 → ₹14.20 per track','Measuring','blue']];
+
+function fmt(n){ return Math.round(n).toLocaleString('en-IN'); }
+
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    var scopes = {}, adopt = {};
+    NOTIFS.forEach(function(n){ scopes[n[0]] = n[3]; adopt[n[0]] = n[4]; });
+    this.state = { page: null, rng: 'today', dt: 'dept', tryIdx: -1, logTask: 'All', logStatus: 'All', modelTask: 'All', scopes: scopes, adopt: adopt };
+  }
+  renderVals(){
+    var self = this, st = this.state;
+    var page = st.page || this.props.startPage || 'usage';
+    var nav = {}, go = {}, is = {};
+    PAGES.forEach(function(p){ nav[p] = p === page ? 'on' : ''; is[p] = p === page; go[p] = function(){ self.setState({ page: p }); window.scrollTo(0,0); }; });
+
+    var r = RANGES[st.rng];
+    var total = 48216 * r[0];
+    var rngCls = {}, setRng = {};
+    ['today','yday','d7','d30'].forEach(function(k){ rngCls[k] = k === st.rng ? 'on' : ''; setRng[k] = function(){ self.setState({ rng: k }); }; });
+    var days = {today:1, yday:1, d7:7, d30:30}[st.rng];
+    var u = { total: fmt(total), ok: fmt(total * 0.9827), fail: fmt(total * 0.0173), growth: r[1], rps: (total / (86400 * days)).toFixed(2), peak: r[2].toFixed(2) };
+
+    var dtCls = {}, setDt = {};
+    ['dept','model','budget','app'].forEach(function(k){ dtCls[k] = k === st.dt ? 'on' : ''; setDt[k] = function(){ self.setState({ dt: k }); }; });
+    var conc;
+    if (st.dt === 'budget') {
+      var sumB = 0; BUDGET_ROWS.forEach(function(b){ sumB += b[2]; });
+      conc = { title: 'Budget utilisation', sub: 'Spend against allocation per department — current month', colA: 'Department', colB: 'Spend · % used',
+        rows: BUDGET_ROWS.map(function(b, i){ return { rank: i + 1, label: b[0], note: '', val: b[1], pctLabel: b[2] + '%', barW: b[2], share: (b[2] / sumB * 100).toFixed(2), color: b[2] >= 100 ? '#B91C1C' : (b[2] >= 80 ? '#C58A0B' : PALETTE[1]) }; }) };
+    } else {
+      var src = st.dt === 'model' ? MODEL_ROWS : (st.dt === 'app' ? APP_ROWS : DEPT_ROWS);
+      var labels = { dept: ['Usage concentration','Departments by request volume — reflects the selected time window','Department'], model: ['Model mix','Models by request volume — reflects the selected time window','Model'], app: ['Application mix','iGOT applications by request volume — reflects the selected time window','Application'] }[st.dt];
+      var max = src[0][2];
+      conc = { title: labels[0], sub: labels[1], colA: labels[2], colB: 'Total requests · % of total',
+        rows: src.map(function(x, i){ var v = x[2] * r[0]; return { rank: i + 1, label: x[0], note: x[1], val: fmt(v), pctLabel: (x[2] / 48216 * 100).toFixed(2), barW: (x[2] / max * 100).toFixed(1), share: (x[2] / 48216 * 100).toFixed(2), color: PALETTE[i % PALETTE.length] }; }) };
+    }
+
+    var logs = LOGS.filter(function(l){ return (st.logTask === 'All' || l[2] === st.logTask) && (st.logStatus === 'All' || l[1] === st.logStatus); })
+      .map(function(l){ return { ts: l[0], status: l[1], tone: l[1] === 'SUCCESS' ? 'ok' : 'bad', task: l[2], svc: l[3], app: l[4], url: l[5], dept: l[6], lat: l[7] }; });
+    var lgBase = { All: 129, LLM: 64, ASR: 22, NMT: 31, TTS: 5, PII: 7 }[st.logTask];
+    var lgFail = st.logTask === 'All' ? 3 : (st.logTask === 'LLM' || st.logTask === 'ASR' ? 1 : 0);
+    var lg = st.logStatus === 'FAILED' ? { total: lgFail, ok: 0, fail: lgFail } : (st.logStatus === 'SUCCESS' ? { total: lgBase - lgFail, ok: lgBase - lgFail, fail: 0 } : { total: lgBase, ok: lgBase - lgFail, fail: lgFail });
+    lg.shown = logs.length;
+
+    var models = MODELS.filter(function(m){ return st.modelTask === 'All' || m[3] === st.modelTask; })
+      .map(function(m){ return { name: m[0], ver: m[1], prov: m[2], task: m[3], host: m[4], status: m[5], tone: m[5] === 'ACTIVE' ? 'ok' : (m[5] === 'TESTING' ? 'warn' : 'neu'), created: m[6], langs: m[7] }; });
+
+    var studio = STUDIO.map(function(s, i){ return Object.assign({}, s, { pick: function(){ self.setState({ tryIdx: i }); } }); });
+
+    var notifs = NOTIFS.map(function(n){ var id = n[0], sc = st.scopes[id];
+      return { name: n[1], desc: n[2], channel: n[5], gCls: sc === 'global' ? 'on' : '', iCls: sc === 'institution' ? 'on' : '', adopter: !!st.adopt[id],
+        setG: function(){ var s = Object.assign({}, self.state.scopes); s[id] = 'global'; self.setState({ scopes: s }); },
+        setI: function(){ var s = Object.assign({}, self.state.scopes); s[id] = 'institution'; self.setState({ scopes: s }); },
+        toggle: function(){ var a = Object.assign({}, self.state.adopt); a[id] = !a[id]; self.setState({ adopt: a }); } }; });
+
+    return {
+      nav: nav, go: go, is: is, rng: rngCls, setRng: setRng, dt: dtCls, setDt: setDt, u: u, conc: conc,
+      studio: studio, tryOpen: st.tryIdx >= 0, tryCard: st.tryIdx >= 0 ? STUDIO[st.tryIdx] : STUDIO[0],
+      logs: logs, lg: lg, logTask: st.logTask, logStatus: st.logStatus,
+      onLogTask: function(e){ self.setState({ logTask: e.target.value }); },
+      onLogStatus: function(e){ self.setState({ logStatus: e.target.value }); },
+      models: models, modelCount: models.length, modelTask: st.modelTask,
+      onModelTask: function(e){ self.setState({ modelTask: e.target.value }); },
+      services: SERVICES.map(function(s){ return { name: s[0], task: s[1], tiers: s[2], apps: s[3], status: s[4], tone: s[4] === 'PUBLISHED' ? 'ok' : 'warn', created: s[5], models: s[6] }; }),
+      depts: DEPTS.map(function(d, i){ return { name: d[0], ini: d[1], contact: d[2], email: d[3], type: d[4], tier: d[5], onb: d[6], isDefault: d[7], status: d[0] === 'Ministry of Railways' ? 'BUDGET HOLD' : 'ACTIVE', tone: d[0] === 'Ministry of Railways' ? 'warn' : 'ok', color: PALETTE[i % PALETTE.length] }; }),
+      keys: KEYS.map(function(k){ return { name: k[0], mask: k[1], app: k[2], dept: k[3], alloc: k[4], amt: k[5], used: k[6], status: k[7], dot: k[7] === 'Active' ? '#16A34A' : '#EA580C', exp: k[8] }; }),
+      notifs: notifs,
+      tiers: TIERS.map(function(t){ return { name: t[0], desc: t[1], status: t[2], tone: t[2] === 'ACTIVE' ? 'ok' : 'neu', tasks: t[3], svc: t[4], depts: t[5], quota: t[6] }; }),
+      policies: POLICIES.map(function(p){ return { name: p[0], desc: p[1], cat: p[2], apps: p[3], langs: p[4], status: p[5], tone: p[5] === 'ACTIVE' ? 'ok' : 'warn' }; }),
+      langs: LANGS.map(function(g){ var below = g[1] < 0.85; return { name: g[0], score: g[1].toFixed(2), w: (g[1] * 100).toFixed(0), color: below ? '#C58A0B' : '#0F8C7E', text: below ? '#92400E' : '#0F172A' }; }),
+      phases: PHASES.map(function(p){ return { wk: p[0], name: p[1], out: p[2], color: p[3] === 'done' ? '#0F8C7E' : (p[3] === 'now' ? '#C58A0B' : '#CBD5E1') }; }),
+      acc: ACC.map(function(a){ return { dim: a[0], measure: a[1], ev: a[2], status: a[3], tone: a[4] }; })
+    };
+  }
+}
+
+__comp = new Component({startPage:'usage'});
+__render();
+</script>
+</body>
+</html>
