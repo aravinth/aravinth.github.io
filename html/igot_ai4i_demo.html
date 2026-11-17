@@ -81,6 +81,18 @@ button{font-family:inherit}
 .sgl button.on{background:#4F8FDC;color:#FFFFFF}
 .studio{position:relative;overflow:hidden;padding:24px;display:flex;flex-direction:column;gap:16px}
 .try{min-height:44px;border:0;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;color:#0F172A}
+.expc{text-align:left;padding:18px 20px;display:flex;flex-direction:column;gap:8px;cursor:pointer;font-family:inherit;color:#0F172A;min-height:44px}
+.expc:hover{border-color:#93C5FD}
+.expc.on{border-color:#2563B8;box-shadow:0 0 0 3px #DBEAFE}
+.va{background:#CCFBF1;color:#115E59}
+.vb{background:#EDE9FE;color:#5B21B6}
+.dn{color:#B91C1C;font-size:14px;font-weight:500}
+.rngin{width:100%;height:44px;accent-color:#7C3AED;cursor:pointer}
+.g-cmp{grid-template-columns:1.3fr 1.4fr 1.4fr .9fr .6fr}
+.g-scen{grid-template-columns:1.4fr 1fr .8fr 1fr 1.1fr}
+.g-seg{grid-template-columns:1.2fr .8fr .8fr .8fr .8fr}
+.tr.cur{background:#EFF6FF}
+.gd{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #EEF2F6;font-size:15px}
 </style>
 
 </head>
@@ -122,6 +134,9 @@ button{font-family:inherit}
 
   <p class="navh">ORCHESTRATION</p>
   <button class="nav {{nav.policy}}" onClick="{{go.policy}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"></path></svg><span>Policy Management</span></button>
+
+  <p class="navh">EXPERIMENTS</p>
+  <button class="nav {{nav.ab}}" onClick="{{go.ab}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 001.3 2h12.4a1.5 1.5 0 001.3-2L14 9V3"></path><path d="M7 15h10"></path></svg><span>A/B Testing</span><span class="pill vb" style="margin-left: auto; font-size: 11px">2 LIVE</span></button>
 
   <div style="margin-top: auto; padding-top: 28px">
     <div style="border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; display: flex; gap: 10px; align-items: center">
@@ -640,6 +655,169 @@ button{font-family:inherit}
   </div>
 </sc-if>
 
+<!-- ================= A/B TESTING ================= -->
+<sc-if value="{{is.ab}}" hint-placeholder-val="{{ false }}">
+  <div style="display: flex; flex-direction: column; gap: 22px">
+    <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+      <div>
+        <p class="mut" style="margin: 0 0 8px; font-size: 15px">Experiments  ›  <span style="color: #0F172A; font-weight: 500">A/B Testing</span></p>
+        <h1 style="margin: 0; font-size: 40px; font-weight: 700; letter-spacing: -0.02em">A/B Testing</h1>
+        <p style="margin: 8px 0 0; color: #475569; font-size: 17px">Route a share of live traffic to a challenger model and see how cost and accuracy move before you switch.</p>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap"><button class="btn2">Experiment history</button><button class="btn">＋ New Experiment</button></div>
+    </div>
+    <div style="height: 1px; background: #E2E8F0"></div>
+
+    <div class="g3">
+      <sc-for list="{{exps}}" as="e" hint-placeholder-count="3">
+        <button class="card expc {{e.cls}}" onClick="{{e.pick}}">
+          <span style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="pill {{e.tone}}">{{e.status}}</span><span class="pill t-{{e.task}}">{{e.task}}</span><span class="mut" style="margin-left: auto">A/B {{e.splitTxt}}</span></span>
+          <span style="font-size: 17px; font-weight: 700">{{e.name}}</span>
+          <span class="mut" style="font-size: 14px">{{e.service}} · {{e.short}}</span>
+        </button>
+      </sc-for>
+    </div>
+
+    <section class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: flex-start">
+        <div style="min-width: 0; flex: 1 1 420px">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="pill {{ab.tone}}">{{ab.status}}</span><span class="mut">Day {{ab.day}} of {{ab.days}}</span></div>
+          <h2 style="margin: 8px 0 0; font-size: 24px">{{ab.name}}</h2>
+          <p style="margin: 8px 0 0; color: #334155; font-size: 15px; line-height: 1.55"><b>Hypothesis:</b> {{ab.hyp}}</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap"><button class="btn2">Pause</button><button class="btn2">Roll back to A</button><button class="btn" style="background: #6D28D9">Promote B to 100%</button></div>
+      </div>
+      <div class="bar" style="height: 6px"><div style="width: {{ab.dayPct}}%; background: #2563B8"></div></div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px 24px">
+        <div><span class="kl">Service · app</span><div style="font-size: 15px; margin-top: 4px">{{ab.service}} · {{ab.app}}</div></div>
+        <div><span class="kl">Primary metric</span><div style="font-size: 15px; margin-top: 4px">{{ab.metric}}</div></div>
+        <div><span class="kl">Routing rule</span><div style="font-size: 15px; margin-top: 4px">{{ab.routing}}</div></div>
+        <div><span class="kl">Departments in scope</span><div style="font-size: 15px; margin-top: 4px">{{ab.scope}}</div></div>
+        <div><span class="kl">Started</span><div style="font-size: 15px; margin-top: 4px">{{ab.started}}</div></div>
+        <div><span class="kl">Evaluation</span><div style="font-size: 15px; margin-top: 4px">{{ab.evalm}}</div></div>
+      </div>
+    </section>
+
+    <section class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 16px">
+      <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center">
+        <p class="sec" style="margin: 0">{{ab.routeTitle}}</p>
+        <span class="mut">Volume basis: {{ab.vol}}</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+        <span style="display: flex; gap: 10px; align-items: center"><span class="pill va">A · CONTROL</span><span style="font-size: 16px; font-weight: 600">{{ab.aModel}}</span><span style="font-size: 22px; font-weight: 700">{{ab.sA}}%</span></span>
+        <span style="display: flex; gap: 10px; align-items: center"><span style="font-size: 22px; font-weight: 700">{{ab.sB}}%</span><span style="font-size: 16px; font-weight: 600">{{ab.bModel}}</span><span class="pill vb">B · CHALLENGER</span></span>
+      </div>
+      <div style="display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: #EDE9FE" aria-hidden="true"><div style="width: {{ab.sA}}%; background: #0F8C7E"></div><div style="flex: 1; background: #7C3AED"></div></div>
+      <label for="ab-split" class="mut" style="font-size: 14px">Share of traffic routed to B</label>
+      <input id="ab-split" type="range" class="rngin" min="0" max="100" step="5" value="{{ab.sB}}" onChange="{{onSplit}}">
+      <div style="display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: center">
+        <div class="seg" role="group" aria-label="Preset split">
+          <sc-for list="{{presets}}" as="pr" hint-placeholder-count="6"><button class="{{pr.cls}}" onClick="{{pr.pick}}">{{pr.label}}</button></sc-for>
+        </div>
+        <button class="btn">Apply split</button>
+      </div>
+      <p class="mut" style="margin: 0">Assignment is sticky per Karmayogi ID / course video, so a learner always sees the same variant. Learner PII redaction runs before either model.</p>
+    </section>
+
+    <div class="g4">
+      <div class="kpi"><span class="kl">Projected monthly cost</span><span class="kv">{{ab.cost}}</span><span class="{{ab.costCls}}">{{ab.costDelta}}</span><span class="ks">Budget {{ab.budget}}</span></div>
+      <div class="kpi"><span class="kl">Blended accuracy</span><span class="kv">{{ab.acc}}</span><span class="{{ab.accCls}}">{{ab.accDelta}}</span><span class="ks">Gate {{ab.minAcc}}</span></div>
+      <div class="kpi"><span class="kl">Blended p95 latency</span><span class="kv">{{ab.p95}}</span><span class="ks">Limit {{ab.maxP95}}</span></div>
+      <div class="kpi"><span class="kl">Blended error rate</span><span class="kv">{{ab.err}}</span><span class="ks">Auto-rollback above {{ab.maxErr}}</span></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 20px">
+      <section class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+        <p class="sec" style="margin: 0">Cost vs accuracy across traffic split</p>
+        <div style="display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; color: #334155">
+          <span style="display: inline-flex; gap: 8px; align-items: center"><span style="width: 18px; height: 3px; background: #B4552A"></span>Monthly cost</span>
+          <span style="display: inline-flex; gap: 8px; align-items: center"><span style="width: 18px; height: 3px; background: #2563B8"></span>Accuracy</span>
+          <span style="display: inline-flex; gap: 8px; align-items: center"><span style="width: 18px; border-top: 2px dashed #64748B"></span>Accuracy gate</span>
+        </div>
+        <svg viewBox="0 0 600 230" role="img" aria-label="Line chart of projected monthly cost and accuracy as traffic share to B goes from 0 to 100 percent" style="width: 100%; height: auto; font-family: inherit">
+          <line x1="60" y1="190" x2="540" y2="190" stroke="#CBD5E1" stroke-width="1"></line>
+          <line x1="60" y1="30" x2="540" y2="30" stroke="#EEF2F6" stroke-width="1"></line>
+          <line x1="60" y1="110" x2="540" y2="110" stroke="#EEF2F6" stroke-width="1"></line>
+          <line x1="60" y1="{{ab.ch.thY}}" x2="540" y2="{{ab.ch.thY}}" stroke="#64748B" stroke-width="1.5" stroke-dasharray="5 4"></line>
+          <polyline points="{{ab.ch.costPts}}" fill="none" stroke="#B4552A" stroke-width="3"></polyline>
+          <polyline points="{{ab.ch.accPts}}" fill="none" stroke="#2563B8" stroke-width="3"></polyline>
+          <line x1="{{ab.ch.mx}}" y1="22" x2="{{ab.ch.mx}}" y2="190" stroke="#7C3AED" stroke-width="1.5"></line>
+          <circle cx="{{ab.ch.mx}}" cy="{{ab.ch.my1}}" r="6" fill="#B4552A" stroke="#FFFFFF" stroke-width="2"></circle>
+          <circle cx="{{ab.ch.mx}}" cy="{{ab.ch.my2}}" r="6" fill="#2563B8" stroke="#FFFFFF" stroke-width="2"></circle>
+          <text x="54" y="34" text-anchor="end" font-size="12" fill="#B4552A">{{ab.ch.cHi}}</text>
+          <text x="54" y="194" text-anchor="end" font-size="12" fill="#B4552A">{{ab.ch.cLo}}</text>
+          <text x="546" y="34" font-size="12" fill="#2563B8">{{ab.ch.aHi}}</text>
+          <text x="546" y="194" font-size="12" fill="#2563B8">{{ab.ch.aLo}}</text>
+          <text x="60" y="214" font-size="12" fill="#475569">0% to B</text>
+          <text x="300" y="214" text-anchor="middle" font-size="12" fill="#475569">50%</text>
+          <text x="540" y="214" text-anchor="end" font-size="12" fill="#475569">100% to B</text>
+          <text x="{{ab.ch.mx}}" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="#5B21B6">{{ab.sB}}%</text>
+        </svg>
+      </section>
+      <section class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 12px">
+        <p class="sec" style="margin: 0">Statistical significance</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap"><span class="pill {{ab.stat.sigTone}}">{{ab.stat.sigTxt}}</span></div>
+        <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+          <div><span class="kl">p-value</span><div class="kv" style="font-size: 26px">{{ab.stat.p}}</div></div>
+          <div><span class="kl">95% CI of difference (B − A)</span><div class="kv" style="font-size: 20px">{{ab.stat.ci}}</div></div>
+          <div><span class="kl">Min. detectable effect</span><div style="font-size: 17px; font-weight: 600; margin-top: 4px">{{ab.stat.mde}}</div></div>
+          <div><span class="kl">Samples A · B</span><div style="font-size: 17px; font-weight: 600; margin-top: 4px">{{ab.stat.nA}} · {{ab.stat.nB}}</div></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; justify-content: space-between; font-size: 14px"><span>Sample size progress (smaller arm)</span><b>{{ab.stat.prog}}% of {{ab.stat.req}}</b></div>
+          <div class="bar"><div style="width: {{ab.stat.prog}}%; background: #7C3AED"></div></div>
+        </div>
+        <div style="border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px; background: #F8FAFC"><span class="kl">Recommendation</span><div style="margin-top: 6px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap"><span class="pill {{ab.stat.vtone}}">{{ab.stat.vlabel}}</span><span style="font-size: 15px">{{ab.stat.verdict}}</span></div></div>
+      </section>
+    </div>
+
+    <div>
+      <p class="sec" style="margin: 0 0 12px">Variant comparison</p>
+      <div class="tbox">
+        <div class="tr th g-cmp"><span>Metric</span><span>A · control</span><span>B · challenger</span><span>B vs A</span><span>Better</span></div>
+        <sc-for list="{{ab.cmp}}" as="c" hint-placeholder-count="10">
+          <div class="tr g-cmp"><span style="font-weight: 600">{{c.label}}</span><span>{{c.a}}</span><span>{{c.b}}</span><span>{{c.d}}</span><span><span class="pill {{c.tone}}">{{c.best}}</span></span></div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(440px, 1fr)); gap: 20px">
+      <section class="card" style="padding: 8px 24px 16px">
+        <p class="sec" style="margin: 16px 0 4px">Guardrails at {{ab.sB}}% to B</p>
+        <sc-for list="{{ab.guards}}" as="g" hint-placeholder-count="5">
+          <div class="gd"><span>{{g.label}}</span><span style="display: flex; gap: 10px; align-items: center"><b>{{g.val}}</b><span class="pill {{g.tone}}">{{g.txt}}</span></span></div>
+        </sc-for>
+      </section>
+      <section class="card" style="padding: 8px 24px 16px">
+        <p class="sec" style="margin: 16px 0 4px">Ramp history</p>
+        <sc-for list="{{ab.ramp}}" as="r" hint-placeholder-count="4">
+          <div class="gd" style="justify-content: flex-start; align-items: flex-start"><span class="mono" style="width: 56px; flex: none; color: #475569">{{r.d}}</span><span style="display: flex; flex-direction: column"><span style="font-weight: 600">{{r.e}}</span><span class="mut">{{r.n}}</span></span></div>
+        </sc-for>
+      </section>
+    </div>
+
+    <div>
+      <p class="sec" style="margin: 0 0 12px">Split scenarios</p>
+      <div class="tbox">
+        <div class="tr th g-scen"><span>Traffic split</span><span>Monthly cost</span><span>Accuracy</span><span>Cost vs 100% A</span><span>Guardrails</span></div>
+        <sc-for list="{{ab.scen}}" as="r" hint-placeholder-count="5">
+          <div class="tr g-scen {{r.cur}}"><span style="font-weight: 600">{{r.label}}</span><span>{{r.cost}}</span><span>{{r.acc}}</span><span>{{r.delta}}</span><span><span class="pill {{r.tone}}">{{r.status}}</span></span></div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <p class="sec" style="margin: 0 0 12px">Segment breakdown · {{ab.segBy}}</p>
+      <div class="tbox">
+        <div class="tr th g-seg"><span>Segment</span><span>Share of traffic</span><span>A score</span><span>B score</span><span>B vs A</span></div>
+        <sc-for list="{{ab.segs}}" as="g" hint-placeholder-count="4">
+          <div class="tr g-seg"><span style="font-weight: 600">{{g.name}}</span><span>{{g.share}}</span><span>{{g.a}}</span><span>{{g.b}}</span><span><span class="pill {{g.tone}}">{{g.d}}</span></span></div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
 </div>
 </main>
 </div>
@@ -671,7 +849,7 @@ var __comp;
 function __render(){var vals=__comp.renderVals();var frag=document.createDocumentFragment();var tpl=document.getElementById('tpl').content;tpl.childNodes.forEach(function(c){__renderNode(c,vals,frag);});var root=document.getElementById('root');var y=window.scrollY;root.replaceChildren(frag);window.scrollTo(0,y);}
 
 
-var PAGES = ['explore','usage','logs','pilot','models','services','depts','keys','settings','tiers','policy'];
+var PAGES = ['explore','usage','logs','pilot','models','services','depts','keys','settings','tiers','policy','ab'];
 var PALETTE = ['#B4552A','#2563B8','#0F8C7E','#7C3AED','#C58A0B','#DB2777','#475569','#0284C7','#65A30D','#9A3412'];
 
 var DEPT_ROWS = [
@@ -790,6 +968,32 @@ var ACC = [
  ['Governance','Traces and reports give enough evidence for oversight','Weekly report to DoPT','On track','ok'],
  ['Business value','Baseline vs pilot cost per unit, like-for-like','₹18.60 → ₹14.20 per track','Measuring','blue']];
 
+var EXPS = [
+ {id:'asr',name:'Low-resource ASR for subtitles',short:'indic-conformer vs saarika-v2.5',status:'RUNNING',tone:'ok',service:'Subtitle Generation',task:'ASR',app:'Subtitle & Transcript',
+  hyp:'Routing Assamese and other low-resource languages to saarika-v2.5 lifts the reviewer score above the 0.85 gate at an acceptable cost increase.',
+  metric:'Reviewer score (0–1)',evalm:'5% of tracks human-reviewed',unit:'audio hour',volume:420,vol:'420 audio hours / month',routing:'Language ∈ as, or, bn, pa · sticky by video ID',started:'10/29/2026',day:20,days:28,scope:'Govt of Odisha, MoAFW',latUnit:'s',
+  A:{model:'indic-conformer-600m',prov:'AI4Bharat · self-hosted NIC',acc:0.82,cost:62,p50:18,p95:41,err:1.9,fb:'2.1%',n:1840},
+  B:{model:'saarika-v2.5',prov:'Sarvam AI · API',acc:0.88,cost:96,p50:12,p95:29,err:0.6,fb:'0.4%',n:612},
+  split:25,minAcc:0.85,budget:36000,maxErr:2,maxP95:45,p:0.003,req:600,mde:'±0.03',ci:'+0.04 to +0.08',vlabel:'B WINS ON QUALITY',vtone:'blue',verdict:'+6 pts at +55% unit cost. A 50/50 split clears the gate and stays within budget.',segBy:'language',
+  segs:[['Assamese','38%',0.79,0.87],['Odia','27%',0.86,0.89],['Bengali','21%',0.84,0.88],['Punjabi','14%',0.83,0.87]],
+  ramp:[['10/29','Started at 5% to B','Reviewer sampling at 5%'],['11/3','Raised to 10%','No guardrail breach'],['11/10','Raised to 25%','p-value crossed 0.05'],['Next','Proposed: 50%','Awaiting Adopter Admin approval']]},
+ {id:'llm',name:'AI Sarthi answer model',short:'sarvam-m vs gemma-3-27b-it',status:'RUNNING',tone:'ok',service:'AI Sarthi Assist',task:'LLM',app:'AI Sarthi',
+  hyp:'Self-hosted gemma-3-27b-it answers learner queries within 3 points of sarvam-m quality at under half the cost.',
+  metric:'Answer quality (LLM judge + reviewer)',evalm:'LLM judge on all · 1% human review',unit:'1K requests',volume:600,vol:'6 L requests / month',routing:'Hash of Karmayogi ID · all departments',started:'10/27/2026',day:22,days:35,scope:'All ministry-standard tenants',latUnit:'s',
+  A:{model:'sarvam-m',prov:'Sarvam AI · API',acc:0.86,cost:48,p50:0.9,p95:1.9,err:0.8,fb:'0.6%',n:41200},
+  B:{model:'gemma-3-27b-it',prov:'Google open weights · self-hosted NIC',acc:0.84,cost:22,p50:1.2,p95:2.6,err:1.2,fb:'1.1%',n:17650},
+  split:30,minAcc:0.83,budget:30000,maxErr:2,maxP95:3,p:0.21,req:15000,mde:'±0.02',ci:'−0.05 to +0.01',vlabel:'NON-INFERIOR',vtone:'ok',verdict:'Quality within the 3-pt margin at 54% lower cost. Watch Tamil, which drops 4 pts.',segBy:'query language',
+  segs:[['English','52%',0.88,0.87],['Hindi','31%',0.86,0.85],['Tamil','9%',0.84,0.80],['Bengali','8%',0.85,0.83]],
+  ramp:[['10/20','Shadow mode','B scored offline on 2,000 real queries'],['10/27','Live at 10%','No guardrail breach'],['11/6','Raised to 30%','Tamil quality dip flagged'],['Next','Hold at 30%, exclude Tamil','Proposal for review']]},
+ {id:'nmt',name:'Course translation engine',short:'indictrans2 vs sarvam-translate',status:'COMPLETED',tone:'neu',service:'Transcript Translation',task:'NMT',app:'Subtitle & Transcript',
+  hyp:'A commercial translation API improves subtitle translation quality enough to justify its higher price.',
+  metric:'Reviewer score (0–1)',evalm:'5% of segments human-reviewed',unit:'1K requests',volume:900,vol:'9 L requests / month',routing:'50/50 by course video ID',started:'9/22/2026',day:30,days:30,scope:'Govt of Odisha, MoAFW',latUnit:'s',
+  A:{model:'indictrans2-en-indic-1B',prov:'AI4Bharat · self-hosted NIC',acc:0.89,cost:6,p50:0.6,p95:1.1,err:0.3,fb:'0.2%',n:22400},
+  B:{model:'sarvam-translate',prov:'Sarvam AI · API',acc:0.90,cost:31,p50:0.8,p95:1.6,err:0.5,fb:'0.3%',n:22380},
+  split:50,minAcc:0.85,budget:12000,maxErr:2,maxP95:2,p:0.41,req:20000,mde:'±0.015',ci:'−0.01 to +0.03',vlabel:'KEEP CONTROL',vtone:'neu',verdict:'+1 pt is not significant at 5× the unit cost. indictrans2 kept at 100%.',segBy:'target language',
+  segs:[['Hindi','34%',0.92,0.92],['Odia','24%',0.88,0.90],['Tamil','22%',0.89,0.89],['Bengali','20%',0.87,0.89]],
+  ramp:[['9/22','Started at 50/50','Both arms equal'],['10/20','22K samples per variant','Sample target reached'],['10/21','Concluded — kept A','Report shared with DoPT']]}];
+
 function fmt(n){ return Math.round(n).toLocaleString('en-IN'); }
 
 class Component extends DCLogic {
@@ -797,7 +1001,8 @@ class Component extends DCLogic {
     super(props);
     var scopes = {}, adopt = {};
     NOTIFS.forEach(function(n){ scopes[n[0]] = n[3]; adopt[n[0]] = n[4]; });
-    this.state = { page: null, rng: 'today', dt: 'dept', tryIdx: -1, logTask: 'All', logStatus: 'All', modelTask: 'All', scopes: scopes, adopt: adopt };
+    var splits = {}; EXPS.forEach(function(e){ splits[e.id] = e.split; });
+    this.state = { page: null, exp: 0, splits: splits, rng: 'today', dt: 'dept', tryIdx: -1, logTask: 'All', logStatus: 'All', modelTask: 'All', scopes: scopes, adopt: adopt };
   }
   renderVals(){
     var self = this, st = this.state;
@@ -845,7 +1050,66 @@ class Component extends DCLogic {
         setI: function(){ var s = Object.assign({}, self.state.scopes); s[id] = 'institution'; self.setState({ scopes: s }); },
         toggle: function(){ var a = Object.assign({}, self.state.adopt); a[id] = !a[id]; self.setState({ adopt: a }); } }; });
 
+    var E = EXPS[st.exp], A = E.A, B = E.B, sv = st.splits[E.id], s = sv / 100, lu = E.latUnit;
+    function mix(a, b){ return a * (1 - s) + b * s; }
+    function rup(n){ return '₹' + fmt(n); }
+    function sgn(n, d){ return (n >= 0 ? '+' : '−') + Math.abs(n).toFixed(d); }
+    var costA = E.volume * A.cost, costB = E.volume * B.cost, cost = mix(costA, costB);
+    var acc = mix(A.acc, B.acc), err = mix(A.err, B.err), p95 = mix(A.p95, B.p95);
+    var dCost = cost - costA, dAcc = (acc - A.acc) * 100;
+    var exps = EXPS.map(function(e, i){ return { name: e.name, short: e.short, status: e.status, tone: e.tone, task: e.task, service: e.service, splitTxt: (100 - st.splits[e.id]) + '/' + st.splits[e.id], cls: i === st.exp ? 'on' : '', pick: function(){ self.setState({ exp: i }); } }; });
+    function setSplit(v){ var sp = Object.assign({}, self.state.splits); sp[E.id] = v; self.setState({ splits: sp }); }
+    var presets = [0,10,25,50,75,100].map(function(v){ return { label: v + '%', cls: v === sv ? 'on' : '', pick: function(){ setSplit(v); } }; });
+    var onSplit = function(e){ setSplit(+e.target.value); };
+    var X0 = 60, X1 = 540, Y0 = 30, Y1 = 190;
+    var cLo = Math.min(costA, costB), cHi = Math.max(costA, costB); if (cHi === cLo) cHi = cLo + 1;
+    var aLo = Math.min(A.acc, B.acc, E.minAcc) - 0.01, aHi = Math.max(A.acc, B.acc, E.minAcc) + 0.01;
+    function xs(v){ return X0 + (X1 - X0) * v; }
+    function yc(v){ return Y1 - (Y1 - Y0) * (v - cLo) / (cHi - cLo); }
+    function ya(v){ return Y1 - (Y1 - Y0) * (v - aLo) / (aHi - aLo); }
+    var cp = [], ap = [];
+    for (var k = 0; k <= 20; k++){ var t = k / 20; cp.push(xs(t).toFixed(1) + ',' + yc(costA * (1 - t) + costB * t).toFixed(1)); ap.push(xs(t).toFixed(1) + ',' + ya(A.acc * (1 - t) + B.acc * t).toFixed(1)); }
+    var ok = function(a, c){ return a >= E.minAcc - 1e-9 && c <= E.budget; };
+    function better(a, b, higher){ if (a === b) return '—'; return (higher ? b > a : b < a) ? 'B' : 'A'; }
+    var minN = Math.min(A.n, B.n), sig = E.p < 0.05;
+    var cmp = [
+      ['Model', A.model, B.model, '', '—'],
+      ['Provider · hosting', A.prov, B.prov, '', '—'],
+      ['Requests in experiment', fmt(A.n), fmt(B.n), '', '—'],
+      [E.metric, A.acc.toFixed(2), B.acc.toFixed(2), sgn((B.acc - A.acc) * 100, 1) + ' pts', better(A.acc, B.acc, true)],
+      ['Cost per ' + E.unit, rup(A.cost), rup(B.cost), sgn((B.cost / A.cost - 1) * 100, 0) + '%', better(A.cost, B.cost, false)],
+      ['Monthly cost at 100%', rup(costA), rup(costB), sgn(costB - costA, 0).replace(/[0-9.]+/, function(m){ return '₹' + fmt(+m); }), better(costA, costB, false)],
+      ['Cost per quality point', rup(A.cost / (A.acc * 100) * 100) + ' /100', rup(B.cost / (B.acc * 100) * 100) + ' /100', sgn(((B.cost / B.acc) / (A.cost / A.acc) - 1) * 100, 0) + '%', better(A.cost / A.acc, B.cost / B.acc, false)],
+      ['Latency p50', A.p50 + ' ' + lu, B.p50 + ' ' + lu, sgn(B.p50 - A.p50, 1) + ' ' + lu, better(A.p50, B.p50, false)],
+      ['Latency p95', A.p95 + ' ' + lu, B.p95 + ' ' + lu, sgn(B.p95 - A.p95, 1) + ' ' + lu, better(A.p95, B.p95, false)],
+      ['Error rate', A.err + '%', B.err + '%', sgn(B.err - A.err, 1) + ' pts', better(A.err, B.err, false)],
+      ['Fallback triggered', A.fb, B.fb, '', '—']
+    ].map(function(r){ return { label: r[0], a: r[1], b: r[2], d: r[3], best: r[4], tone: r[4] === 'B' ? 'vb' : (r[4] === 'A' ? 'va' : 'neu') }; });
+    var guards = [
+      ['Accuracy ≥ ' + E.minAcc.toFixed(2), acc.toFixed(3), acc >= E.minAcc - 1e-9],
+      ['Monthly cost ≤ ' + rup(E.budget), rup(cost), cost <= E.budget],
+      ['Error rate ≤ ' + E.maxErr + '%', err.toFixed(2) + '%', err <= E.maxErr],
+      ['p95 latency ≤ ' + E.maxP95 + ' ' + lu, p95.toFixed(1) + ' ' + lu, p95 <= E.maxP95],
+      ['Min. ' + fmt(E.req) + ' samples per variant', fmt(minN), minN >= E.req]
+    ].map(function(g){ return { label: g[0], val: g[1], tone: g[2] ? 'ok' : 'bad', txt: g[2] ? 'PASS' : 'BREACH' }; });
+    var ab = {
+      name: E.name, hyp: E.hyp, status: E.status, tone: E.tone, day: E.day, days: E.days, dayPct: Math.round(E.day / E.days * 100),
+      service: E.service, app: E.app, metric: E.metric, routing: E.routing, scope: E.scope, started: E.started, evalm: E.evalm,
+      routeTitle: E.status === 'COMPLETED' ? 'What-if traffic split · experiment concluded' : 'Traffic routing', vol: E.vol,
+      aModel: A.model, bModel: B.model, sA: 100 - sv, sB: sv,
+      cost: rup(cost), costDelta: (dCost > 0 ? '↑ +' : (dCost < 0 ? '↓ −' : '')) + rup(Math.abs(dCost)) + ' vs 100% A', costCls: dCost > 0 ? 'dn' : 'up', budget: rup(E.budget) + ' / month',
+      acc: acc.toFixed(3), accDelta: (dAcc >= 0 ? '↑ +' : '↓ −') + Math.abs(dAcc).toFixed(1) + ' pts vs 100% A', accCls: dAcc >= 0 ? 'up' : 'dn', minAcc: E.minAcc.toFixed(2),
+      p95: p95.toFixed(1) + ' ' + lu, maxP95: E.maxP95 + ' ' + lu, err: err.toFixed(2) + '%', maxErr: E.maxErr + '%',
+      ch: { costPts: cp.join(' '), accPts: ap.join(' '), mx: xs(s).toFixed(1), my1: yc(cost).toFixed(1), my2: ya(acc).toFixed(1), thY: ya(E.minAcc).toFixed(1), cLo: rup(cLo), cHi: rup(cHi), aLo: aLo.toFixed(2), aHi: aHi.toFixed(2) },
+      stat: { p: E.p.toFixed(3), ci: E.ci, mde: E.mde, nA: fmt(A.n), nB: fmt(B.n), req: fmt(E.req), prog: Math.min(100, Math.round(minN / E.req * 100)), sigTxt: sig ? 'Statistically significant · p < 0.05' : 'Not significant · p ≥ 0.05', sigTone: sig ? 'ok' : 'neu', vlabel: E.vlabel, vtone: E.vtone, verdict: E.verdict },
+      cmp: cmp, guards: guards, segBy: E.segBy,
+      scen: [0,25,50,75,100].map(function(v){ var t = v / 100, c = costA * (1 - t) + costB * t, a = A.acc * (1 - t) + B.acc * t, good = ok(a, c);
+        return { label: 'A ' + (100 - v) + '% · B ' + v + '%', cost: rup(c), acc: a.toFixed(3), delta: v === 0 ? '—' : ((c - costA >= 0 ? '+' : '−') + rup(Math.abs(c - costA))), status: good ? 'Within guardrails' : (a < E.minAcc - 1e-9 ? 'Below accuracy gate' : 'Over budget'), tone: good ? 'ok' : 'warn', cur: v === sv ? 'cur' : '' }; }),
+      segs: E.segs.map(function(g){ var d = (g[3] - g[2]) * 100; return { name: g[0], share: g[1], a: g[2].toFixed(2), b: g[3].toFixed(2), d: sgn(d, 0) + ' pts', tone: d > 0 ? 'vb' : (d < -2 ? 'bad' : 'neu') }; }),
+      ramp: E.ramp.map(function(r){ return { d: r[0], e: r[1], n: r[2] }; })
+    };
     return {
+      ab: ab, exps: exps, presets: presets, onSplit: onSplit,
       nav: nav, go: go, is: is, rng: rngCls, setRng: setRng, dt: dtCls, setDt: setDt, u: u, conc: conc,
       studio: studio, tryOpen: st.tryIdx >= 0, tryCard: st.tryIdx >= 0 ? STUDIO[st.tryIdx] : STUDIO[0],
       logs: logs, lg: lg, logTask: st.logTask, logStatus: st.logStatus,
